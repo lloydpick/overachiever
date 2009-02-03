@@ -1,0 +1,268 @@
+
+Overachiever v0.36
+==============================
+
+Author: Tuhljin
+
+Tools and tweaks to make the lives of players seeking Achievements a little bit easier.
+
+General:
+
+* Slash commands to search for achievements by name.
+* Ctrl+click on an achievement link to open the UI to that achievement. Ctrl+click again to track it.
+* Optionally display your progress toward earning an achievement in links provided by others for easy comparison.
+* Click and drag to move the Achievement frame around the screen.
+* The achievement tracker is also draggable.
+* Remember achievement tracking between sessions and resume when you log in.
+* Add information from progress bars and normally-hidden progress information to your achievement tooltips. (For
+  example, "Progress: 5/10" or "Assault 2 bases (0/2).")
+* Display a tooltip when hovering over the icon on the achievement tracker to see more details about that achievement.
+* Shift-click the tracker's icon to add that achievement's link to chat.
+* The tooltips of meta-criteria (achievements displayed as the criteria for obtaining a larger achievement) changed
+  from simply giving the date the criteria was met or nothing (if not met) to the standard, detailed tooltip for the
+  achievement.
+* And more!
+
+Achievement-specific:
+
+* Automatically track exploration achievements as you travel (if desired).
+* Critters' tooltips remind you which ones you need to earn "To All The Squirrels I've Loved Before."
+* "Well Read" and "Higher Learning": Add whether you've read a relevant book to its tooltip.
+* "The Scavenger," "Outland Angler," and "Northrend Angler": Show whether you've fished a node in its tooltip.
+* "Let It Snow" and "Fistful of Love": Show whether you need to use a Handful of Snowflakes or a Handful of Rose
+  Petals on players in their tooltips.
+* "It's Happy Hour Somewhere" and "Tastes Like Chicken": Show whether you've consumed a food or drink item.
+* Select a sound effect to play when one of the above reminders show up in a tooltip if you need to do something.
+
+Options can be found using the /oa command or at Interface Options -> AddOns tab -> Overachiever.
+
+
+More details
+--------------
+
+SLASH COMMANDS:
+
+- ALTERED: /ach and its aliases (/achieve, /achievement, and /achievements)
+
+  You can now add the name, part of the name, or the # sign next to the ID number of an achievement to search for it.
+
+  Example A: /ach
+   - Result: Toggle visibility of the main achievement UI.
+  Example B: /ach gold
+   - Result: Outputs links to each achievement with "gold" in its name and opens the UI to the first of these.
+  Example C: /ach #1206
+   - Result: Outputs a link to the achievement whose ID is 1206 and opens the UI to it.
+  Example D: /ach 80
+   - Result: As Example B except it searches for "80" in achievement names.
+
+- NEW: /achsilent, /achs
+
+  These commands silently search for the first matching achievement and display it, useful if you don't want text
+  added to the chat log.
+
+  Example A: /achs gold
+   - Result: Finds the first achievement with "gold" in its name and opens the UI to it.
+  Example B: /achs #1206
+   - Result: Opens the achievement UI to the achievement whose ID is 1206.
+
+- NEW: /oa
+
+  As /ach, except that if no argument is provided, Overachiever's interface options are displayed instead of the
+  main achievement UI.
+
+- NEW: /oasilent, /oas
+
+  As /achsilent, except that if no argument is provided, Overachiever's interface options are displayed instead of the
+  main achievement UI.
+
+
+DRAGGABLE FRAMES:
+
+The main achievement frame (where achievements earned and unearned are listed by category) and the achievement tracker
+are draggable when the proper Interface Options are set. Left-click on an appropriate area and hold the mouse button
+down to move the frame where you desire.
+
+By default, the main achievement frame can be moved but it is still subject to some standard frame handling that will
+reposition it when it is opened or certain other frames are displayed. To unattach the frame from this position
+handling and have Overachiever remember where the frame is from session to session, check the "Remember position"
+option under the "Main Achievement UI frame" option. Once in the position you desire, you may want to uncheck the
+"Main Achievement UI frame" option so you don't accidentally move it elsewhere.
+
+The achievement tracker is not draggable by default. In order to move it, the "Achievement tracker" option in the
+"Draggable Frames" section must be checked and the "Lock position" option under it must be unchecked. Of course, you
+must be tracking an achievement in order to see the frame so you can move it. The area used to drag the frame is the
+label giving the name of the achievement, not the icon next to it. Once the tracker is in position, you can check
+the "Lock position" option to keep it in place. Keep the "Achievement tracker" option checked or the tracker will
+be placed back at the standard position.
+
+
+EXPLORATION AUTO-TRACKING:
+
+When enabled, if you enter a new zone, Overachiever automatically switches tracking to the Exploration achievement for
+that zone unless you're already tracking a non-Exploration achievement or an Exploration meta-achievement (like
+"Explore Kalimdor"). It can optionally be set to not automatically track an achievement that you've already completed.
+
+
+Change log
+==========
+
+The change log lists changes of particular note to users, not every change made.
+
+v0.36
+- Trade module: Now supports the lilsparky's branch of Skillet. Because that addon uses ctrl-clicking on recipes to
+  do something else, use Alt instead to open to the achievement associated with the recipe.
+- Work in progress.
+
+v0.35
+- Trade module: You can now ctrl-click on a recipe in the list to open the achievement UI to the achievement for which
+  you still need to cook the recipe.
+- Trade module: Now supports the addon Advanced Trade Skill Window.
+- Suggestions Tabs: Added several new zone-based suggestions.
+- Fixed various situational bugs.
+
+v0.34
+- Trade module: Now supports the addon Skillet. Achievement icons are placed before the names of recipes you need to
+  cook in the main list. Tooltips and text beneath the selected recipe's reagents list indicate which achievements
+  are associated with the recipe.
+- Extra feature for Skillet users: A new sorting method, "By Achievement," is provided. This sorts the list of recipes
+  by the number of achievements the recipe is associated with (provided you haven't already cooked the given recipe),
+  then by the name of the first such achievement (which is "first" is determined by ID, though currently there is no
+  overlap between relevant achievements), and finally, by the recipe name.
+- Trade module: Fixed an error that occurs with non-English clients.
+- Updated German localization.
+
+v0.33
+- "The Northrend Gourmet" and "The Outland Gourmet": Pulled this functionality out of the core addon and placed it
+  into a new module, Overachiever_Trade. The module may be disabled or deleted if desired.
+- The new module is far more efficient and accurate than the old system and fixes an issue where the reminder icon
+  system didn't always initialize properly (which resulted in no icons appearing in the trade skill UI).
+- Updated most localizations.
+
+v0.32
+- "Pest Control" (new): Added an option to display reminder tooltips for critters you need to kill.
+- "To All The Squirrels Who Shared My Life" (new): Critters' /loved status for this achievement is now part of the
+  option that exists for "To All The Squirrels I've Loved Before."
+- "The Northrend Gourmet" and "The Outland Gourmet" (new): In the trade skill UI, an achievement shield icon is now
+  placed next to recipes that you currently need to cook in order to earn these achievements. A tooltip indicates
+  which achievement requires the given recipe.
+- Added an option to display a tooltip when the cursor is over an achievement in the main achievement UI giving the
+  names of any meta-achievements that list this achievement as a criteria.
+- Changed achievement sorting so that two strings beginning with numbers compare the numbers first. This means
+  "5 Exalted Reputations" is now listed before "20 Exalted Reputations," for example.
+- Updated most localizations. Translations are generously provided by users like you! Please help contribute if you
+  are able: http://wow.curseforge.com/projects/overachiever/localization/
+
+v0.31
+- Suggestions Tab: Many new suggestions based on your current location are possible, including those for: completing
+  a number of quests in your zone, goals to accomplish in your current dungeon or raid instance (or, in some cases,
+  one you are near), Heroic dungeon or raid goals when that is the current difficulty mode, City PvP goals when
+  in a capitol city (varying, depending on your faction and which city it is), Wintergrasp PvP, and more.
+- Suggestions Tab: Achievements you were reminded about through a tooltip within the last 2 minutes are now given as
+  suggestions. Additionally, any such achievement in any Overachiever-provided tab has its background colored green
+  for quick identification.
+- "It's Happy Hour Somewhere" and "Tastes Like Chicken": Now examines item IDs instead of names, making this option
+  more reliable.
+- If draggable frames with saved positions are used and you log in with a character that doesn't have a position saved
+  for one of these frames yet, the position used by the previous character is applied. (Positions are still saved per
+  character, so each one can have a different layout if desired. This simply removes the need for dragging frames to
+  the same location every time you log in with a new character.)
+- Format of the completion date shown when comparing your progress with another's in an achievement link changed to
+  dd/mm/yy for enGB and non-English clients.
+- Fixed an issue where the achievement frame wouldn't save its position if the achievement UI loaded earlier than
+  normal (as another addon may cause to be the case).
+- "Let It Snow" and "Fistful of Love": Reminders should now trigger properly with non-English clients.
+- Spanish localization updated.
+
+v0.30
+- Added an option to display a tooltip when the cursor is over an achievement in the main achievement UI that is part
+  of a series in order to display the names of other achievements in the series and its relation to them.
+- The Overachiever Tabs module has been released! This adds two new tabs to the default achievement UI. This module
+  is installed as a separate addon: The Overachiever_Tabs folder goes in the AddOns folder along with the Overachiever
+  folder. The module can be disabled or you can opt to not install it without affecting the core addon's
+  functionality.
+- The first new tab is Search. Use it to search for achievements by name, description, criteria, and/or reward. You
+  can opt to only display achievements available in the normal UI or to include all achievements, including those
+  exclusive to the opposing faction, etc.
+- The second new tab is Suggestions. This is where Overachiever will display achievements you might be interested in
+  based on your character's current circumstances. For now, it simply displays incomplete exploration achievements for
+  the current zone, but more is planned for the future.
+- Key bindings have been added to open to the Search and Suggestions tabs. Set them in the default key bindings
+  interface.
+- Individual tabs can be disabled without disabling the entire Tabs module by renaming or deleting the individual
+  file that creates that tab. That'd be either Search.lua or Suggestions.lua.
+- Compensated for a Blizzard typo that made Tel'Abim Bananas get overlooked by the "Tastes Like Chicken" check when
+  using an English client.
+- Spanish localization implemented. (Some unresolved issues remain. Please report any you find.)
+- Updated German localization.
+
+v0.25
+- Updated localizations: French, traditional Chinese.
+
+v0.24
+- New option for "It's Happy Hour Somewhere" and "Tastes Like Chicken": Show whether an item needs to be consumed
+  in its tooltip. A second new option has this display even when the achievement is complete (for the curious).
+- New option added to choose a sound effect to play when reminder text is added to the tooltip about an incomplete
+  achievement. It will not play more than once every 15 seconds. This uses LibSharedMedia, so any sound registered
+  with that library can be selected. (No sound selected by default.)
+- New option added to prevent the reminder sound from being triggered by fishing nodes when your fishing pole is
+  equipped. (Enabled by default.)
+- Fixed a compatibility issue that produced an error when some addons made the tooltip show before Overachiever was
+  fully initialized.
+- Simplified Chinese localization implemented.
+
+v0.23
+- When you enable an exploration achievement auto-tracking option, tracking begins immediately (if applicable) instead
+  of requiring you to enter a new zone.
+- Slash commands /oa, /oasilent, and /oas now show Overachiever's interface options instead of the main achievement UI
+  when no argument is provided.
+- Updated to latest LibBabble-Zone-3.0 (used for auto-tracking of exploration zones).
+
+v0.22
+- Fixed an issue that could cause taint if the draggable achievement tracker is enabled when performing certain
+  actions while in combat, such as entering/exiting a vehicle.
+- Updated localizations: German, traditional Chinese.
+
+v0.21
+- "Let It Snow" and "Fistful of Love" achievements: Options added to show whether you need to use a Handful of
+  Snowflakes or a Handful of Rose Petals on players in their tooltips.
+- Traditional Chinese and Russian localizations updated.
+
+v0.20
+- "Well Read" achievement option expanded to include "Higher Learning."
+- New option: Show in fishing nodes' tooltips whether you need to fish them for "The Scavenger," "Outland Angler,"
+  or "Northrend Angler."
+- Fixed an error that occurred when trying to open to an achievement that isn't in the normal UI. (For example,
+  achievements exclusive to the opposing faction.)
+- Russian localization implemented.
+
+v0.18
+- New option for "Well Read" achievement: Add whether you've read a relevant book to its tooltip.
+
+v0.17
+- The achievement tracker is now draggable.
+- Traditional Chinese localization implemented.
+
+v0.16
+- Quantity-based criteria progress is now added to the tooltip even if it is of the type that would not use a
+  progress bar when it is tracked, including information that is normally hidden from the user.
+- When there are multiple criteria, your progress with each is now inserted directly next to its listing on the
+  achievement tooltip. (Combined with the above change, you might see something like this: "Assault 2 bases (0/2).")
+- Achievement progress comparison feature added, replacing the option to simply show your "progress bar data" in
+  others' achievement links.
+
+v0.15
+- Revamped automatic tracking of exploration achievements to better support non-English clients.
+- French localization implemented.
+
+v0.14
+- New option added to save the position of the draggable Achievement UI.
+- Corrected German localization issue. Further work may be necessary, but this should be an improvement.
+
+v0.13
+- German localization implemented.
+
+v0.12
+- The main Achievement UI is now draggable.
+
+v0.11
+- Initial release.

@@ -1,0 +1,337 @@
+
+local AchievementIcon = "Interface\\AddOns\\Overachiever\\AchShield"
+local tooltip_complete = { r = 0.2, g = 0.5, b = 0.2 }
+local tooltip_incomplete = { r = 1, g = 0.1, b = 0.1 }
+
+local function isCriteria(achID, name)
+  local n, t, complete
+  for i=1,GetAchievementNumCriteria(achID) do
+    n, t, complete = GetAchievementCriteriaInfo(achID, i)
+    if (n == name) then  return true, complete;  end
+  end
+end
+
+Overachiever.IsCriteria = isCriteria
+
+--[[
+local function isCriteria_hidden(achID, name)
+  local n, t, complete
+  local i = 0
+  repeat
+    i = i + 1
+    n, t, complete = GetAchievementCriteriaInfo(achID, i)
+    if (n == name) then  return true, complete;  end
+  until (not n)
+end
+--]]
+
+local lastreminder = 0
+local SharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
+
+local function PlayReminder()
+  if (Overachiever_Settings.SoundAchIncomplete ~= 0 and time() >= lastreminder + 15) then
+    local sound = SharedMedia:Fetch("sound", Overachiever_Settings.SoundAchIncomplete)
+    if (sound) then
+      PlaySoundFile(sound)
+      lastreminder = time()
+    end
+  end
+end
+
+
+Overachiever.RecentReminders = {}  -- Used by Tabs module
+local RecentReminders = Overachiever.RecentReminders
+
+function Overachiever.RecentReminders_Check()
+  local earliest = time() - 120  -- Allow reminders from up to 2 minutes ago
+  for id,t in pairs(RecentReminders) do
+    if (t < earliest) then
+      RecentReminders[id] = nil
+    end
+  end
+end
+
+
+-- UNIT TOOLTIP HOOK
+----------------------
+
+local CritterAch = {
+  LoveCritters = { "CritterTip_loved", OVERACHIEVER_STRINGS_ACH_LOVECRITTERS_COMPLETE, OVERACHIEVER_STRINGS_ACH_LOVECRITTERS_INCOMPLETE },
+  LoveCritters2 = { "CritterTip_loved", OVERACHIEVER_STRINGS_ACH_LOVECRITTERS_COMPLETE, OVERACHIEVER_STRINGS_ACH_LOVECRITTERS_INCOMPLETE },
+  PestControl = { "CritterTip_killed", OVERACHIEVER_STRINGS_KILL_COMPLETE, OVERACHIEVER_STRINGS_KILL_INCOMPLETE },
+};
+
+local function CritterCheck(ach, name)
+  local id = OVERACHIEVER_ACHID[ach]
+  if (select(4, GetAchievementInfo(id))) then
+    CritterAch[ach] = nil;
+    return;
+  end
+  local isCrit, complete = isCriteria(id, name)
+  if (isCrit) then
+    return id, complete and CritterAch[ach][2] or CritterAch[ach][3], complete
+  end
+end
+
+local RaceClassAch = {
+  FistfulOfLove = { "FistfulOfLove_petals", OVERACHIEVER_STRINGS_ACH_FISTFULOFLOVE_COMPLETE, OVERACHIEVER_STRINGS_ACH_FISTFULOFLOVE_INCOMPLETE,
+    { "Gnome WARLOCK", "Human DEATHKNIGHT", "NightElf PRIEST", "Orc SHAMAN", "Tauren DRUID", "Troll ROGUE",
+      "Scourge WARRIOR", "BloodElf MAGE", "Draenei PALADIN", "Dwarf HUNTER" }
+  },
+  LetItSnow = { "LetItSnow_flaked", OVERACHIEVER_STRINGS_ACH_LETITSNOW_COMPLETE, OVERACHIEVER_STRINGS_ACH_LETITSNOW_INCOMPLETE,
+    { "Orc DEATHKNIGHT", "Human WARRIOR", "Tauren SHAMAN", "NightElf DRUID", "Scourge ROGUE", "Troll HUNTER",
+      "Gnome MAGE", "Dwarf PALADIN", "BloodElf WARLOCK", "Draenei PRIEST" }
+  },
+};
+
+local function RaceClassCheck(ach, text)
+  local id = OVERACHIEVER_ACHID[ach]
+  if (select(4, GetAchievementInfo(id))) then
+    RaceClassAch[ach] = nil;
+    return;
+  end
+  local tab = RaceClassAch[ach]
+  local isCrit, complete
+  for i,c in ipairs(tab[4]) do
+    if (c == text) then
+      local _
+      isCrit = true
+      _, _, complete = GetAchievementCriteriaInfo(id, i)
+      break;
+    end
+  end
+  if (isCrit) then
+    return id, complete and tab[2] or tab[3], complete
+  end
+end
+
+function Overachiever.ExamineSetUnit(tooltip)
+  tooltip = tooltip or GameTooltip  -- Workaround since another addon is known to break this
+  local name, unit = tooltip:GetUnit()
+  if (not unit) then  return;  end
+  local id, text, complete
+  if (UnitIsPlayer(unit)) then
+    local _, r = UnitRace(unit)
+    local _, c = UnitClass(unit)
+    if (r and c) then
+      local raceclass = r.." "..c
+      for key,tab in pairs(RaceClassAch) do
+        if (Overachiever_Settings[ tab[1] ]) then
+          id, text, complete = RaceClassCheck(key, raceclass)
+          if (text) then  break;  end
+        end
+      end
+    end
+  elseif (name and UnitCreatureType(unit) == OVERACHIEVER_STRINGS_CRITTER) then
+    for key,tab in pairs(CritterAch) do
+      if (Overachiever_Settings[ tab[1] ]) then
+        id, text, complete = CritterCheck(key, name)
+        if (text) then  break;  end
+      end
+    end
+  end
+
+  if (text) then
+    local r, g, b
+    if (complete) then
+      r, g, b = tooltip_complete.r, tooltip_complete.g, tooltip_complete.b
+    else
+      r, g, b = tooltip_incomplete.r, tooltip_incomplete.g, tooltip_incomplete.b
+      PlayReminder()
+      RecentReminders[id] = time()
+    end
+    tooltip:AddLine(text, r, g, b)
+    tooltip:AddTexture(AchievementIcon)
+    tooltip:Show()
+  end
+end
+
+
+-- WORLD OBJECT TOOLTIP HOOK
+------------------------------
+
+local WorldObjAch = {
+  WellRead = { "WellReadTip_read", OVERACHIEVER_STRINGS_ACH_WELLREAD_COMPLETE, OVERACHIEVER_STRINGS_ACH_WELLREAD_INCOMPLETE },
+  HigherLearning = { "WellReadTip_read", OVERACHIEVER_STRINGS_ACH_WELLREAD_COMPLETE, OVERACHIEVER_STRINGS_ACH_WELLREAD_INCOMPLETE },
+  Scavenger = { "AnglerTip_fished", OVERACHIEVER_STRINGS_ACH_ANGLER_COMPLETE, OVERACHIEVER_STRINGS_ACH_ANGLER_INCOMPLETE, true },
+  OutlandAngler = { "AnglerTip_fished", OVERACHIEVER_STRINGS_ACH_ANGLER_COMPLETE, OVERACHIEVER_STRINGS_ACH_ANGLER_INCOMPLETE, true },
+  NorthrendAngler = { "AnglerTip_fished", OVERACHIEVER_STRINGS_ACH_ANGLER_COMPLETE, OVERACHIEVER_STRINGS_ACH_ANGLER_INCOMPLETE, true },
+};
+
+local function WorldObjCheck(ach, text)
+  local id = OVERACHIEVER_ACHID[ach]
+  if (select(4, GetAchievementInfo(id))) then
+    WorldObjAch[ach] = nil;
+    return;
+  end
+  local isCrit, complete = isCriteria(id, text)
+  if (isCrit) then
+    return id, complete and WorldObjAch[ach][2] or WorldObjAch[ach][3], complete, WorldObjAch[ach][4]
+  end
+end
+
+function Overachiever.ExamineOneLiner(tooltip)
+-- Unfortunately, we couldn't find a "GameTooltip:SetWorldObject" or similar type of thing, so we have to check for
+-- these sorts of tooltips in a less direct way.
+  tooltip = tooltip or GameTooltip  -- Workaround since another addon is known to break this
+  if (tooltip:NumLines() == 1) then
+    local n = tooltip:GetName()
+    if (getglobal(n.."TextRight1"):GetText()) then  return;  end
+    local tiptext = getglobal(n.."TextLeft1"):GetText()
+    local id, text, complete, angler
+    for key,tab in pairs(WorldObjAch) do
+      if (Overachiever_Settings[ tab[1] ]) then
+        id, text, complete, angler = WorldObjCheck(key, tiptext)
+        if (text) then  break;  end
+      end
+    end
+    if (text) then
+      local r, g, b
+      if (complete) then
+        r, g, b = tooltip_complete.r, tooltip_complete.g, tooltip_complete.b
+      else
+        r, g, b = tooltip_incomplete.r, tooltip_incomplete.g, tooltip_incomplete.b
+        if (not angler or not Overachiever_Settings.SoundAchIncomplete_AnglerCheckPole or
+            not IsEquippedItemType("Fishing Poles")) then
+          PlayReminder()
+          RecentReminders[id] = time()
+        end
+      end
+      tooltip:AddLine(text, r, g, b)
+      tooltip:AddTexture(AchievementIcon)
+      tooltip:Show()
+    end
+  end
+end
+
+
+-- ITEM TOOLTIP HOOK
+-----------------------
+
+local FoodCriteria, DrinkCriteria, ItemLookupTabBuilt = {}, {}
+
+--local lastitemTime, lastitemLink = 0
+
+function Overachiever.BuildItemLookupTab()
+-- Build lookup tables (since examining the criteria each time is time-consuming)
+  local foodID, drinkID = OVERACHIEVER_ACHID.TastesLikeChicken, OVERACHIEVER_ACHID.HappyHour
+  if ( ItemLookupTabBuilt or not Overachiever_Settings.Item_consumed or
+       (not Overachiever_Settings.Item_consumed_whencomplete and select(4, GetAchievementInfo(foodID)) and
+       select(4, GetAchievementInfo(drinkID))) ) then
+  -- If the tables are built, or we don't add this info to tooltips, or we don't add this info to tooltips if the
+  -- achievement is complete AND both achievements are complete, then do nothing.
+    return;
+  end
+
+  local i, _, asset = 1
+  _, _, _, _, _, _, _, asset = GetAchievementCriteriaInfo(foodID, i)
+  while (asset) do -- while loop used because these are "hidden" criteria: GetAchievementNumCriteria returns only 1.
+    FoodCriteria[asset] = i
+    i = i + 1
+    _, _, _, _, _, _, _, asset = GetAchievementCriteriaInfo(foodID, i)
+  end
+
+  i = 1
+  _, _, _, _, _, _, _, asset = GetAchievementCriteriaInfo(drinkID, i)
+  while (asset) do
+    DrinkCriteria[asset] = i
+    i = i + 1
+    _, _, _, _, _, _, _, asset = GetAchievementCriteriaInfo(drinkID, i)
+  end
+
+  ItemLookupTabBuilt = true
+end
+
+local LBI = LibStub:GetLibrary("LibBabble-Inventory-3.0"):GetLookupTable()
+
+local ConsumeItemAch = {
+  TastesLikeChicken = { "Item_consumed", OVERACHIEVER_STRINGS_ACH_CONSUME_COMPLETE, OVERACHIEVER_STRINGS_ACH_CONSUME_INCOMPLETE, OVERACHIEVER_STRINGS_ACH_CONSUME_INCOMPLETE_EXTRA, FoodCriteria },
+  HappyHour = { "Item_consumed", OVERACHIEVER_STRINGS_ACH_CONSUME_COMPLETE, OVERACHIEVER_STRINGS_ACH_CONSUME_INCOMPLETE, OVERACHIEVER_STRINGS_ACH_CONSUME_INCOMPLETE_EXTRA, DrinkCriteria },
+};
+
+local function ItemConsumedCheck(ach, itemID)
+  local id = OVERACHIEVER_ACHID[ach]
+  ach = ConsumeItemAch[ach]
+  local achcomplete = select(4, GetAchievementInfo(id))
+  if (achcomplete and not Overachiever_Settings[ ach[1].."_whencomplete" ]) then
+    return;
+  end
+  local critNum = ach[5][itemID]
+  if (critNum) then
+    local n, t, complete = GetAchievementCriteriaInfo(id, critNum)
+    return id, complete and ach[2] or achcomplete and ach[4] or ach[3], complete, achcomplete
+  end
+end
+
+function Overachiever.ExamineItem(tooltip)
+  tooltip = tooltip or this or GameTooltip  -- Workaround in case another addon breaks this
+  local name, link = tooltip:GetItem() -- Issue: This doesn't reliably get the item we want?
+  if (not link) then  return;  end
+  -- Could check IsUsableItem(link) to see if it's something in your inventory..
+  local itemMinLevel, itemType, subtype = select(5, GetItemInfo(link))
+  if ((itemType == LBI["Consumable"] and (subtype == LBI["Food & Drink"] or subtype == LBI["Consumable"])) or
+      (itemType == LBI["Trade Goods"] and subtype == LBI["Meat"])) then
+    local _, _, itemID  = strfind(link, "item:(%d+)")
+    itemID = tonumber(itemID)
+    local id, text, complete, achcomplete
+    for key,tab in pairs(ConsumeItemAch) do
+      if (Overachiever_Settings[ tab[1] ]) then
+        id, text, complete, achcomplete = ItemConsumedCheck(key, itemID)
+        if (text) then  break;  end
+      end
+    end
+    if (text) then
+      local r, g, b
+      if (complete) then
+        r, g, b = tooltip_complete.r, tooltip_complete.g, tooltip_complete.b
+      else
+        r, g, b = tooltip_incomplete.r, tooltip_incomplete.g, tooltip_incomplete.b
+        if (not achcomplete and tooltip == GameTooltip and itemMinLevel <= UnitLevel("player")) then
+          -- Extra checks needed since the previous item sometimes shows up on the tooltip?
+          PlayReminder()
+          RecentReminders[id] = time()
+        end
+      end
+      tooltip:AddLine(text, r, g, b)
+      tooltip:AddTexture(AchievementIcon)
+      tooltip:Show()
+    end
+  end
+end
+
+
+-- Register some Blizzard sounds
+-----------------------------------
+
+if (SharedMedia) then
+  local soundtab = {
+  ["Sound\\Doodad\\BellTollAlliance.wav"] = OVERACHIEVER_STRINGS_SOUND_BELL_ALLIANCE,
+  ["Sound\\Doodad\\BellTollHorde.wav"] = OVERACHIEVER_STRINGS_SOUND_BELL_HORDE,
+  ["Sound\\Doodad\\BellTollNightElf.wav"] = OVERACHIEVER_STRINGS_SOUND_BELL_NIGHTELF,
+  ["Sound\\Doodad\\BellTollTribal.wav"] = OVERACHIEVER_STRINGS_SOUND_DRUMHIT,
+  ["Sound\\Doodad\\BoatDockedWarning.wav"] = OVERACHIEVER_STRINGS_SOUND_BELL_BOATARRIVED,
+  ["Sound\\Doodad\\G_GongTroll01.wav"] = OVERACHIEVER_STRINGS_SOUND_GONG_TROLL,
+  ["Sound\\Spells\\ShaysBell.wav"] = OVERACHIEVER_STRINGS_SOUND_BELL_MELLOW,
+
+  ["Sound\\Spells\\PVPEnterQueue.wav"] = OVERACHIEVER_STRINGS_SOUND_ENTERQUEUE,
+  ["Sound\\Spells\\bind2_Impact_Base.wav"] = OVERACHIEVER_STRINGS_SOUND_HEARTHBIND,
+  ["Sound\\Doodad\\KharazahnBellToll.wav"] = OVERACHIEVER_STRINGS_SOUND_BELL_KARA,
+
+  ["Sound\\Interface\\AuctionWindowOpen.wav"] = OVERACHIEVER_STRINGS_SOUND_DING_AUCTION,
+  ["Sound\\Interface\\AuctionWindowClose.wav"] = OVERACHIEVER_STRINGS_SOUND_BELL_AUCTION,
+  ["Sound\\Interface\\AlarmClockWarning1.wav"] = OVERACHIEVER_STRINGS_SOUND_ALARM1,
+  ["Sound\\Interface\\AlarmClockWarning2.wav"] = OVERACHIEVER_STRINGS_SOUND_ALARM2,
+  ["Sound\\Interface\\AlarmClockWarning3.wav"] = OVERACHIEVER_STRINGS_SOUND_ALARM3,
+  ["Sound\\Interface\\MapPing.wav"] = OVERACHIEVER_STRINGS_SOUND_MAP_PING,
+
+  ["Sound\\Spells\\SimonGame_Visual_GameTick.wav"] = OVERACHIEVER_STRINGS_SOUND_SIMON_DING,
+  ["Sound\\Spells\\SimonGame_Visual_LevelStart.wav"] = OVERACHIEVER_STRINGS_SOUND_SIMON_STARTGAME,
+  ["Sound\\Spells\\SimonGame_Visual_GameStart.wav"] = OVERACHIEVER_STRINGS_SOUND_SIMON_STATRLEVEL,
+
+  ["Sound\\Spells\\YarrrrImpact.wav"] = OVERACHIEVER_STRINGS_SOUND_YAR,
+  }
+  for data,name in pairs(soundtab) do
+    SharedMedia:Register("sound", "Blizzard: "..name, data)
+  end
+  soundtab = nil
+end

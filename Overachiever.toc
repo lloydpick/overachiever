@@ -1,0 +1,20 @@
+## Interface: 30000
+## Title: Overachiever
+## Version: 0.36
+## Author: Tuhljin
+## Notes: Tools and tweaks to make the lives of players seeking Achievements a little bit easier.
+## SavedVariables: Overachiever_Settings, Overachiever_CharVars_Default
+## SavedVariablesPerCharacter: Overachiever_CharVars
+
+libs\LibBabble-Zone-3.0\LibStub\LibStub.lua
+libs\LibBabble-Zone-3.0\lib.xml
+libs\LibBabble-Inventory-3.0\lib.xml
+libs\TjOptions.lua
+libs\TjSharedMediaDropDown\lib.xml
+libs\TjDragIt.lua
+
+localization.lua
+Overachiever.lua
+AchieveID.lua
+AchieveTip.lua
+GameTip.lua
