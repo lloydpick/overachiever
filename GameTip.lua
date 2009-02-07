@@ -328,7 +328,7 @@ if (SharedMedia) then
 
   ["Sound\\Spells\\SimonGame_Visual_GameTick.wav"] = L.SOUND_SIMON_DING,
   ["Sound\\Spells\\SimonGame_Visual_LevelStart.wav"] = L.SOUND_SIMON_STARTGAME,
-  ["Sound\\Spells\\SimonGame_Visual_GameStart.wav"] = L.SOUND_SIMON_STATRLEVEL,
+  ["Sound\\Spells\\SimonGame_Visual_GameStart.wav"] = L.SOUND_SIMON_STARTLEVEL,
 
   ["Sound\\Spells\\YarrrrImpact.wav"] = L.SOUND_YAR,
   }

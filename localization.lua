@@ -113,7 +113,7 @@ OVERACHIEVER_STRINGS = {
 	SOUND_MAP_PING = "Map Ping";
 	SOUND_SIMON_DING = "Simon Ding";
 	SOUND_SIMON_STARTGAME = "Simon Start Game";
-	SOUND_SIMON_STATRLEVEL = "Simon Start Level";
+	SOUND_SIMON_STARTLEVEL = "Simon Start Level";
 	SOUND_YAR = "Yarrrr";
 }
 
