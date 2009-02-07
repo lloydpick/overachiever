@@ -14,6 +14,8 @@ local ACHINFO_NAME = 2
 
 Overachiever = {};
 
+local L = OVERACHIEVER_STRINGS
+
 local CATEGORIES_ALL, CATEGORY_EXPLOREROOT, CATEGORIES_EXPLOREZONES
 local OptionsPanel
 local MadeDraggable_AchFrame, MadeDragSave_AchFrame, MadeDraggable_AchTracker
@@ -520,7 +522,7 @@ sethook(AchievementWatchLine1Button, "OnEnter", TrackerBtnOnEnter)
 sethook(AchievementWatchLine1Button, "OnLeave", TrackerBtnOnLeave)
 
 local function CreateGreenCheck(refobj)
-  local frame = CreateFrame("Frame", refobj)
+  local frame = CreateFrame("Frame", nil, refobj)
   frame:SetWidth(20); frame:SetHeight(16);
   frame.tex = frame:CreateTexture(nil, "ARTWORK")
   frame.tex:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Criteria-Check")
@@ -528,7 +530,6 @@ local function CreateGreenCheck(refobj)
   frame.tex:SetWidth(20); frame.tex:SetHeight(16);
   frame:SetPoint("RIGHT", refobj, "LEFT", 0, -3)
   frame.tex:SetPoint("LEFT")
-  frame:SetScale(0.85)
   frame:SetFrameLevel(refobj:GetFrameLevel() + 1)
   return frame;
 end
@@ -667,7 +668,7 @@ do
       GameTooltip:SetOwner(self, "ANCHOR_NONE")
       GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 8, 0)
       GameTooltip:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b)
-      GameTooltip:AddLine(OVERACHIEVER_STRINGS_SERIESTIP)
+      GameTooltip:AddLine(L.SERIESTIP)
       GameTooltip:AddLine(" ")
       local ach = GetPreviousAchievement(id)
       local first, _, name, anycomplete
@@ -704,7 +705,7 @@ do
         GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 8, 0)
         GameTooltip:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b)
       end
-      GameTooltip:AddLine(OVERACHIEVER_STRINGS_REQUIREDFORMETATIP)
+      GameTooltip:AddLine(L.REQUIREDFORMETATIP)
       GameTooltip:AddLine(" ")
       AddAchListToTooltip(GameTooltip, AchLookup_metaach[id])
       GameTooltip:AddLine(" ")
@@ -765,86 +766,92 @@ function Overachiever.OnEvent(self, event, arg1, arg2, arg3, arg4, arg5, arg6, a
     _, ACH_FistfulOfLove = GetAchievementInfo(OVERACHIEVER_ACHID.FistfulOfLove)
     _, ACH_HappyHour = GetAchievementInfo(OVERACHIEVER_ACHID.HappyHour)
     _, ACH_TastesLikeChicken = GetAchievementInfo(OVERACHIEVER_ACHID.TastesLikeChicken)
-    
+
+    -- Handle clients that aren't at WoW 3.0.8 yet (Chinese):
+    ACH_LoveCritters2 = ACH_LoveCritters2 or L.OPT_ACHUNKNOWN
+    ACH_PestControl = ACH_PestControl or L.OPT_ACHUNKNOWN
+
+    local items = {
+	{ type = "labelwrap", text = L.OPT_LABEL_TOOLTIPS, topBuffer = 1 },
+	{ variable = "Tooltip_ShowProgress", text = L.OPT_SHOWPROGRESS,
+	  tooltip = L.OPT_SHOWPROGRESS_TIP },
+	{ variable = "Tooltip_ShowProgress_Other", text = L.OPT_SHOWPROGRESS_OTHER,
+	  tooltip = L.OPT_SHOWPROGRESS_OTHER_TIP },
+	{ variable = "Tooltip_ShowID", text = L.OPT_SHOWID },
+
+	{ type = "labelwrap", text = L.OPT_LABEL_ACHTWO:format(ACH_LoveCritters, ACH_LoveCritters2),
+	  topBuffer = 4 },
+	{ variable = "CritterTip_loved", text = L.OPT_CRITTERTIPS,
+	  tooltip = L.OPT_CRITTERTIPS_TIP },
+
+	{ type = "labelwrap", text = '"'..ACH_PestControl..'"',
+	  topBuffer = 4 },
+	{ variable = "CritterTip_killed", text = L.OPT_PESTCONTROLTIPS,
+	  tooltip = L.OPT_PESTCONTROLTIPS_TIP },
+
+	{ type = "labelwrap", text = L.OPT_LABEL_ACHTWO:format(ACH_WellRead, ACH_HigherLearning),
+	  topBuffer = 4 },
+	{ variable = "WellReadTip_read", text = L.OPT_WELLREADTIPS,
+	  tooltip = L.OPT_WELLREADTIPS_TIP },
+
+	{ type = "labelwrap", text = L.OPT_LABEL_ACHTHREE:format(ACH_Scavenger, ACH_OutlandAngler, ACH_NorthrendAngler),
+	  topBuffer = 4 },
+	{ variable = "AnglerTip_fished", text = L.OPT_ANGLERTIPS,
+	  tooltip = L.OPT_ANGLERTIPS_TIP },
+
+	{ type = "labelwrap", text = L.OPT_LABEL_ACHTWO:format(ACH_HappyHour, ACH_TastesLikeChicken),
+	  topBuffer = 4 },
+	{ variable = "Item_consumed", text = L.OPT_CONSUMEITEMTIPS,
+	  tooltip = L.OPT_CONSUMEITEMTIPS_TIP, tooltip2 = L.OPT_CONSUMEITEMTIPS_TIP2.."|n|cffffffff"..L.OPT_CONSUMEITEMTIPS_TIP3,
+	  OnChange = Overachiever.BuildItemLookupTab },
+	{ variable = "Item_consumed_whencomplete", text = L.OPT_CONSUMEITEMTIPS_WHENCOMPLETE,
+	  OnChange = Overachiever.BuildItemLookupTab, xOffset = 10 },
+
+	{ type = "labelwrap", text = '"'..ACH_FistfulOfLove..'"', topBuffer = 4, xOffset = 0 },
+	{ variable = "FistfulOfLove_petals", text = L.OPT_FISTFULOFLOVETIPS,
+	  tooltip = L.OPT_FISTFULOFLOVETIPS_TIP },
+
+	{ type = "labelwrap", text = '"'..ACH_LetItSnow..'"', topBuffer = 4 },
+	{ variable = "LetItSnow_flaked", text = L.OPT_LETITSNOWTIPS,
+	  tooltip = L.OPT_LETITSNOWTIPS_TIP },
+
+	{ type = "labelwrap", text = L.OPT_LABEL_TRACKING, topBuffer = 4 },
+	{ variable = "Tracker_GreenCheck", text = L.OPT_TRACKERGREENCHECK,
+	  tooltip = L.OPT_TRACKERGREENCHECK_TIP, OnChange = GreenCheckUpdate },
+	{ variable = "Explore_AutoTrack", text = L.OPT_AUTOTRACKEXPLORE,
+	  tooltip = L.OPT_AUTOTRACKEXPLORE_TIP, OnChange = AutoTrackCheck_Explore },
+	{ variable = "Explore_AutoTrack_Completed", text = L.OPT_AUTOTRACKEXPLORE_COMPLETED,
+	  xOffset = 10, OnChange = AutoTrackCheck_Explore },
+
+	{ type = "labelwrap", text = L.OPT_LABEL_DRAG, topBuffer = 4, xOffset = 0 },
+	{ variable = "Draggable_AchFrame", text = L.OPT_DRAG_ACHFRAME,
+	  OnChange = CheckDraggable_AchFrame },
+	{ variable = "DragSave_AchFrame", text = L.OPT_DRAGSAVE, xOffset = 10,
+	  OnChange = CheckDraggable_AchFrame },
+	{ variable = "Draggable_AchTracker", text = L.OPT_DRAG_ACHTRACKER, xOffset = 0,
+	  OnChange = CheckDraggable_AchTracker },
+	{ variable = "DragLock_AchTracker", text = L.OPT_DRAGLOCK, xOffset = 10,
+	  OnChange = CheckDraggable_AchTracker },
+
+	{ type = "sharedmedia", mediatype = "sound", variable = "SoundAchIncomplete", text = L.OPT_SELECTSOUND,
+	  tooltip = L.OPT_SELECTSOUND_TIP, tooltip2 = L.OPT_SELECTSOUND_TIP2,
+	  xOffset = 0, topBuffer = 10, OnChange = SoundSelected },
+	{ variable = "SoundAchIncomplete_AnglerCheckPole", text = L.OPT_SELECTSOUND_ANGLERCHECKPOLE,
+	  tooltip = L.OPT_SELECTSOUND_ANGLERCHECKPOLE_TIP, xOffset = 10 },
+
+	{ type = "labelwrap", text = L.OPT_LABEL_MAINUI, topBuffer = 4, xOffset = 0 },
+	{ variable = "UI_SeriesTooltip", text = L.OPT_UI_SERIESTIP,
+	  tooltip = L.OPT_UI_SERIESTIP_TIP },
+	{ variable = "UI_RequiredForMetaTooltip", text = L.OPT_UI_REQUIREDFORMETATIP,
+	  tooltip = L.OPT_UI_REQUIREDFORMETATIP_TIP, OnChange = BuildCriteriaLookupTab_check },
+    }
+
     local oldver
     OptionsPanel, oldver = TjOptions.CreatePanel(THIS_TITLE, nil, {
 	title = THIS_TITLE.." v"..THIS_VERSION,
 	itemspacing = 3,
 	scrolling = true,
-	items = {
-		 { type = "labelwrap", text = OVERACHIEVER_STRINGS_OPT_LABEL_TOOLTIPS, topBuffer = 1 },
-		 { variable = "Tooltip_ShowProgress", text = OVERACHIEVER_STRINGS_OPT_SHOWPROGRESS,
-		   tooltip = OVERACHIEVER_STRINGS_OPT_SHOWPROGRESS_TIP },
-		 { variable = "Tooltip_ShowProgress_Other", text = OVERACHIEVER_STRINGS_OPT_SHOWPROGRESS_OTHER,
-		   tooltip = OVERACHIEVER_STRINGS_OPT_SHOWPROGRESS_OTHER_TIP },
-		 { variable = "Tooltip_ShowID", text = OVERACHIEVER_STRINGS_OPT_SHOWID },
-
-		 { type = "labelwrap", text = OVERACHIEVER_STRINGS_OPT_LABEL_ACHTWO:format(ACH_LoveCritters, ACH_LoveCritters2),
-		   topBuffer = 4 },
-		 { variable = "CritterTip_loved", text = OVERACHIEVER_STRINGS_OPT_CRITTERTIPS,
-		   tooltip = OVERACHIEVER_STRINGS_OPT_CRITTERTIPS_TIP },
-
-		 { type = "labelwrap", text = '"'..ACH_PestControl..'"',
-		   topBuffer = 4 },
-		 { variable = "CritterTip_killed", text = OVERACHIEVER_STRINGS_OPT_PESTCONTROLTIPS,
-		   tooltip = OVERACHIEVER_STRINGS_OPT_PESTCONTROLTIPS_TIP },
-
-		 { type = "labelwrap", text = OVERACHIEVER_STRINGS_OPT_LABEL_ACHTWO:format(ACH_WellRead, ACH_HigherLearning),
-		   topBuffer = 4 },
-		 { variable = "WellReadTip_read", text = OVERACHIEVER_STRINGS_OPT_WELLREADTIPS,
-		   tooltip = OVERACHIEVER_STRINGS_OPT_WELLREADTIPS_TIP },
-
-		 { type = "labelwrap", text = OVERACHIEVER_STRINGS_OPT_LABEL_ACHTHREE:format(ACH_Scavenger, ACH_OutlandAngler, ACH_NorthrendAngler),
-		   topBuffer = 4 },
-		 { variable = "AnglerTip_fished", text = OVERACHIEVER_STRINGS_OPT_ANGLERTIPS,
-		   tooltip = OVERACHIEVER_STRINGS_OPT_ANGLERTIPS_TIP },
-
-		 { type = "labelwrap", text = OVERACHIEVER_STRINGS_OPT_LABEL_ACHTWO:format(ACH_HappyHour, ACH_TastesLikeChicken),
-		   topBuffer = 4 },
-		 { variable = "Item_consumed", text = OVERACHIEVER_STRINGS_OPT_CONSUMEITEMTIPS,
-		   tooltip = OVERACHIEVER_STRINGS_OPT_CONSUMEITEMTIPS_TIP, tooltip2 = OVERACHIEVER_STRINGS_OPT_CONSUMEITEMTIPS_TIP2.."|n|cffffffff"..OVERACHIEVER_STRINGS_OPT_CONSUMEITEMTIPS_TIP3,
-		   OnChange = Overachiever.BuildItemLookupTab },
-		 { variable = "Item_consumed_whencomplete", text = OVERACHIEVER_STRINGS_OPT_CONSUMEITEMTIPS_WHENCOMPLETE,
-		   OnChange = Overachiever.BuildItemLookupTab, xOffset = 10 },
-
-		 { type = "labelwrap", text = '"'..ACH_FistfulOfLove..'"', topBuffer = 4, xOffset = 0 },
-		 { variable = "FistfulOfLove_petals", text = OVERACHIEVER_STRINGS_OPT_FISTFULOFLOVETIPS,
-		   tooltip = OVERACHIEVER_STRINGS_OPT_FISTFULOFLOVETIPS_TIP },
-
-		 { type = "labelwrap", text = '"'..ACH_LetItSnow..'"', topBuffer = 4 },
-		 { variable = "LetItSnow_flaked", text = OVERACHIEVER_STRINGS_OPT_LETITSNOWTIPS,
-		   tooltip = OVERACHIEVER_STRINGS_OPT_LETITSNOWTIPS_TIP },
-
-		 { type = "labelwrap", text = OVERACHIEVER_STRINGS_OPT_LABEL_TRACKING, topBuffer = 4 },
-		 { variable = "Tracker_GreenCheck", text = OVERACHIEVER_STRINGS_OPT_TRACKERGREENCHECK,
-		   tooltip = OVERACHIEVER_STRINGS_OPT_TRACKERGREENCHECK_TIP, OnChange = GreenCheckUpdate },
-		 { variable = "Explore_AutoTrack", text = OVERACHIEVER_STRINGS_OPT_AUTOTRACKEXPLORE,
-		   tooltip = OVERACHIEVER_STRINGS_OPT_AUTOTRACKEXPLORE_TIP, OnChange = AutoTrackCheck_Explore },
-		 { variable = "Explore_AutoTrack_Completed", text = OVERACHIEVER_STRINGS_OPT_AUTOTRACKEXPLORE_COMPLETED,
-		   xOffset = 10, OnChange = AutoTrackCheck_Explore },
-
-		 { type = "labelwrap", text = OVERACHIEVER_STRINGS_OPT_LABEL_DRAG, topBuffer = 4, xOffset = 0 },
-		 { variable = "Draggable_AchFrame", text = OVERACHIEVER_STRINGS_OPT_DRAG_ACHFRAME,
-		   OnChange = CheckDraggable_AchFrame },
-		 { variable = "DragSave_AchFrame", text = OVERACHIEVER_STRINGS_OPT_DRAGSAVE, xOffset = 10,
-		   OnChange = CheckDraggable_AchFrame },
-		 { variable = "Draggable_AchTracker", text = OVERACHIEVER_STRINGS_OPT_DRAG_ACHTRACKER, xOffset = 0,
-		   OnChange = CheckDraggable_AchTracker },
-		 { variable = "DragLock_AchTracker", text = OVERACHIEVER_STRINGS_OPT_DRAGLOCK, xOffset = 10,
-		   OnChange = CheckDraggable_AchTracker },
-
-		 { type = "sharedmedia", mediatype = "sound", variable = "SoundAchIncomplete", text = OVERACHIEVER_STRINGS_OPT_SELECTSOUND,
-		   tooltip = OVERACHIEVER_STRINGS_OPT_SELECTSOUND_TIP, tooltip2 = OVERACHIEVER_STRINGS_OPT_SELECTSOUND_TIP2,
-		   xOffset = 0, topBuffer = 10, OnChange = SoundSelected },
-		 { variable = "SoundAchIncomplete_AnglerCheckPole", text = OVERACHIEVER_STRINGS_OPT_SELECTSOUND_ANGLERCHECKPOLE,
-		   tooltip = OVERACHIEVER_STRINGS_OPT_SELECTSOUND_ANGLERCHECKPOLE_TIP, xOffset = 10 },
-
-		 { type = "labelwrap", text = OVERACHIEVER_STRINGS_OPT_LABEL_MAINUI, topBuffer = 4, xOffset = 0 },
-		 { variable = "UI_SeriesTooltip", text = OVERACHIEVER_STRINGS_OPT_UI_SERIESTIP,
-		   tooltip = OVERACHIEVER_STRINGS_OPT_UI_SERIESTIP_TIP },
-		 { variable = "UI_RequiredForMetaTooltip", text = OVERACHIEVER_STRINGS_OPT_UI_REQUIREDFORMETATIP,
-		   tooltip = OVERACHIEVER_STRINGS_OPT_UI_REQUIREDFORMETATIP_TIP, OnChange = BuildCriteriaLookupTab_check },
-	},
+	items = items,
 	variables = "Overachiever_Settings",
 	defaults = Overachiever.DefaultSettings
     });
@@ -955,7 +962,7 @@ function Overachiever.SearchForAchievement(isCustomList, searchList, argnum, msg
   end
   if (tab) then
     local id = tab[1]
-    if (toChat) then  chatprint(OVERACHIEVER_STRINGS_MSG_OPENINGTO..GetAchievementLink(id));  end
+    if (toChat) then  chatprint(L.MSG_OPENINGTO..GetAchievementLink(id));  end
     local tab2
     if (givelist) then
       tab2 = type(retTable) == "table" and wipe(retTable) or {}
@@ -964,9 +971,9 @@ function Overachiever.SearchForAchievement(isCustomList, searchList, argnum, msg
     end
     local size = #(tab)
     if (size == 2) then
-      chatprint(OVERACHIEVER_STRINGS_MSG_ONEFOUND..GetAchievementLink(tab[2]))
+      chatprint(L.MSG_ONEFOUND..GetAchievementLink(tab[2]))
     elseif (size > 2) then
-      chatprint(OVERACHIEVER_STRINGS_MSG_NUMFOUNDLIST:format(size-1))
+      chatprint(L.MSG_NUMFOUNDLIST:format(size-1))
       local a, b, c
       for i=2,size,3 do
         a, b, c = tab[i], tab[i+1], tab[i+2]
@@ -978,7 +985,7 @@ function Overachiever.SearchForAchievement(isCustomList, searchList, argnum, msg
     end
     return tab2 or id
   elseif (toChat) then
-    chatprint(OVERACHIEVER_STRINGS_MSG_NAMENOTFOUND:format(msg))
+    chatprint(L.MSG_NAMENOTFOUND:format(msg))
   end
 end
 
@@ -999,7 +1006,7 @@ function Overachiever.UI_SelectAchievement(id, failFunc, ...)
       expandCategory(category)
     end
   else
-    chatprint(OVERACHIEVER_STRINGS_MSG_ACHNOTFOUND)
+    chatprint(L.MSG_ACHNOTFOUND)
     if (Overachiever_Debug) then
       chatprint(ret1, "[Error]")
     elseif (failFunc) then
@@ -1042,10 +1049,10 @@ local function slashHandler(msg, self, silent, func_nomsg)
       local id = tonumber(strsub(msg, 2))
       if (id) then
         if (GetAchievementInfo(id)) then
-          if (not silent) then  chatprint(OVERACHIEVER_STRINGS_MSG_OPENINGTO..GetAchievementLink(id));  end
+          if (not silent) then  chatprint(L.MSG_OPENINGTO..GetAchievementLink(id));  end
           openToAchievement(id)
         elseif (not silent) then
-          chatprint(OVERACHIEVER_STRINGS_MSG_INVALIDID);
+          chatprint(L.MSG_INVALIDID);
         end
         return;
       end

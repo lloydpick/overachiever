@@ -1,4 +1,5 @@
 
+local L = OVERACHIEVER_STRINGS
 local LBI = LibStub:GetLibrary("LibBabble-Inventory-3.0"):GetReverseLookupTable()
 
 local TradeSkillLookup = {}
@@ -175,7 +176,7 @@ if (Skillet) then
     end
   end
 
-  Skillet:AddRecipeSorter(OVERACHIEVER_STRINGS_TRADE_SKILLET_ACHSORT, sortByAchRequired)
+  Skillet:AddRecipeSorter(L.TRADE_SKILLET_ACHSORT, sortByAchRequired)
 
   local orig_get_extra = Skillet.GetExtraItemDetailText
   Skillet.GetExtraItemDetailText = function(obj, tradeskill, skill_index)
@@ -186,7 +187,7 @@ if (Skillet) then
     if (not achs) then  return before;  end
 
     local myvalue = "|TInterface\\AddOns\\Overachiever_Trade\\AchShieldGlow:0|t |cffffd100" ..
-      OVERACHIEVER_STRINGS_REQUIREDFORMETATIP .. "|cffffffff"
+      L.REQUIREDFORMETATIP .. "|cffffffff"
     local _, name
     if (#achs > 1) then
       for i,id in ipairs(achs) do
@@ -250,7 +251,7 @@ if (Skillet) then
         local achlist = TradeSkillLookup[tradeName] and TradeSkillCheck(tradeName, GetTradeSkillInfo(index), true)
         if (achlist) then
           -- The custom tooltip used by Skillet doesn't handle AddTexture, or we'd use that instead of this method:
-          SkilletTradeskillTooltip:AddLine("|TInterface\\AddOns\\Overachiever_Trade\\AchShieldGlow:0|t |cffffd100" .. OVERACHIEVER_STRINGS_REQUIREDFORMETATIP)
+          SkilletTradeskillTooltip:AddLine("|TInterface\\AddOns\\Overachiever_Trade\\AchShieldGlow:0|t |cffffd100" .. L.REQUIREDFORMETATIP)
           Overachiever.AddAchListToTooltip(SkilletTradeskillTooltip, achlist)
           SkilletTradeskillTooltip:Show()
         end
@@ -294,7 +295,7 @@ if (ATSWFrame) then
       if (achlist) then
         ATSWTradeskillTooltip:AddLine(" ")
         -- The custom tooltip used by ATSW doesn't handle AddTexture, or we'd use that instead of this method:
-        ATSWTradeskillTooltip:AddLine("|TInterface\\AddOns\\Overachiever_Trade\\AchShieldGlow:0|t |cffffd100" .. OVERACHIEVER_STRINGS_REQUIREDFORMETATIP)
+        ATSWTradeskillTooltip:AddLine("|TInterface\\AddOns\\Overachiever_Trade\\AchShieldGlow:0|t |cffffd100" .. L.REQUIREDFORMETATIP)
         Overachiever.AddAchListToTooltip(ATSWTradeskillTooltip, achlist)
         ATSWTradeskillTooltip:Show()
         return true
@@ -354,7 +355,7 @@ skillButtonOnEnter = skillButtonOnEnter or function(self, _, calledByExamine)
       GameTooltip:SetOwner(self, "ANCHOR_NONE")
       GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", -45, 0)
       GameTooltip:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b)
-      GameTooltip:AddLine(OVERACHIEVER_STRINGS_REQUIREDFORMETATIP)
+      GameTooltip:AddLine(L.REQUIREDFORMETATIP)
       GameTooltip:AddLine(" ")
       Overachiever.AddAchListToTooltip(GameTooltip, achlist)
       GameTooltip:AddLine(" ")

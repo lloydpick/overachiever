@@ -109,9 +109,10 @@ Change log
 The change log lists changes of particular note to users, not every change made.
 
 v0.36
-- Trade module: Now supports the lilsparky's branch of Skillet. Because that addon uses ctrl-clicking on recipes to
-  do something else, use Alt instead to open to the achievement associated with the recipe.
-- Work in progress.
+- Trade module: Now supports lilsparky's branch of Skillet. Because that addon uses ctrl-clicking on recipes to do
+  something else, use Alt instead to open to the achievement associated with the recipe.
+- Fixed an issue that occurred when using a client that isn't updated to WoW 3.0.8 yet (Chinese).
+- Revamped the localization system.
 
 v0.35
 - Trade module: You can now ctrl-click on a recipe in the list to open the achievement UI to the achievement for which

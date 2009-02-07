@@ -1,4 +1,6 @@
 
+local L = OVERACHIEVER_STRINGS
+
 local AbbreviateLargeQuantities = true
 
 local PlayerGUID
@@ -80,7 +82,7 @@ local function getProgressString(q, t, qs)
 end
 
 local function AppendProgressToTooltip(tooltip, id, GUID)
-  local text = (PlayerGUID == GUID) and OVERACHIEVER_STRINGS_PROGRESS or OVERACHIEVER_STRINGS_YOURPROGRESS;
+  local text = (PlayerGUID == GUID) and L.PROGRESS or L.YOURPROGRESS;
   local _, _, completed, quantity, totalQuantity, _, _, _, quantityString = GetAchievementCriteriaInfo(id, 1);
   quantityString = getProgressString(quantity, totalQuantity, quantityString)
   if (quantityString) then
@@ -127,7 +129,7 @@ local function InsertProgressInTooltip(tooltip, id)
 end
 
 local function AppendCriteriaProgress(tooltip, id)
-  addline(tooltip, "|cff7eff00"..OVERACHIEVER_STRINGS_YOURPROGRESS..":|r", true)
+  addline(tooltip, "|cff7eff00"..L.YOURPROGRESS..":|r", true)
   local criteriaString, _, completed, quantity, totalQuantity, quantityString
   for crit=1,GetAchievementNumCriteria(id) do
     criteriaString, _, completed, quantity, totalQuantity, _, _, _, quantityString = GetAchievementCriteriaInfo(id, crit);
@@ -160,7 +162,7 @@ function Overachiever.ExamineAchievementTip(tooltip, link)
           if (PlayerGUID ~= GUID and select(4,GetAchievementInfo(id))) then
           -- Link from someone else to an achievement you completed:
             local _, _, _, _, m, d, y = GetAchievementInfo(id)
-            addline_format(tooltip, OVERACHIEVER_STRINGS_YOURPROGRESS, OVERACHIEVER_STRINGS_COMPLETEDATE:format(d, m, y))
+            addline_format(tooltip, L.YOURPROGRESS, L.COMPLETEDATE:format(d, m, y))
             progresscompleted = true
           else
             local inserted
@@ -171,7 +173,7 @@ function Overachiever.ExamineAchievementTip(tooltip, link)
             if (not inserted) then
               if (numcrit < 1) then
                 if (PlayerGUID ~= GUID) then
-                  addline_format(tooltip, OVERACHIEVER_STRINGS_YOURPROGRESS, OVERACHIEVER_STRINGS_INCOMPLETE)
+                  addline_format(tooltip, L.YOURPROGRESS, L.INCOMPLETE)
                 end
               elseif (numcrit == 1) then
                 progresscompleted = AppendProgressToTooltip(tooltip, id, GUID)

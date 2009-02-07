@@ -7,6 +7,8 @@
 --  The addon's other features will work regardless.
 --
 
+local L = OVERACHIEVER_STRINGS
+
 local CATEGORIES_ALL = Overachiever.UI_GetValidCategories()
 
 
@@ -130,28 +132,28 @@ local function OnLoad(v)
   if (VARS.SearchFullList) then  FullListCheckbox:SetChecked(1);  end
 end
 
-frame, panel = Overachiever.BuildNewTab("Overachiever_SearchFrame", OVERACHIEVER_STRINGS_SEARCH_TAB,
-                 "Interface\\AddOns\\Overachiever_Tabs\\SearchWatermark", OVERACHIEVER_STRINGS_SEARCH_HELP, OnLoad)
+frame, panel = Overachiever.BuildNewTab("Overachiever_SearchFrame", L.SEARCH_TAB,
+                 "Interface\\AddOns\\Overachiever_Tabs\\SearchWatermark", L.SEARCH_HELP, OnLoad)
 
 sortdrop = TjDropDownMenu.CreateDropDown("Overachiever_SearchFrameSortDrop", panel, {
   {
-    text = OVERACHIEVER_STRINGS_TAB_SORT_NAME,
+    text = L.TAB_SORT_NAME,
     value = 0
   },
   {
-    text = OVERACHIEVER_STRINGS_TAB_SORT_COMPLETE,
+    text = L.TAB_SORT_COMPLETE,
     value = 1
   },
   {
-    text = OVERACHIEVER_STRINGS_TAB_SORT_POINTS,
+    text = L.TAB_SORT_POINTS,
     value = 2
   },
   {
-    text = OVERACHIEVER_STRINGS_TAB_SORT_ID,
+    text = L.TAB_SORT_ID,
     value = 3
   };
 })
-sortdrop:SetLabel(OVERACHIEVER_STRINGS_TAB_SORT, true)
+sortdrop:SetLabel(L.TAB_SORT, true)
 sortdrop:SetPoint("TOPLEFT", panel, "TOPLEFT", -16, -22)
 sortdrop:OnSelect(SortDrop_OnSelect)
 
@@ -182,7 +184,7 @@ local function beginSearch()
   if (list == 0 or not list) then  wipe(results);  end
   Overachiever_SearchFrameContainerScrollBar:SetValue(0)
   frame:ForceUpdate(true)
-  ResultsLabel:SetText(OVERACHIEVER_STRINGS_SEARCH_RESULTS:format(#results))
+  ResultsLabel:SetText(L.SEARCH_RESULTS:format(#results))
 end
 
 local EditBoxes = {}
@@ -220,20 +222,20 @@ local function createEditBox(name, labeltext, obj, x, y)
   return editbox
 end
 
-EditName = createEditBox("Name", OVERACHIEVER_STRINGS_SEARCH_NAME, sortdrop, 22, -19)
-EditDesc = createEditBox("Desc", OVERACHIEVER_STRINGS_SEARCH_DESC, EditName)
-EditCriteria = createEditBox("Criteria", OVERACHIEVER_STRINGS_SEARCH_CRITERIA, EditDesc)
-EditReward = createEditBox("Reward", OVERACHIEVER_STRINGS_SEARCH_REWARD, EditCriteria)
-EditAny = createEditBox("Any", OVERACHIEVER_STRINGS_SEARCH_ANY, EditReward)
+EditName = createEditBox("Name", L.SEARCH_NAME, sortdrop, 22, -19)
+EditDesc = createEditBox("Desc", L.SEARCH_DESC, EditName)
+EditCriteria = createEditBox("Criteria", L.SEARCH_CRITERIA, EditDesc)
+EditReward = createEditBox("Reward", L.SEARCH_REWARD, EditCriteria)
+EditAny = createEditBox("Any", L.SEARCH_ANY, EditReward)
 
 FullListCheckbox = CreateFrame("CheckButton", "Overachiever_SearchFrameFullListCheckbox", panel, "InterfaceOptionsCheckButtonTemplate")
 FullListCheckbox:SetPoint("TOPLEFT", EditAny, "BOTTOMLEFT", -8, -12)
-Overachiever_SearchFrameFullListCheckboxText:SetText(OVERACHIEVER_STRINGS_SEARCH_FULLLIST)
+Overachiever_SearchFrameFullListCheckboxText:SetText(L.SEARCH_FULLLIST)
 FullListCheckbox:SetScript("OnClick", FullList_OnClick)
 FullListCheckbox:SetScript("OnEnter", function(self)
   GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
   GameTooltip:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b)
-  GameTooltip:SetText(OVERACHIEVER_STRINGS_SEARCH_FULLLIST_TIP, nil, nil, nil, nil, 1)
+  GameTooltip:SetText(L.SEARCH_FULLLIST_TIP, nil, nil, nil, nil, 1)
 end)
 FullListCheckbox:SetScript("OnLeave", function(self)
   GameTooltip:Hide()
@@ -249,13 +251,13 @@ end
 SubmitBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
 SubmitBtn:SetWidth(75); SubmitBtn:SetHeight(21)
 SubmitBtn:SetPoint("TOPLEFT", FullListCheckbox, "BOTTOMLEFT", 2, -8)
-SubmitBtn:SetText(OVERACHIEVER_STRINGS_SEARCH_SUBMIT)
+SubmitBtn:SetText(L.SEARCH_SUBMIT)
 SubmitBtn:SetScript("OnClick", beginSearch)
 
 ResetBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
 ResetBtn:SetWidth(75); ResetBtn:SetHeight(21)
 ResetBtn:SetPoint("LEFT", SubmitBtn, "RIGHT", 4, 0)
-ResetBtn:SetText(OVERACHIEVER_STRINGS_SEARCH_RESET)
+ResetBtn:SetText(L.SEARCH_RESET)
 ResetBtn:SetScript("OnClick", resetEditBoxes)
 
 ResultsLabel = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")

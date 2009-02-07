@@ -19,6 +19,8 @@
 
 --[[
 
-local frame = Overachiever.BuildNewTab("Overachiever_WatchFrame", OVERACHIEVER_STRINGS_SUGGESTIONS_TAB,
+local L = OVERACHIEVER_STRINGS
+
+local frame = Overachiever.BuildNewTab("Overachiever_WatchFrame", L.SUGGESTIONS_TAB,
                 "Interface\\AddOns\\Overachiever_Tabs\\SuggestionsWatermark", "Suggestions help goes here.")
 --]]

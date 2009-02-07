@@ -7,6 +7,8 @@
 --  Suggestions_unused.lua). The addon's other features will work regardless.
 --
 
+local L = OVERACHIEVER_STRINGS
+
 local RecentReminders = Overachiever.RecentReminders
 
 -- ZONE-SPECIFIC ACHIEVEMENTS
@@ -261,28 +263,28 @@ local function OnLoad(v)
   sortdrop:SetSelectedValue(VARS.SuggestionsSort or 0)
 end
 
-frame, panel = Overachiever.BuildNewTab("Overachiever_SuggestionsFrame", OVERACHIEVER_STRINGS_SUGGESTIONS_TAB,
-                "Interface\\AddOns\\Overachiever_Tabs\\SuggestionsWatermark", OVERACHIEVER_STRINGS_SUGGESTIONS_HELP, OnLoad)
+frame, panel = Overachiever.BuildNewTab("Overachiever_SuggestionsFrame", L.SUGGESTIONS_TAB,
+                "Interface\\AddOns\\Overachiever_Tabs\\SuggestionsWatermark", L.SUGGESTIONS_HELP, OnLoad)
 
 sortdrop = TjDropDownMenu.CreateDropDown("Overachiever_SuggestionsFrameSortDrop", panel, {
   {
-    text = OVERACHIEVER_STRINGS_TAB_SORT_NAME,
+    text = L.TAB_SORT_NAME,
     value = 0
   },
   {
-    text = OVERACHIEVER_STRINGS_TAB_SORT_COMPLETE,
+    text = L.TAB_SORT_COMPLETE,
     value = 1
   },
   {
-    text = OVERACHIEVER_STRINGS_TAB_SORT_POINTS,
+    text = L.TAB_SORT_POINTS,
     value = 2
   },
   {
-    text = OVERACHIEVER_STRINGS_TAB_SORT_ID,
+    text = L.TAB_SORT_ID,
     value = 3
   };
 })
-sortdrop:SetLabel(OVERACHIEVER_STRINGS_TAB_SORT, true)
+sortdrop:SetLabel(L.TAB_SORT, true)
 sortdrop:SetPoint("TOPLEFT", panel, "TOPLEFT", -16, -22)
 sortdrop:OnSelect(SortDrop_OnSelect)
 
@@ -359,7 +361,7 @@ local function Refresh()
   local num = #list
   if (num > 0) then
     NoSuggestionsLabel:Hide()
-    ResultsLabel:SetText(OVERACHIEVER_STRINGS_SUGGESTIONS_RESULTS:format(num))
+    ResultsLabel:SetText(L.SUGGESTIONS_RESULTS:format(num))
   else
     NoSuggestionsLabel:Show()
     ResultsLabel:SetText(" ")
@@ -369,7 +371,7 @@ end
 RefreshBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
 RefreshBtn:SetWidth(75); RefreshBtn:SetHeight(21)
 RefreshBtn:SetPoint("TOPLEFT", sortdrop, "BOTTOMLEFT", 16, -14)
-RefreshBtn:SetText(OVERACHIEVER_STRINGS_SUGGESTIONS_REFRESH)
+RefreshBtn:SetText(L.SUGGESTIONS_REFRESH)
 RefreshBtn:SetScript("OnClick", Refresh)
 
 ResultsLabel = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
@@ -380,7 +382,7 @@ panel:SetScript("OnShow", Refresh)
 
 NoSuggestionsLabel = frame:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 NoSuggestionsLabel:SetPoint("TOP", frame, "TOP", 0, -189)
-NoSuggestionsLabel:SetText(OVERACHIEVER_STRINGS_SUGGESTIONS_EMPTY)
+NoSuggestionsLabel:SetText(L.SUGGESTIONS_EMPTY)
 NoSuggestionsLabel:SetWidth(490)
 
 --[[
@@ -388,7 +390,7 @@ local InfoLabel = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 InfoLabel:SetPoint("LEFT", panel, "LEFT", 0, 25)
 InfoLabel:SetWidth(180)
 InfoLabel:SetJustifyH("LEFT")
-InfoLabel:SetText(OVERACHIEVER_STRINGS_SUGGESTIONS_INFO)
+InfoLabel:SetText(L.SUGGESTIONS_INFO)
 --]]
 
 

@@ -1,4 +1,6 @@
 
+local L = OVERACHIEVER_STRINGS
+
 local AchievementIcon = "Interface\\AddOns\\Overachiever\\AchShield"
 local tooltip_complete = { r = 0.2, g = 0.5, b = 0.2 }
 local tooltip_incomplete = { r = 1, g = 0.1, b = 0.1 }
@@ -56,9 +58,9 @@ end
 ----------------------
 
 local CritterAch = {
-  LoveCritters = { "CritterTip_loved", OVERACHIEVER_STRINGS_ACH_LOVECRITTERS_COMPLETE, OVERACHIEVER_STRINGS_ACH_LOVECRITTERS_INCOMPLETE },
-  LoveCritters2 = { "CritterTip_loved", OVERACHIEVER_STRINGS_ACH_LOVECRITTERS_COMPLETE, OVERACHIEVER_STRINGS_ACH_LOVECRITTERS_INCOMPLETE },
-  PestControl = { "CritterTip_killed", OVERACHIEVER_STRINGS_KILL_COMPLETE, OVERACHIEVER_STRINGS_KILL_INCOMPLETE },
+  LoveCritters = { "CritterTip_loved", L.ACH_LOVECRITTERS_COMPLETE, L.ACH_LOVECRITTERS_INCOMPLETE },
+  LoveCritters2 = { "CritterTip_loved", L.ACH_LOVECRITTERS_COMPLETE, L.ACH_LOVECRITTERS_INCOMPLETE },
+  PestControl = { "CritterTip_killed", L.KILL_COMPLETE, L.KILL_INCOMPLETE },
 };
 
 local function CritterCheck(ach, name)
@@ -74,11 +76,11 @@ local function CritterCheck(ach, name)
 end
 
 local RaceClassAch = {
-  FistfulOfLove = { "FistfulOfLove_petals", OVERACHIEVER_STRINGS_ACH_FISTFULOFLOVE_COMPLETE, OVERACHIEVER_STRINGS_ACH_FISTFULOFLOVE_INCOMPLETE,
+  FistfulOfLove = { "FistfulOfLove_petals", L.ACH_FISTFULOFLOVE_COMPLETE, L.ACH_FISTFULOFLOVE_INCOMPLETE,
     { "Gnome WARLOCK", "Human DEATHKNIGHT", "NightElf PRIEST", "Orc SHAMAN", "Tauren DRUID", "Troll ROGUE",
       "Scourge WARRIOR", "BloodElf MAGE", "Draenei PALADIN", "Dwarf HUNTER" }
   },
-  LetItSnow = { "LetItSnow_flaked", OVERACHIEVER_STRINGS_ACH_LETITSNOW_COMPLETE, OVERACHIEVER_STRINGS_ACH_LETITSNOW_INCOMPLETE,
+  LetItSnow = { "LetItSnow_flaked", L.ACH_LETITSNOW_COMPLETE, L.ACH_LETITSNOW_INCOMPLETE,
     { "Orc DEATHKNIGHT", "Human WARRIOR", "Tauren SHAMAN", "NightElf DRUID", "Scourge ROGUE", "Troll HUNTER",
       "Gnome MAGE", "Dwarf PALADIN", "BloodElf WARLOCK", "Draenei PRIEST" }
   },
@@ -122,7 +124,7 @@ function Overachiever.ExamineSetUnit(tooltip)
         end
       end
     end
-  elseif (name and UnitCreatureType(unit) == OVERACHIEVER_STRINGS_CRITTER) then
+  elseif (name and UnitCreatureType(unit) == L.CRITTER) then
     for key,tab in pairs(CritterAch) do
       if (Overachiever_Settings[ tab[1] ]) then
         id, text, complete = CritterCheck(key, name)
@@ -151,11 +153,11 @@ end
 ------------------------------
 
 local WorldObjAch = {
-  WellRead = { "WellReadTip_read", OVERACHIEVER_STRINGS_ACH_WELLREAD_COMPLETE, OVERACHIEVER_STRINGS_ACH_WELLREAD_INCOMPLETE },
-  HigherLearning = { "WellReadTip_read", OVERACHIEVER_STRINGS_ACH_WELLREAD_COMPLETE, OVERACHIEVER_STRINGS_ACH_WELLREAD_INCOMPLETE },
-  Scavenger = { "AnglerTip_fished", OVERACHIEVER_STRINGS_ACH_ANGLER_COMPLETE, OVERACHIEVER_STRINGS_ACH_ANGLER_INCOMPLETE, true },
-  OutlandAngler = { "AnglerTip_fished", OVERACHIEVER_STRINGS_ACH_ANGLER_COMPLETE, OVERACHIEVER_STRINGS_ACH_ANGLER_INCOMPLETE, true },
-  NorthrendAngler = { "AnglerTip_fished", OVERACHIEVER_STRINGS_ACH_ANGLER_COMPLETE, OVERACHIEVER_STRINGS_ACH_ANGLER_INCOMPLETE, true },
+  WellRead = { "WellReadTip_read", L.ACH_WELLREAD_COMPLETE, L.ACH_WELLREAD_INCOMPLETE },
+  HigherLearning = { "WellReadTip_read", L.ACH_WELLREAD_COMPLETE, L.ACH_WELLREAD_INCOMPLETE },
+  Scavenger = { "AnglerTip_fished", L.ACH_ANGLER_COMPLETE, L.ACH_ANGLER_INCOMPLETE, true },
+  OutlandAngler = { "AnglerTip_fished", L.ACH_ANGLER_COMPLETE, L.ACH_ANGLER_INCOMPLETE, true },
+  NorthrendAngler = { "AnglerTip_fished", L.ACH_ANGLER_COMPLETE, L.ACH_ANGLER_INCOMPLETE, true },
 };
 
 local function WorldObjCheck(ach, text)
@@ -245,8 +247,8 @@ end
 local LBI = LibStub:GetLibrary("LibBabble-Inventory-3.0"):GetLookupTable()
 
 local ConsumeItemAch = {
-  TastesLikeChicken = { "Item_consumed", OVERACHIEVER_STRINGS_ACH_CONSUME_COMPLETE, OVERACHIEVER_STRINGS_ACH_CONSUME_INCOMPLETE, OVERACHIEVER_STRINGS_ACH_CONSUME_INCOMPLETE_EXTRA, FoodCriteria },
-  HappyHour = { "Item_consumed", OVERACHIEVER_STRINGS_ACH_CONSUME_COMPLETE, OVERACHIEVER_STRINGS_ACH_CONSUME_INCOMPLETE, OVERACHIEVER_STRINGS_ACH_CONSUME_INCOMPLETE_EXTRA, DrinkCriteria },
+  TastesLikeChicken = { "Item_consumed", L.ACH_CONSUME_COMPLETE, L.ACH_CONSUME_INCOMPLETE, L.ACH_CONSUME_INCOMPLETE_EXTRA, FoodCriteria },
+  HappyHour = { "Item_consumed", L.ACH_CONSUME_COMPLETE, L.ACH_CONSUME_INCOMPLETE, L.ACH_CONSUME_INCOMPLETE_EXTRA, DrinkCriteria },
 };
 
 local function ItemConsumedCheck(ach, itemID)
@@ -305,30 +307,30 @@ end
 
 if (SharedMedia) then
   local soundtab = {
-  ["Sound\\Doodad\\BellTollAlliance.wav"] = OVERACHIEVER_STRINGS_SOUND_BELL_ALLIANCE,
-  ["Sound\\Doodad\\BellTollHorde.wav"] = OVERACHIEVER_STRINGS_SOUND_BELL_HORDE,
-  ["Sound\\Doodad\\BellTollNightElf.wav"] = OVERACHIEVER_STRINGS_SOUND_BELL_NIGHTELF,
-  ["Sound\\Doodad\\BellTollTribal.wav"] = OVERACHIEVER_STRINGS_SOUND_DRUMHIT,
-  ["Sound\\Doodad\\BoatDockedWarning.wav"] = OVERACHIEVER_STRINGS_SOUND_BELL_BOATARRIVED,
-  ["Sound\\Doodad\\G_GongTroll01.wav"] = OVERACHIEVER_STRINGS_SOUND_GONG_TROLL,
-  ["Sound\\Spells\\ShaysBell.wav"] = OVERACHIEVER_STRINGS_SOUND_BELL_MELLOW,
+  ["Sound\\Doodad\\BellTollAlliance.wav"] = L.SOUND_BELL_ALLIANCE,
+  ["Sound\\Doodad\\BellTollHorde.wav"] = L.SOUND_BELL_HORDE,
+  ["Sound\\Doodad\\BellTollNightElf.wav"] = L.SOUND_BELL_NIGHTELF,
+  ["Sound\\Doodad\\BellTollTribal.wav"] = L.SOUND_DRUMHIT,
+  ["Sound\\Doodad\\BoatDockedWarning.wav"] = L.SOUND_BELL_BOATARRIVED,
+  ["Sound\\Doodad\\G_GongTroll01.wav"] = L.SOUND_GONG_TROLL,
+  ["Sound\\Spells\\ShaysBell.wav"] = L.SOUND_BELL_MELLOW,
 
-  ["Sound\\Spells\\PVPEnterQueue.wav"] = OVERACHIEVER_STRINGS_SOUND_ENTERQUEUE,
-  ["Sound\\Spells\\bind2_Impact_Base.wav"] = OVERACHIEVER_STRINGS_SOUND_HEARTHBIND,
-  ["Sound\\Doodad\\KharazahnBellToll.wav"] = OVERACHIEVER_STRINGS_SOUND_BELL_KARA,
+  ["Sound\\Spells\\PVPEnterQueue.wav"] = L.SOUND_ENTERQUEUE,
+  ["Sound\\Spells\\bind2_Impact_Base.wav"] = L.SOUND_HEARTHBIND,
+  ["Sound\\Doodad\\KharazahnBellToll.wav"] = L.SOUND_BELL_KARA,
 
-  ["Sound\\Interface\\AuctionWindowOpen.wav"] = OVERACHIEVER_STRINGS_SOUND_DING_AUCTION,
-  ["Sound\\Interface\\AuctionWindowClose.wav"] = OVERACHIEVER_STRINGS_SOUND_BELL_AUCTION,
-  ["Sound\\Interface\\AlarmClockWarning1.wav"] = OVERACHIEVER_STRINGS_SOUND_ALARM1,
-  ["Sound\\Interface\\AlarmClockWarning2.wav"] = OVERACHIEVER_STRINGS_SOUND_ALARM2,
-  ["Sound\\Interface\\AlarmClockWarning3.wav"] = OVERACHIEVER_STRINGS_SOUND_ALARM3,
-  ["Sound\\Interface\\MapPing.wav"] = OVERACHIEVER_STRINGS_SOUND_MAP_PING,
+  ["Sound\\Interface\\AuctionWindowOpen.wav"] = L.SOUND_DING_AUCTION,
+  ["Sound\\Interface\\AuctionWindowClose.wav"] = L.SOUND_BELL_AUCTION,
+  ["Sound\\Interface\\AlarmClockWarning1.wav"] = L.SOUND_ALARM1,
+  ["Sound\\Interface\\AlarmClockWarning2.wav"] = L.SOUND_ALARM2,
+  ["Sound\\Interface\\AlarmClockWarning3.wav"] = L.SOUND_ALARM3,
+  ["Sound\\Interface\\MapPing.wav"] = L.SOUND_MAP_PING,
 
-  ["Sound\\Spells\\SimonGame_Visual_GameTick.wav"] = OVERACHIEVER_STRINGS_SOUND_SIMON_DING,
-  ["Sound\\Spells\\SimonGame_Visual_LevelStart.wav"] = OVERACHIEVER_STRINGS_SOUND_SIMON_STARTGAME,
-  ["Sound\\Spells\\SimonGame_Visual_GameStart.wav"] = OVERACHIEVER_STRINGS_SOUND_SIMON_STATRLEVEL,
+  ["Sound\\Spells\\SimonGame_Visual_GameTick.wav"] = L.SOUND_SIMON_DING,
+  ["Sound\\Spells\\SimonGame_Visual_LevelStart.wav"] = L.SOUND_SIMON_STARTGAME,
+  ["Sound\\Spells\\SimonGame_Visual_GameStart.wav"] = L.SOUND_SIMON_STATRLEVEL,
 
-  ["Sound\\Spells\\YarrrrImpact.wav"] = OVERACHIEVER_STRINGS_SOUND_YAR,
+  ["Sound\\Spells\\YarrrrImpact.wav"] = L.SOUND_YAR,
   }
   for data,name in pairs(soundtab) do
     SharedMedia:Register("sound", "Blizzard: "..name, data)

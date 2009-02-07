@@ -1,4 +1,6 @@
 
+local L = OVERACHIEVER_STRINGS
+
 local tabs, tabselected
 local LeftFrame
 
@@ -541,7 +543,7 @@ local function HelpIcon_OnEnter(self)
   GameTooltip:AddLine(" ")
   GameTooltip:AddLine(tabselected.helptip, nil, nil, nil, 1)
   GameTooltip:AddLine(" ")
-  GameTooltip:AddLine(OVERACHIEVER_STRINGS_TAB_HELP, nil, nil, nil, 1)
+  GameTooltip:AddLine(L.TAB_HELP, nil, nil, nil, 1)
   GameTooltip:Show()
 end
 
