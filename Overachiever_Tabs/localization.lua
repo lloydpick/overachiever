@@ -19,7 +19,8 @@ L.SUGGESTIONS_HELP = "Suggested achievements are listed here based on your curre
 L.SUGGESTIONS_REFRESH = "Refresh";
 L.SUGGESTIONS_EMPTY = "Overachiever has no suggestions for you at this time.";
 L.SUGGESTIONS_RESULTS = "%d |4suggestion:suggestions; found.";
---L.SUGGESTIONS_INFO = "This section is still in development. Currently, only incomplete exploration achievements for the current zone are listed, but much more will be considered in future releases.";
+L.SUGGESTIONS_RESULTS_TRADESKILL = "%s: %d |4suggestion:suggestions; found.";
+L.SUGGESTIONS_EMPTY_TRADESKILL = "%s: Overachiever has no suggestions for you at this time.";
 
 L.TAB_SORT = "Sort by:";
 L.TAB_SORT_NAME = "Name";

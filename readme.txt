@@ -1,5 +1,5 @@
 
-Overachiever v0.36
+Overachiever v0.37
 ==============================
 
 Author: Tuhljin
@@ -108,6 +108,15 @@ Change log
 
 The change log lists changes of particular note to users, not every change made.
 
+v0.37
+- Tabs module: You can now use the dropdown added to the default UI in WoW 3.0.8 to filter Search results and
+  Suggestions. The Suggestions filter defaults to "Incomplete"; by changing it, you can now display achievements that
+  you've already earned.
+- Suggestions Tab: Added battleground achievements.
+- Suggestions Tab: Added Cooking and Fishing achievements. When the Cooking tradeskill window is open, all suggestions
+  will be for Cooking. Otherwise, if a fishing pole is equipped, all suggestions will be for Fishing. In other cases,
+  Cooking and Fishing achievements specific to the zone you're in will be shown alongside other relevant achievements.
+
 v0.36
 - Trade module: Now supports lilsparky's branch of Skillet. Because that addon uses ctrl-clicking on recipes to do
   something else, use Alt instead to open to the achievement associated with the recipe.
@@ -118,7 +127,7 @@ v0.35
 - Trade module: You can now ctrl-click on a recipe in the list to open the achievement UI to the achievement for which
   you still need to cook the recipe.
 - Trade module: Now supports the addon Advanced Trade Skill Window.
-- Suggestions Tabs: Added several new zone-based suggestions.
+- Suggestions Tab: Added several new zone-based suggestions.
 - Fixed various situational bugs.
 
 v0.34

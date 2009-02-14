@@ -161,7 +161,7 @@ local function beginSearch()
   PlaySound("igMainMenuOptionCheckBoxOn")
   local name, desc, criteria, reward, any = EditName:GetText(), EditDesc:GetText(), EditCriteria:GetText(), EditReward:GetText(), EditAny:GetText()
   if (name == "" and desc == "" and criteria == "" and reward == "" and any == "") then  -- all fields are blank
-    ResultsLabel:SetText(" ")
+    ResultsLabel:Hide()
     return;
   end
   local list = VARS.SearchFullList and Overachiever.GetAllAchievements() or nil
@@ -184,7 +184,11 @@ local function beginSearch()
   if (list == 0 or not list) then  wipe(results);  end
   Overachiever_SearchFrameContainerScrollBar:SetValue(0)
   frame:ForceUpdate(true)
-  ResultsLabel:SetText(L.SEARCH_RESULTS:format(#results))
+  ResultsLabel:Show()
+end
+
+function frame.SetNumListed(num)
+  ResultsLabel:SetText(L.SEARCH_RESULTS:format(num))
 end
 
 local EditBoxes = {}
@@ -262,7 +266,7 @@ ResetBtn:SetScript("OnClick", resetEditBoxes)
 
 ResultsLabel = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 ResultsLabel:SetPoint("TOPLEFT", SubmitBtn, "BOTTOMLEFT", 0, -8)
-ResultsLabel:SetText(" ")
+ResultsLabel:Hide()
 
 
 --[[

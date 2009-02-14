@@ -9,13 +9,19 @@
 
 local L = OVERACHIEVER_STRINGS
 
+local LBZ = LibStub("LibBabble-Zone-3.0"):GetReverseLookupTable()
+local LBI = LibStub:GetLibrary("LibBabble-Inventory-3.0"):GetLookupTable()
+local LBIR = LibStub:GetLibrary("LibBabble-Inventory-3.0"):GetReverseLookupTable()
+
 local RecentReminders = Overachiever.RecentReminders
+
+local IsAlliance = UnitFactionGroup("player") == "Alliance"
 
 -- ZONE-SPECIFIC ACHIEVEMENTS
 ----------------------------------------------------
 
 local ACHID_ZONE_NUMQUESTS
-if (UnitFactionGroup("player") == "Alliance") then
+if (IsAlliance) then
   ACHID_ZONE_NUMQUESTS = {
   -- Outland
 	["Blade's Edge Mountains"] = 1193,
@@ -60,22 +66,23 @@ end
 local ACHID_ZONE_MISC = {
 -- Eastern Kingdoms
 	["Stranglethorn Vale"] =	-- "The Green Hills of Stranglethorn", "Gurubashi Arena Master",
-		{ 940, 389, 396 },	-- "Gurubashi Arena Grand Master"
+		{ 940, 389, 396, 306 },	-- "Gurubashi Arena Grand Master", "Master Angler of Stranglethorn"
 -- Outland
 	["Blade's Edge Mountains"] = 1276,	-- "Blade's Edge Bomberman"
 	["Nagrand"] = 939,		-- "Hills Like White Elekk"
 	["Netherstorm"] = 545,		-- "Shave and a Haircut"
-	["Shattrath City"] = { 1165, 905 },	-- "My Sack is "Gigantique"", "Old Man Barlowned"
+	["Shattrath City"] =	-- "My Sack is "Gigantique"", "Old Man Barlowned", "Kickin' It Up a Notch"
+		{ 1165, 905, 906 },
 	["Terokkar Forest"] = { 905, 1275 },	-- "Old Man Barlowned", "Bombs Away"
 -- Northrend
 	["Borean Tundra"] = 561,	-- "D.E.H.T.A's Little P.I.T.A."
 	["Dragonblight"] = { 1277, 547 },	-- "Rapid Defense", "Veteran of the Wrathgate"
-	["Dalaran"] = { 2096, 1956, 1958, 545 },
+	["Dalaran"] = { 2096, 1956, 1958, 545, 1998, IsAlliance and 1782 or 1783 },
 	["Sholazar Basin"] =		-- "The Snows of Northrend", "Honorary Frenzyheart",
 		{ 938, 961, 962 },	-- "Savior of the Oracles"
 	["Wintergrasp"] = { 1752, 2199, 1737, 1717, 1739, 1751, 1755, 1727, 1731, 1723 },
 }
-if (UnitFactionGroup("player") == "Alliance") then
+if (IsAlliance) then
   ACHID_ZONE_MISC["Grizzly Hills"] = 2016	-- "Grizzled Veteran"
   -- "City Defender", "Shave and a Haircut":
   ACHID_ZONE_MISC["Stormwind City"] = { 388, 545 }
@@ -182,6 +189,21 @@ local ACHID_INSTANCES = {
 	["The Obsidian Sanctum"] = { 1876, 2047, 2049, 2050, 2051, 624 },
 	["Vault of Archavon"] = 1722,
 }
+-- Battlegrounds
+ACHID_INSTANCES["Eye of the Storm"] = { 1171, 587, 1258, 211 }
+if (IsAlliance) then
+	ACHID_INSTANCES["Alterac Valley"] = { 1167, 907 }
+	ACHID_INSTANCES["Arathi Basin"] = { 1169, 907 }
+	ACHID_INSTANCES["Warsong Gulch"] = { 1172, 1259, 907 }
+	ACHID_INSTANCES["Strand of the Ancients"] = 2194
+else
+	ACHID_INSTANCES["Alterac Valley"] = { 1168, 714 }
+	ACHID_INSTANCES["Arathi Basin"] = { 1170, 714 }
+	ACHID_INSTANCES["Warsong Gulch"] = { 1173, 1259, 714 }
+	ACHID_INSTANCES["Strand of the Ancients"] = 2195
+end
+-- For all battlegrounds:
+local ACHID_BATTLEGROUNDS = { 238, 245, IsAlliance and 246 or 1005, 247, 229, 227, 231 }
 
 local ACHID_INSTANCES_HEROIC = {
 -- Burning Crusade
@@ -239,10 +261,36 @@ local ACHID_INSTANCES_HEROIC_EXTRA = {
 	["The Obsidian Sanctum"] = { 625, 2048, 2052, 2053, 2054, 1877 },
 }
 
-local LBZ = LibStub("LibBabble-Zone-3.0"):GetReverseLookupTable()
 local function ZoneLookup(zoneName)
   return LBZ[zoneName] or zoneName
 end
+
+
+-- TRADESKILL ACHIEVEMENTS
+----------------------------------------------------
+
+local ACHID_TRADESKILL = {
+	["Cooking"] = IsAlliance and 1563 or 1784,	-- "Hail to the Chef"
+	["Fishing"] = 1516				-- "Accomplished Angler"
+}
+
+local ACHID_TRADESKILL_ZONE = {
+	["Cooking"] = {
+		["Dalaran"] = { 1998, IsAlliance and 1782 or 1783 },	-- "Dalaran Cooking Award", "Our Daily Bread"
+		["Shattrath City"] = 906	-- "Kickin' It Up a Notch"
+        },
+	["Fishing"] = {
+		["Dalaran"] = 2096,		-- "The Coin Master"
+		["Ironforge"] = 1837,		-- "Old Ironjaw"
+		["Orgrimmar"] = { 1836, 150 },	-- "Old Crafty", "The Fishing Diplomat"
+		["Shattrath City"] = 905,	-- "Old Man Barlowned"
+		["Stranglethorn Vale"] = 306,	-- "Master Angler of Stranglethorn"
+		["Stormwind City"] = 150,	-- "The Fishing Diplomat"
+		["Terokkar Forest"] = 905,	-- "Old Man Barlowned"
+        }
+}
+
+local ACHID_TRADESKILL_BG = { Cooking = 1785 }	-- "Dinner Impossible"
 
 
 -- SUGGESTIONS TAB CREATION AND HANDLING
@@ -264,7 +312,9 @@ local function OnLoad(v)
 end
 
 frame, panel = Overachiever.BuildNewTab("Overachiever_SuggestionsFrame", L.SUGGESTIONS_TAB,
-                "Interface\\AddOns\\Overachiever_Tabs\\SuggestionsWatermark", L.SUGGESTIONS_HELP, OnLoad)
+                "Interface\\AddOns\\Overachiever_Tabs\\SuggestionsWatermark", L.SUGGESTIONS_HELP, OnLoad,
+                ACHIEVEMENT_FILTER_INCOMPLETE)
+frame.AchList_checkprev = true
 
 sortdrop = TjDropDownMenu.CreateDropDown("Overachiever_SuggestionsFrameSortDrop", panel, {
   {
@@ -288,82 +338,118 @@ sortdrop:SetLabel(L.TAB_SORT, true)
 sortdrop:SetPoint("TOPLEFT", panel, "TOPLEFT", -16, -22)
 sortdrop:OnSelect(SortDrop_OnSelect)
 
-local function Refresh_AddIncomplete(list, ...)
-  local id, _, complete
+local suggested
+
+local function Refresh_Add(...)
+  local id, _, complete, nextid
   for i=1, select("#", ...) do
     id = select(i, ...)
     if (id) then
       if (type(id) == "table") then
-        Refresh_AddIncomplete(list, unpack(id))
+        Refresh_Add(unpack(id))
       else
         _, _, _, complete = GetAchievementInfo(id)
-        if (not complete) then
-          list[#list+1] = id
-        else
-          id, complete = GetNextAchievement(id)
-          if (id) then
+        if (complete) then
+          nextid, complete = GetNextAchievement(id)
+          if (nextid) then
             while (complete) do  -- Find first incomplete achievement in the chain
-              id, complete = GetNextAchievement(id)
+              id = nextid
+              nextid, complete = GetNextAchievement(id)
             end
-            if (id) then  list[#list+1] = id;  end
+            id = nextid or id
           end
         end
+        suggested[id] = true
       end
     end
   end
 end
 
-local temptab
+local TradeskillSuggestions
 
 local function Refresh()
-  local list = frame.AchList
-  wipe(list)
+  if (not frame:IsVisible()) then  return;  end
+  suggested = suggested and wipe(suggested) or {}
 
-  if (IsInInstance()) then
-    local zone = GetRealZoneText()
-    if (not zone or zone == "") then  zone = GetSubZoneText();  end
-    zone = ZoneLookup(zone)
-    Refresh_AddIncomplete( list, ACHID_INSTANCES[zone] )
-    if (GetInstanceDifficulty() > 1) then  -- If current instance is Heroic
-      Refresh_AddIncomplete(list, ACHID_INSTANCES_HEROIC[zone], ACHID_INSTANCES_HEROIC_EXTRA[zone])
+  -- Suggestions based on an open tradeskill window or whether a fishing pole is equipped:
+  TradeskillSuggestions = GetTradeSkillLine()
+  local tradeskill = LBIR[TradeskillSuggestions]
+  if (not ACHID_TRADESKILL[tradeskill] and IsEquippedItemType("Fishing Poles")) then
+    TradeskillSuggestions, tradeskill = LBI["Fishing"], "Fishing"
+  end
+  if (ACHID_TRADESKILL[tradeskill]) then
+    Refresh_Add(ACHID_TRADESKILL[tradeskill])
+    if (ACHID_TRADESKILL_ZONE[tradeskill]) then
+      local zone = GetRealZoneText()
+      Refresh_Add(ACHID_TRADESKILL_ZONE[tradeskill][zone])
+    end
+    local _, instype = IsInInstance()
+    if (instype == "pvp") then  -- If in a battleground:
+      Refresh_Add(ACHID_TRADESKILL_BG[tradeskill])
     end
   else
-    local zone, subz = GetRealZoneText(), GetSubZoneText()
-    zone, subz = ZoneLookup(zone), ZoneLookup(subz)
-    Refresh_AddIncomplete(list, Overachiever.ExploreZoneIDLookup(zone), ACHID_ZONE_NUMQUESTS[zone], ACHID_ZONE_MISC[zone])
-    -- Also look for instance achievements for an instance you're near if we can look it up easily (since many zones
-    -- have subzones with the instance name when you're near the instance entrance and some instance entrances are
-    -- actually in their own "zone" using the instance's zone name):
-    Refresh_AddIncomplete(list, ACHID_INSTANCES[subz] or ACHID_INSTANCES[zone])
-    if (GetCurrentDungeonDifficulty() > 1) then  -- If option currently set to Heroic difficulty
-      Refresh_AddIncomplete(list, ACHID_INSTANCES_HEROIC[subz] or ACHID_INSTANCES_HEROIC[zone],
-        ACHID_INSTANCES_HEROIC_EXTRA[subz] or ACHID_INSTANCES_HEROIC_EXTRA[zone])
+    TradeskillSuggestions = nil
+
+  -- Suggestions for your location:
+    local inInstance, instype = IsInInstance()
+    if (inInstance) then
+      local zone = GetRealZoneText()
+      if (not zone or zone == "") then  zone = GetSubZoneText();  end
+      zone = ZoneLookup(zone)
+      Refresh_Add(ACHID_INSTANCES[zone])
+      if (GetInstanceDifficulty() > 1) then  -- If current instance is Heroic
+        Refresh_Add(ACHID_INSTANCES_HEROIC[zone], ACHID_INSTANCES_HEROIC_EXTRA[zone])
+      end
+      if (instype == "pvp") then  -- If in a battleground:
+        Refresh_Add(ACHID_BATTLEGROUNDS)
+      end
+    else
+      local zone, subz = GetRealZoneText(), GetSubZoneText()
+      zone, subz = ZoneLookup(zone), ZoneLookup(subz)
+      Refresh_Add(Overachiever.ExploreZoneIDLookup(zone), ACHID_ZONE_NUMQUESTS[zone], ACHID_ZONE_MISC[zone])
+      -- Also look for instance achievements for an instance you're near if we can look it up easily (since many zones
+      -- have subzones with the instance name when you're near the instance entrance and some instance entrances are
+      -- actually in their own "zone" using the instance's zone name):
+      Refresh_Add(ACHID_INSTANCES[subz] or ACHID_INSTANCES[zone])
+      if (GetCurrentDungeonDifficulty() > 1) then  -- If option currently set to Heroic difficulty
+        Refresh_Add(ACHID_INSTANCES_HEROIC[subz] or ACHID_INSTANCES_HEROIC[zone],
+          ACHID_INSTANCES_HEROIC_EXTRA[subz] or ACHID_INSTANCES_HEROIC_EXTRA[zone])
+      end
+    end
+
+    -- Suggestions from recent reminders:
+    Overachiever.RecentReminders_Check()
+    for id in pairs(RecentReminders) do
+      suggested[id] = true
     end
   end
 
-  temptab = temptab or {}
-  Overachiever.RecentReminders_Check()
-  for id,t in pairs(RecentReminders) do
-    local found
-    for i,v in ipairs(list) do
-      if (v == id) then
-        found = true
-        break
-      end
-    end
-    if (not found) then  temptab[#temptab+1] = id;  end
+  local list, count = frame.AchList, 0
+  wipe(list)
+  for id in pairs(suggested) do
+    count = count + 1
+    list[count] = id
   end
-  Refresh_AddIncomplete(list, unpack(temptab))
-  wipe(temptab)
 
   Overachiever_SuggestionsFrameContainerScrollBar:SetValue(0)
   frame:ForceUpdate(true)
-  local num = #list
+end
+
+function frame.SetNumListed(num)
   if (num > 0) then
     NoSuggestionsLabel:Hide()
-    ResultsLabel:SetText(L.SUGGESTIONS_RESULTS:format(num))
+    if (TradeskillSuggestions) then
+      ResultsLabel:SetText(L.SUGGESTIONS_RESULTS_TRADESKILL:format(TradeskillSuggestions, num))
+    else
+      ResultsLabel:SetText(L.SUGGESTIONS_RESULTS:format(num))
+    end
   else
     NoSuggestionsLabel:Show()
+    if (TradeskillSuggestions) then
+      NoSuggestionsLabel:SetText(L.SUGGESTIONS_EMPTY_TRADESKILL:format(TradeskillSuggestions))
+    else
+      NoSuggestionsLabel:SetText(L.SUGGESTIONS_EMPTY)
+    end
     ResultsLabel:SetText(" ")
   end
 end
@@ -376,6 +462,8 @@ RefreshBtn:SetScript("OnClick", Refresh)
 
 ResultsLabel = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 ResultsLabel:SetPoint("TOPLEFT", RefreshBtn, "BOTTOMLEFT", 0, -8)
+ResultsLabel:SetWidth(178)
+ResultsLabel:SetJustifyH("LEFT")
 ResultsLabel:SetText(" ")
 
 panel:SetScript("OnShow", Refresh)
@@ -385,13 +473,9 @@ NoSuggestionsLabel:SetPoint("TOP", frame, "TOP", 0, -189)
 NoSuggestionsLabel:SetText(L.SUGGESTIONS_EMPTY)
 NoSuggestionsLabel:SetWidth(490)
 
---[[
-local InfoLabel = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-InfoLabel:SetPoint("LEFT", panel, "LEFT", 0, 25)
-InfoLabel:SetWidth(180)
-InfoLabel:SetJustifyH("LEFT")
-InfoLabel:SetText(L.SUGGESTIONS_INFO)
---]]
+frame:RegisterEvent("TRADE_SKILL_SHOW")
+frame:RegisterEvent("TRADE_SKILL_CLOSE")
+frame:SetScript("OnEvent", Refresh)
 
 
 --[[

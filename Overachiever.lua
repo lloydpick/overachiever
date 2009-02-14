@@ -591,9 +591,13 @@ local orig_AchievementButton_GetMeta
 
 local function MetaCriteriaOnEnter(self)
   if (self.id) then
-    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
     local link = GetAchievementLink(self.id)
     GameTooltip:SetHyperlink(link)
+    if (MouseIsOver(GameTooltip)) then
+      GameTooltip:ClearAllPoints()
+      GameTooltip:SetPoint("TOPLEFT", self, "BOTTOMLEFT")
+    end
   -- If for some reason the ID isn't there but a date completed is (something that probably shouldn't happen), fall
   -- back to the way tooltips were handled in Blizzard_AchievementUI.xml's MetaCriteriaTemplate:
   elseif ( self.date ) then
@@ -662,12 +666,13 @@ do
 
   function achbtnOnEnter(self)
     button = self
-    local id, showedseries, showedmeta = self.id
+    local id, tipset = self.id
 
     if (Overachiever_Settings.UI_SeriesTooltip and (GetNextAchievement(id) or GetPreviousAchievement(id))) then
       GameTooltip:SetOwner(self, "ANCHOR_NONE")
       GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 8, 0)
       GameTooltip:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b)
+      tipset = true
       GameTooltip:AddLine(L.SERIESTIP)
       GameTooltip:AddLine(" ")
       local ach = GetPreviousAchievement(id)
@@ -696,23 +701,22 @@ do
         ach, completed = GetNextAchievement(ach)
       end
       GameTooltip:AddLine(" ")
-      showedseries = true
     end
 
     if (Overachiever_Settings.UI_RequiredForMetaTooltip and AchLookup_metaach[id]) then
-      if (not showedseries) then
+      if (not tipset) then
         GameTooltip:SetOwner(self, "ANCHOR_NONE")
         GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 8, 0)
         GameTooltip:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b)
+        tipset = true
       end
       GameTooltip:AddLine(L.REQUIREDFORMETATIP)
       GameTooltip:AddLine(" ")
       AddAchListToTooltip(GameTooltip, AchLookup_metaach[id])
       GameTooltip:AddLine(" ")
-      showedseries = true
     end
 
-    if (showedseries or showedmeta) then
+    if (tipset) then
       GameTooltip:Show()
       return true
     end

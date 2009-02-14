@@ -4,6 +4,27 @@ local L = OVERACHIEVER_STRINGS
 local tabs, tabselected
 local LeftFrame
 
+local function emptyfunc() end
+
+
+local FilterByTab = {}
+local orig_AchievementFrame_SetFilter = AchievementFrame_SetFilter
+
+AchievementFrame_SetFilter = function(value, tabswitch)
+  if (not tabswitch) then
+    local frame = tabselected or AchievementFrameAchievements
+    FilterByTab[frame] = value
+  end
+  if (tabswitch or tabselected) then
+    local orig_SetValue = AchievementFrameAchievementsContainerScrollBar.SetValue
+    AchievementFrameAchievementsContainerScrollBar.SetValue = emptyfunc
+    orig_AchievementFrame_SetFilter(value)
+    AchievementFrameAchievementsContainerScrollBar.SetValue = orig_SetValue
+  else
+    return orig_AchievementFrame_SetFilter(value)
+  end
+end
+
 
 local function getFrameOfButton(button)
   return button:GetParent():GetParent():GetParent()
@@ -191,7 +212,7 @@ end
 local sortList
 do
   local getret
-  
+
   local function sortList_simple(a, b)
     local aV = select(getret, GetAchievementInfo(a))
     local bV = select(getret, GetAchievementInfo(b))
@@ -265,9 +286,51 @@ do
   end
 end
 
+local FilteredList, FilteredList_current
+local function applyAchievementFilter(list, completed, built, checkprev)
+  FilteredList = FilteredList or {}
+  local list2 = FilteredList[list]
+  if (list2) then
+    if (built and FilteredList_current[list] == completed) then  return list2;  end
+    wipe(list2)
+  else
+    FilteredList[list] = {}
+    list2 = FilteredList[list]
+  end
+  local count, _, c = 0
+  for i,id in pairs(list) do  -- Using pairs instead of ipairs so we can safely nil things out.
+    _, _, _, c = GetAchievementInfo(id)
+    if (c == completed) then
+      count = count + 1
+      list2[count] = id
+    elseif (checkprev and completed) then
+    -- If we're listing complete achievements and this one is incomplete but it's in a series where the previous
+    -- one is complete, then we can display that one instead. This option is used by the Suggestions tab.
+      local prev = GetPreviousAchievement(id)
+      if (prev) then
+        _, _, _, c = GetAchievementInfo(prev)
+        -- We don't need to go any deeper than one previous, since the Suggestions by default finds the first
+        -- incomplete one (or the last one in the series, if all are complete).
+        if (c) then
+          count = count + 1
+          list2[count] = prev
+        end
+      end
+    end
+  end
+  FilteredList_current = FilteredList_current or {}
+  FilteredList_current[list] = completed
+  return list2
+end
+
 local function updateAchievementsList(frame)
-  local list = frame.AchList
-  if (not frame.AchList_sorted) then
+  local list, sorted = frame.AchList, frame.AchList_sorted
+  if (ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrame_GetCategoryNumAchievements_Complete) then
+    list = applyAchievementFilter(list, true, sorted, frame.AchList_checkprev)
+  elseif (ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrame_GetCategoryNumAchievements_Incomplete) then
+    list = applyAchievementFilter(list, false, sorted, frame.AchList_checkprev)
+  end
+  if (not sorted) then
     sortList(list, frame.sort)
     frame.AchList_sorted = true
   end
@@ -303,6 +366,8 @@ local function updateAchievementsList(frame)
   else
     HybridScrollFrame_CollapseButton(scrollFrame);
   end
+  
+  if (frame.SetNumListed) then  frame.SetNumListed(#list);  end
 end
 
 local function forceUpdate(frame, keepSelection, fromHook)
@@ -423,6 +488,7 @@ end
 
 local function ListFrame_OnShow(self)
   self.panel:Show()
+  AchievementFrame_SetFilter( FilterByTab[self] or ACHIEVEMENT_FILTER_ALL, true )
 end
 
 local function ListFrame_OnHide(self)
@@ -430,7 +496,7 @@ local function ListFrame_OnHide(self)
 end
 
 
-function Overachiever.BuildNewTab(name, text, watermark, helptip, loadFunc)
+function Overachiever.BuildNewTab(name, text, watermark, helptip, loadFunc, filter)
   local numtabs, tab = 0
   repeat
     numtabs = numtabs + 1
@@ -481,9 +547,9 @@ function Overachiever.BuildNewTab(name, text, watermark, helptip, loadFunc)
 
   scrollbar.Hide =
     function (self)
-      frame:SetWidth(527);
+      frame:SetWidth(530);
       for _, button in next, frame.buttons do
-        button:SetWidth(519);
+        button:SetWidth(522);
       end
       getmetatable(self).__index.Hide(self);
     end
@@ -523,8 +589,11 @@ function Overachiever.BuildNewTab(name, text, watermark, helptip, loadFunc)
   panel:SetPoint("BOTTOM", LeftFrame, "BOTTOM")
   panel:Hide()
   frame.panel = panel
+  frame:Hide()
   frame:SetScript("OnShow", ListFrame_OnShow)
   frame:SetScript("OnHide", ListFrame_OnHide)
+  
+  FilterByTab[frame] = filter
 
   return frame, panel
 end
@@ -554,22 +623,27 @@ end
 
 local function LeftFrame_OnShow(self)
   AchievementFrameCategoriesContainer:Hide()
+  AchievementFrameFilterDropDown:Show()
+  AchievementFrameHeaderRightDDLInset:Show()
 end
 
 local function LeftFrame_OnHide(self)
   AchievementFrameCategoriesContainer:Show()
+  if (not AchievementFrameAchievements:IsShown()) then
+    AchievementFrameFilterDropDown:Hide()
+    AchievementFrameHeaderRightDDLInset:Hide()
+  end
+  AchievementFrame_SetFilter( FilterByTab[AchievementFrameAchievements] or ACHIEVEMENT_FILTER_ALL, true )
 end
 
 local function LeftFrame_OnEvent_CRITERIA_UPDATE()
-  local frame
   for k,tab in ipairs(tabs) do
-    frame = tab.frame
-    if ( frame.selection ) then
+    if ( tab.frame.selection ) then
       local id = AchievementFrameAchievementsObjectives.id;
       local button = AchievementFrameAchievementsObjectives:GetParent();
       AchievementFrameAchievementsObjectives.id = nil;
       AchievementButton_DisplayObjectives(button, id, button.completed);
-      return;
+      return; -- This only needs to happen once, no matter which frame it is that's currently shown.
     end
   end
 end
@@ -610,6 +684,7 @@ do
       self:UnregisterEvent("ADDON_LOADED")
       self:RegisterEvent("CRITERIA_UPDATE")
       self:SetScript("OnEvent", LeftFrame_OnEvent_CRITERIA_UPDATE)
+
       Overachiever_Tabs_Settings = Overachiever_Tabs_Settings or {}
       if (tabs) then
         local v = Overachiever_Tabs_Settings
