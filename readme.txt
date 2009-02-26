@@ -1,5 +1,5 @@
 
-Overachiever v0.37
+Overachiever v0.38
 ==============================
 
 Author: Tuhljin
@@ -107,6 +107,11 @@ Change log
 ==========
 
 The change log lists changes of particular note to users, not every change made.
+
+v0.38
+- The exploration auto-tracking option will no longer change what you're tracking when it is "Bloody Rare," "Northern
+  Exposure," or their followup achievements.
+- Work in progress.
 
 v0.37
 - Tabs module: You can now use the dropdown added to the default UI in WoW 3.0.8 to filter Search results and

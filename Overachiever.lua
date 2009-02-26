@@ -124,7 +124,14 @@ local function isExplorationAchievement(id, zonesOnly)
     if (not zonesOnly) then  return true;  end
   else
     local _, parentID = GetCategoryInfo(cat)
-    if (parentID == CATEGORY_EXPLOREROOT) then  return true;  end
+    if (parentID == CATEGORY_EXPLOREROOT) then
+      if (not zonesOnly) then  return true;  end
+      if (id ~= OVERACHIEVER_ACHID.MediumRare and id ~= OVERACHIEVER_ACHID.BloodyRare and
+          id ~= OVERACHIEVER_ACHID.NorthernExposure and id ~= OVERACHIEVER_ACHID.Frostbitten) then
+      -- Make an exception for achievements in the category that aren't really "exploration."
+        return true
+      end
+    end
   end
 end
 

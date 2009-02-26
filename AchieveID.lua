@@ -17,6 +17,11 @@ OVERACHIEVER_ACHID = {
 	GourmetNorthrend = 1779,	-- "The Northrend Gourmet" (last part)
 	GourmetOutland = 1800,		-- "The Outland Gourmet"
 	--GourmetWinter = 1688,		-- "The Winter Veil Gourmet"
+	
+	MediumRare = 1311,		-- "Medium Rare"
+	BloodyRare = 1312,		-- "Bloody Rare"
+	NorthernExposure = 2256,	-- "Northern Exposure"
+	Frostbitten = 2257,		-- "Frostbitten"
 };
 
 

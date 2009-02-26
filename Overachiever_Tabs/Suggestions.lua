@@ -203,7 +203,7 @@ else
 	ACHID_INSTANCES["Strand of the Ancients"] = 2195
 end
 -- For all battlegrounds:
-local ACHID_BATTLEGROUNDS = { 238, 245, IsAlliance and 246 or 1005, 247, 229, 227, 231 }
+local ACHID_BATTLEGROUNDS = { 238, 245, IsAlliance and 246 or 1005, 247, 229, 227, 231, 1785 }
 
 local ACHID_INSTANCES_HEROIC = {
 -- Burning Crusade
