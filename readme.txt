@@ -109,7 +109,8 @@ Change log
 The change log lists changes of particular note to users, not every change made.
 
 v0.38
-- The exploration auto-tracking option will no longer change what you're tracking when it is "Bloody Rare," "Northern
+- New option: Auto-track timed achievements.
+- The exploration auto-tracking option will no longer cause tracking to switch away from "Bloody Rare," "Northern
   Exposure," or their followup achievements.
 - Work in progress.
 

@@ -19,6 +19,7 @@ local L = OVERACHIEVER_STRINGS
 local CATEGORIES_ALL, CATEGORY_EXPLOREROOT, CATEGORIES_EXPLOREZONES
 local OptionsPanel
 local MadeDraggable_AchFrame, MadeDragSave_AchFrame, MadeDraggable_AchTracker
+local AutoTrackedAch
 
 Overachiever.DefaultSettings = {
   Tooltip_ShowProgress = true;
@@ -27,6 +28,7 @@ Overachiever.DefaultSettings = {
   UI_SeriesTooltip = true;
   UI_RequiredForMetaTooltip = true;
   Tracker_GreenCheck = true;
+  Tracker_AutoTimer = false;
   Explore_AutoTrack = false;
   Explore_AutoTrack_Completed = false;
   CritterTip_loved = true;
@@ -556,6 +558,7 @@ local function GreenCheckUpdate()
 end
 
 local function saveTrackedAchievement(id, ...)
+  AutoTrackedAch = nil
   if (id == 0) then  id = nil;  end
   Overachiever_CharVars.TrackedAch = id;
   GreenCheckUpdate()
@@ -582,6 +585,7 @@ local function AutoTrackCheck_Explore(noClearing)
         local _, _, _, complete = GetAchievementInfo(id)
         if (not complete or Overachiever_Settings.Explore_AutoTrack_Completed) then
           setTracking(id)
+          AutoTrackedAch = id
         elseif (complete and not noClearing) then
           setTracking(0)
         end
@@ -601,7 +605,7 @@ local function MetaCriteriaOnEnter(self)
     GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
     local link = GetAchievementLink(self.id)
     GameTooltip:SetHyperlink(link)
-    if (MouseIsOver(GameTooltip)) then
+    if (GameTooltip:GetBottom() < self:GetTop()) then
       GameTooltip:ClearAllPoints()
       GameTooltip:SetPoint("TOPLEFT", self, "BOTTOMLEFT")
     end
@@ -749,13 +753,7 @@ end
 -- GLOBAL FUNCTIONS
 -----------------------
 
-function Overachiever.OnEvent(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)
---[[
-  if (Overachiever_Debug and (arg1 or arg2 or arg3 or arg4 or arg5 or arg6 or arg7 or arg8 or arg9)) then
-    print("Overachiever event:", event)
-    print(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)
-  end
---]]
+function Overachiever.OnEvent(self, event, arg1, ...)
   if (event == "PLAYER_ENTERING_WORLD") then
     Overachiever.MainFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
     Overachiever.MainFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
@@ -829,6 +827,7 @@ function Overachiever.OnEvent(self, event, arg1, arg2, arg3, arg4, arg5, arg6, a
 	{ type = "labelwrap", text = L.OPT_LABEL_TRACKING, topBuffer = 4 },
 	{ variable = "Tracker_GreenCheck", text = L.OPT_TRACKERGREENCHECK,
 	  tooltip = L.OPT_TRACKERGREENCHECK_TIP, OnChange = GreenCheckUpdate },
+	{ variable = "Tracker_AutoTimer", text = L.OPT_AUTOTRACKTIMED, tooltip = L.OPT_AUTOTRACKTIMED_TIP },
 	{ variable = "Explore_AutoTrack", text = L.OPT_AUTOTRACKEXPLORE,
 	  tooltip = L.OPT_AUTOTRACKEXPLORE_TIP, OnChange = AutoTrackCheck_Explore },
 	{ variable = "Explore_AutoTrack_Completed", text = L.OPT_AUTOTRACKEXPLORE_COMPLETED,
@@ -907,6 +906,16 @@ function Overachiever.OnEvent(self, event, arg1, arg2, arg3, arg4, arg5, arg6, a
 
   elseif (event == "ACHIEVEMENT_EARNED" and arg1 == Overachiever_CharVars.TrackedAch) then
     GreenCheckUpdate()
+
+  elseif (event == "TRACKED_ACHIEVEMENT_UPDATE") then
+    local criteriaID, elapsed, duration = ...
+    if (Overachiever_Settings.Tracker_AutoTimer and duration and elapsed < duration) then
+      local tracked = GetTrackedAchievement()
+      if (not tracked or tracked == AutoTrackedAch) then
+        setTracking(arg1)
+        AutoTrackedAch = arg1
+      end
+    end
 
   elseif (event == "ADDON_LOADED" and arg1 == "Blizzard_AchievementUI") then
     Overachiever.MainFrame:UnregisterEvent("ADDON_LOADED")
@@ -1185,9 +1194,8 @@ Overachiever.MainFrame:Hide()
 Overachiever.MainFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 Overachiever.MainFrame:RegisterEvent("ADDON_LOADED")
 Overachiever.MainFrame:RegisterEvent("ACHIEVEMENT_EARNED")
+Overachiever.MainFrame:RegisterEvent("TRACKED_ACHIEVEMENT_UPDATE")
 Overachiever.MainFrame:RegisterEvent("PLAYER_LOGOUT")
-if (Overachiever_Debug) then
-  Overachiever.MainFrame:RegisterEvent("CRITERIA_UPDATE")
-end
+
 Overachiever.MainFrame:SetScript("OnEvent", Overachiever.OnEvent)
 Overachiever.MainFrame:SetScript("OnUpdate", AchievementUI_FirstShown_post)
