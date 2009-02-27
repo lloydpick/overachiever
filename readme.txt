@@ -112,7 +112,6 @@ v0.38
 - New option: Auto-track timed achievements.
 - The exploration auto-tracking option will no longer cause tracking to switch away from "Bloody Rare," "Northern
   Exposure," or their followup achievements.
-- Work in progress.
 
 v0.37
 - Tabs module: You can now use the dropdown added to the default UI in WoW 3.0.8 to filter Search results and
