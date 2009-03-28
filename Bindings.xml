@@ -5,4 +5,7 @@
 	<Binding name="OVERACHIEVER_TAB_SUGGESTIONS">
 		Overachiever.OpenTab("Overachiever_SuggestionsFrame");
 	</Binding>
+	<Binding name="OVERACHIEVER_TAB_WATCH">
+		Overachiever.OpenTab("Overachiever_WatchFrame");
+	</Binding>
 </Bindings>

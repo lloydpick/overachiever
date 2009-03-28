@@ -421,6 +421,11 @@ local function tabOnClick(self, button)
   -- Don't play sound when this is a silentDisplay or Overachiever.OpenTab_frame call.
   if (button) then  PlaySound("igCharacterInfoTab");  end
 
+  if (self.flash and UIFrameIsFading(self.flash)) then
+    UIFrameFlashRemoveFrame(self.flash)
+    self.flash:Hide()
+  end
+
   tabselected = self.frame
   AchievementFrame_ShowSubFrame(self.frame, LeftFrame)
   LeftFrame.label:SetText(self:GetText())
@@ -443,6 +448,9 @@ local function achbtnOnClick(self, button)
   local id = self.id
   if ( IsControlKeyDown() and (GetPreviousAchievement(id) or isAchievementInUI(id, true)) ) then
     Overachiever.UI_SelectAchievement(id, silentDisplay, self)
+    return;
+  elseif (Overachiever_WatchFrame and IsAltKeyDown()) then
+    Overachiever_WatchFrame.SetAchWatchList(id, tabselected ~= Overachiever_WatchFrame)
     return;
   end
   -- This section based on the AchievementButton_OnClick function in Blizzard_AchievementUI.lua:
@@ -727,3 +735,23 @@ local function recolor_AchievementObjectives_DisplayCriteria(objectivesFrame, id
   end
 end
 hooksecurefunc("AchievementObjectives_DisplayCriteria", recolor_AchievementObjectives_DisplayCriteria)
+
+
+-- Flashing tab:
+function Overachiever.FlashTab(tab)
+  if (tabselected and tabselected.tab == tab) then  return;  end
+  local flash = tab.flash
+  if (not flash) then
+    flash = CreateFrame("Frame", tab:GetName().."Flash", tab)
+    flash:SetPoint("TOPLEFT", "$parentLeft", "TOPLEFT")
+    flash:SetPoint("BOTTOMRIGHT", "$parentRight", "BOTTOMRIGHT")
+    local tex = flash:CreateTexture("$parentBackground", "BACKGROUND")
+    tex:SetTexture("Interface\\AddOns\\Overachiever_Tabs\\TabHighlight")
+    tex:SetBlendMode("ADD")
+    tex:SetPoint("TOPLEFT", flash, "TOPLEFT", 7, 8)
+    tex:SetPoint("BOTTOMRIGHT", flash, "BOTTOMRIGHT", -3, -3)
+    tab.flash = flash
+  end
+  if (UIFrameIsFading(flash)) then  UIFrameFlashRemoveFrame(flash);  end
+  UIFrameFlash(flash, 0.35, 0.35, 0.9, nil, 0.05, 0.15)
+end

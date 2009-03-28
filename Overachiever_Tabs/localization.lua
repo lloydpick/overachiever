@@ -22,6 +22,10 @@ L.SUGGESTIONS_RESULTS = "%d |4suggestion:suggestions; found.";
 L.SUGGESTIONS_RESULTS_TRADESKILL = "%s: %d |4suggestion:suggestions; found.";
 L.SUGGESTIONS_EMPTY_TRADESKILL = "%s: Overachiever has no suggestions for you at this time.";
 
+L.WATCH_TAB = "Watch";
+L.WATCH_HELP = "Create your watch list by |cffffffffalt+clicking|r on achievements in the other tabs. |cffffffffAlt+click|r on one displayed here to stop watching it.";
+L.WATCH_EMPTY = "Your watch list is empty. Alt+click on an achievement in another tab to watch it.";
+
 L.TAB_SORT = "Sort by:";
 L.TAB_SORT_NAME = "Name";
 L.TAB_SORT_ID = "ID";

@@ -1,5 +1,5 @@
 
-Overachiever v0.38
+Overachiever v0.39
 ==============================
 
 Author: Tuhljin
@@ -39,6 +39,12 @@ Options can be found using the /oa command or at Interface Options -> AddOns tab
 
 More details
 --------------
+
+KEY BINDINGS:
+
+You can associate key bindings with each of the new tabs added to the Achievement frame using the standard key binding
+interface. The new bindings are located under the heading "Overachiever."
+
 
 SLASH COMMANDS:
 
@@ -107,6 +113,10 @@ Change log
 ==========
 
 The change log lists changes of particular note to users, not every change made.
+
+v0.39
+- Tabs module: The new Watch tab has been implemented, allowing you to create a custom list of achievements. Alt+click
+  on an achievement in another tab to watch it. Alt+click on an achievement in the Watch tab to stop watching it.
 
 v0.38
 - New option: Auto-track timed achievements.

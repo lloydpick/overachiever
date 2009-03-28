@@ -145,13 +145,13 @@ local function getCategoryID(name)
   end
 end
 
-local function get_arg1_argN(n, arg1, ...)
-  return arg1, select(n-1, ...)
-end
-
 local getAchievementID_cat, getAchievementID_tab
 do
   local found
+  
+  local function get_arg1_argN(n, arg1, ...)
+    return arg1, select(n-1, ...)
+  end
 
   function getAchievementID_cat(category, argnum, pattern, anyCase, getAll)
   -- Go over a given category, looking only at achievements that would normally be listed in the UI for the
