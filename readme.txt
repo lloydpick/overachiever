@@ -1,5 +1,5 @@
 
-Overachiever v0.39
+Overachiever v0.40
 ==============================
 
 Author: Tuhljin
@@ -12,12 +12,11 @@ General:
 * Ctrl+click on an achievement link to open the UI to that achievement. Ctrl+click again to track it.
 * Optionally display your progress toward earning an achievement in links provided by others for easy comparison.
 * Click and drag to move the Achievement frame around the screen.
-* The achievement tracker is also draggable.
 * Remember achievement tracking between sessions and resume when you log in.
 * Add information from progress bars and normally-hidden progress information to your achievement tooltips. (For
   example, "Progress: 5/10" or "Assault 2 bases (0/2).")
-* Display a tooltip when hovering over the icon on the achievement tracker to see more details about that achievement.
-* Shift-click the tracker's icon to add that achievement's link to chat.
+* Display a tooltip when hovering over an achievement in the Objectives frame to see more details about it.
+* Shift+click an achievement title in the Objectives frame to add that achievement's link to chat.
 * The tooltips of meta-criteria (achievements displayed as the criteria for obtaining a larger achievement) changed
   from simply giving the date the criteria was met or nothing (if not met) to the standard, detailed tooltip for the
   achievement.
@@ -84,22 +83,15 @@ SLASH COMMANDS:
 
 DRAGGABLE FRAMES:
 
-The main achievement frame (where achievements earned and unearned are listed by category) and the achievement tracker
-are draggable when the proper Interface Options are set. Left-click on an appropriate area and hold the mouse button
-down to move the frame where you desire.
+The main achievement frame (where achievements earned and unearned are listed by category) is draggable when the proper
+Interface Options are set. Left-click on an appropriate area and hold the mouse button down to move the frame where you
+desire.
 
 By default, the main achievement frame can be moved but it is still subject to some standard frame handling that will
 reposition it when it is opened or certain other frames are displayed. To unattach the frame from this position
 handling and have Overachiever remember where the frame is from session to session, check the "Remember position"
 option under the "Main Achievement UI frame" option. Once in the position you desire, you may want to uncheck the
 "Main Achievement UI frame" option so you don't accidentally move it elsewhere.
-
-The achievement tracker is not draggable by default. In order to move it, the "Achievement tracker" option in the
-"Draggable Frames" section must be checked and the "Lock position" option under it must be unchecked. Of course, you
-must be tracking an achievement in order to see the frame so you can move it. The area used to drag the frame is the
-label giving the name of the achievement, not the icon next to it. Once the tracker is in position, you can check
-the "Lock position" option to keep it in place. Keep the "Achievement tracker" option checked or the tracker will
-be placed back at the standard position.
 
 
 EXPLORATION AUTO-TRACKING:
@@ -113,6 +105,15 @@ Change log
 ==========
 
 The change log lists changes of particular note to users, not every change made.
+
+v0.40
+- Updated for WoW patch 3.1.
+- Options involving the now-defunct achievement tracker have been removed. The default UI's new Objectives frame (AKA
+  Watch Frame) has taken its place, and it is draggable.
+- The remaining features that involved some interaction with the old tracker's icons are now associated with the
+  achievement titles displayed by the Objectives frame (since the new frame does not use achievement icons). This
+  includes achievement tooltip display and Shift+clicking to produce chat links.
+- Watch Tab: You can now Alt+click on an achievement's chat link to watch it.
 
 v0.39
 - Tabs module: The new Watch tab has been implemented, allowing you to create a custom list of achievements. Alt+click

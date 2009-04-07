@@ -173,11 +173,11 @@ local function displayAchievement(button, frame, achievement, index, selectionID
       end
     end
 
-    local tracked = GetTrackedAchievement();
-    if ( tracked == id ) then
+    if ( IsTrackedAchievement(id) ) then
       button.check:Show();
       button.label:SetWidth(button.label:GetStringWidth() + 4);
       button.tracked:SetChecked(true);
+      button.tracked:Show();
     else
       button.check:Hide();
       button.tracked:SetChecked(false);
@@ -196,14 +196,15 @@ local function displayAchievement(button, frame, achievement, index, selectionID
     else
       button:Expand(height);
     end
-    button.tracked:Show();
+    if ( not completed ) then
+      button.tracked:Show();
+    end
   elseif ( button.selected ) then
     button.selected = nil;
     if ( not MouseIsOver(button) ) then
       button.highlight:Hide();
     end
     button:Collapse();
-    button.tracked:Hide();
   end
 
   return id;

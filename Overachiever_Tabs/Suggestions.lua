@@ -479,7 +479,7 @@ frame:SetScript("OnEvent", Refresh)
 
 
 --[[
--- /run Overachiever.Debug_GetIDsInCat( GetAchievementCategory(GetTrackedAchievement()) )
+-- /run Overachiever.Debug_GetIDsInCat( GetAchievementCategory(GetTrackedAchievements()) )
 function Overachiever.Debug_GetIDsInCat(cat)
   local tab = Overachiever_Settings.Debug_AchIDsInCat
   if (not tab) then  Overachiever_Settings.Debug_AchIDsInCat = {};  tab = Overachiever_Settings.Debug_AchIDsInCat;  end

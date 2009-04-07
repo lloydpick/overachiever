@@ -54,8 +54,6 @@ OVERACHIEVER_STRINGS = {
 	OPT_SHOWID = "Show achievement IDs";
 
 	OPT_LABEL_TRACKING = "Achievement Tracking";
-	OPT_TRACKERGREENCHECK = "Show checkmark next to completed achievement icon";
-	OPT_TRACKERGREENCHECK_TIP = "Place a green checkmark next to the icon on the tracker when the achievement is complete.";
 	OPT_AUTOTRACKTIMED = "Auto-track timed achievements";
 	OPT_AUTOTRACKTIMED_TIP = "Automatically track achievements with timed criteria when the timer starts. Does not switch if tracking another achievement unless it was automatically tracked by Overachiever.";
 	OPT_AUTOTRACKEXPLORE = "Auto-track exploration achievements as you travel";
@@ -80,17 +78,13 @@ OVERACHIEVER_STRINGS = {
 	OPT_CONSUMEITEMTIPS_TIP3 = "Note: This option can add a few seconds to your initial load time.";
 	OPT_CONSUMEITEMTIPS_WHENCOMPLETE = "Show even if achievement is complete";
 
-	OPT_LABEL_DRAG = "Draggable Frames";
-	OPT_DRAG_ACHFRAME = "Main Achievement UI frame";
-	OPT_DRAG_ACHTRACKER = "Achievement tracker";
-	OPT_DRAGSAVE = "Remember position";
-	OPT_DRAGLOCK = "Lock position";
-
 	OPT_LABEL_MAINUI = "Main Achievement UI Modifications";
 	OPT_UI_SERIESTIP = "Tooltip for achievements that are part of a series";
 	OPT_UI_SERIESTIP_TIP = "When the cursor is over an achievement that is part of a series, display the names of others in the series and its relation to them.";
 	OPT_UI_REQUIREDFORMETATIP = "Tooltip for achievements required by others";
 	OPT_UI_REQUIREDFORMETATIP_TIP = "When the cursor is over an achievement that is required to earn another achievement, display the name of the meta-achievement.";
+	OPT_DRAGGABLE = "Make draggable";
+	OPT_DRAGSAVE = "Remember position";
 
 	OPT_SELECTSOUND = "Incomplete Achievement Reminder Sound";
 	OPT_SELECTSOUND_TIP = "Play the selected sound when an incomplete achievement reminder is added to the tooltip.";

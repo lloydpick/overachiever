@@ -1,5 +1,5 @@
 
-TjOptions v0.34
+TjOptions v0.40
 ========================================
 
 Author: Tuhljin
@@ -88,8 +88,8 @@ changesInProgress, canceling, defaulting, loading = myPanel:IsChangeInProgress()
 
  The place where such a loop is most likely to occur is in an OnChange function (see table specifications,
  below); however, those functions are generally better off utilizing the fourth argument that TjOptions passes to
- them to prevent loops, but if, for some reason, knowing exactly what sort of change is taking place is needed, this
- function is available.
+ them to prevent loops, but if, for some reason, knowing exactly what sort of change is taking place is needed,
+ this function is available.
 
 
 === PANEL CONTENTS TABLE SPECIFICATIONS ===
@@ -103,6 +103,8 @@ Baseline Fields:
 
   title         String. Text of the large label used at the top of the panel. (The resulting label can be
                 accessed at myPanel.titleLabel.) No label is created if this is nil.
+
+  titleCenter   Boolean. If true, then the top label will be centered.
 
   items         Table. The items, such as checkboxes, used on this panel. See "Item Fields," below.
 
@@ -128,8 +130,6 @@ Baseline Fields:
   OnShow        Function. Called when the panel is shown, with the panel as its first argument. The function is
                 called after TjOptions handles its standard OnShow functionality, including LoadVariables().
 
-  OnDefault     Function. Called when the panel's options are set to the default.
-
   OnBuild       Function. Called when the panel's contents are built, with the panel as its first argument. This
                 is called only once, either when the panel is shown for the first time (before the given OnShow
                 function is called) or when the player sets all interface options to the default. At the time of
@@ -138,8 +138,23 @@ Baseline Fields:
                 so you could change the values of your variables at this time so the new values will be used
                 (except they will still be set to their defaults, if any, if that's what triggered this).
 
+  OnOkay        Function. Called when the player clicks the interface options frame's Okay button if this panel
+                was shown or set to default settings at some point since the frame was last shown.
+
+  OnCancel      Function. Called when the player clicks the interface options frame's Cancel button if this panel
+                was shown or set to default settings at some point since the frame was last shown. It is called
+                after the panel's items have already been reverted to their previous state.
+
+  OnDefault     Function. Called when the panel's options are set to the default.
+
   scrolling     Any. If it evaluates to true, the panel's items will be placed inside a scolling frame. If this
                 is a string, it will be the scroll frame's global variable name.
+
+  column?Offset (where "?" is the column number)
+    Number. The base x-position of items in that column. Also see "column" in "Item Fields," below.
+
+  tooltipWrap   Boolean or number. This is checked when an item's tooltip field is a string and that item's
+                tooltipWrap field is omitted. See tooltipWrap under "Item Fields," below.
 
 Item Fields - general (for all items):
   All general item fields are optional.
@@ -148,6 +163,7 @@ Item Fields - general (for all items):
                 TjOptions. Types included by default are:
                   "checkbox"        A checkbox. This is the default if type isn't specified.
                   "checkboxsmall"   A smaller checkbox.
+                  "checkboxnolabel" A checkbox with no text label.
                   "label"           A text label.
                   "labelwhite"      A white text label.
                   "labelwrap"       As "label" but with default values for justifyH and width set to allow for
@@ -180,8 +196,13 @@ Item Fields - general (for all items):
 
   tooltip2      String. Additional tooltip text (uses a smaller font). Used only if "tooltip" field is a string.
 
-  xOffset       Integer. Offset the x position of the item by this amount. Items following it will also be offset
-                by this amount until another is specified. (Set to 0 to end previous offsets.)
+  tooltipWrap   Boolean or number. If tooltip is a string, this determines whether the tooltip will automatically
+                be wordwrapped. If this is omitted, then the baseline tooltipWrap field is checked. If both are
+                omitted, wordwrapping will be applied.
+
+  xOffset       Integer. Offset the x position of the item by this amount. Column-1 items following it will also
+                be offset by this amount until another is specified. (Set to 0 to end previous offsets.) If the
+                current item is in a column other than 1, this offset instead applies only to the current item.
 
   topBuffer     Integer. Additional space to add between this item and the previous one, or fewer if negative.
 
@@ -192,8 +213,11 @@ Item Fields - general (for all items):
                 nil or false) to prevent the panel's OnChange function from being called without calling a
                 different function.
 
-Item Fields - label or labelwhite:
+  column        Integer. The column this item will be placed in. Defaults to 1. If in a column other than 1, then
+                its y-position will be based on that of the last column-1 item. Also see the "column?Offset"
+                baseline field in the "PANEL CONTENTS TABLE" section, above.
 
+Item Fields - label or labelwhite:
   Three additional optional fields are available for labels.
 
   font          String. The font to use, such as "GameFontNormalLeftRed". If omitted, "GameFontNormal" is used
@@ -202,6 +226,13 @@ Item Fields - label or labelwhite:
   width         Integer. The width of the label. Use this to allow automatic wordwrapping.
 
   justifyH      String. The horizontal justification of the text (such as "LEFT").
+
+Item Fields - checkbox, checkboxsmall, or checkboxnolabel:
+  One additional optional field is available for labels.
+
+  width         Integer. Used to expand the checkbox's hit rectangle to the right. For example, using 100 means
+                the hit rectangle will be expanded 100 pixels (toward its text label, if it has one). If omitted,
+                the width of the its text label is used, if it has one.
 
 Item Fields - dropdown:
   Three additional fields are available for dropdown menu items. The menu field is required.
@@ -322,7 +353,7 @@ functions needed to interact with the registered item type. The possible fields 
 fields except for create are optional.
 
 create        Function. The function that creates a new instance of the item. It will be called like so:
-                frame, handletip, xOffset, yOffset, btmBuffer = create(name, parent, data, arg)
+                frame, handletip, xOffset, yOffset, btmBuffer, focusable = create(name, parent, data, arg)
                 Arguments:
                 name        String. The global name that should be used by the new frame (or the primary frame,
                             if more than one is created).
@@ -343,6 +374,13 @@ create        Function. The function that creates a new instance of the item. It
                             Integer or nil. Adjustments used for the positioning of the frame.
                 btmBuffer   Integer. Additional space to add between this item and the next one, or fewer if
                             negative.
+                focusable   Any. If it evaluates to true, then it is added to the list of its parent panel's
+                            focusable items. This allows the player to cycle between items on the list by hitting
+                            tab and shift+tab. This also causes TjOptions to clear the focus on the item when Okay
+                            or Cancel is pressed, which is a necessity for properly handling certain items that
+                            react to the focus being lost (which would otherwise lose the focus when the options
+                            panel closes, after Okay/Cancel handling, which can cause problems). The item must
+                            support the <item>:SetFocus(), <item>:ClearFocus() and <item>:HasFocus() methods.
 
 getvalue      Function. Required for any item that may have a variable associated with it. (Those that never have
               a variable associated with them include labels.) It is called like so:
@@ -379,14 +417,14 @@ create_prehook, getvalue_prehook, setvalue_prehook
   is also defined by this item type or is inherited). It is given the same arguments that will be passed to the
   original function. If the prehook function's first return value is false (not nil), then the original function
   will not be called. If the first return value is true, then whatever else it returns will be passed to the
-  original function as arguments instead of the original arguments (though the same number of arguments are
-  always used even if the prehook returns more).
+  original function as arguments instead of the original arguments (though the same number of arguments are always
+  used even if the prehook returns more).
 
 create_posthook, getvalue_posthook, setvalue_posthook
   Function. If provided, then this function will be called after the function it "hooks" (if that other function
-  is also defined by this item type or is inherited). It is passed whatever the original function returned
-  (that is, return values that were expected: extraneous return values are ignored) followed by the same
-  arguments that were passed to the original function, as noted below for reference:
+  is also defined by this item type or is inherited). It is passed whatever the original function returned (that
+  is, return values that were expected: extraneous return values are ignored) followed by the same arguments that
+  were passed to the original function, as noted below for reference:
 
     create_posthook(frame, handletip, xOffset, yOffset, btmBuffer, name, parent, data, arg)
     getvalue_posthook(value, self, data, arg)
@@ -451,6 +489,19 @@ Example usage:
 
 Recent changes
 ================
+
+v0.40
+- Now supports columns to align items to the right of a previous item, using the "column" key in item tables and
+  "column?Offset" keys in the panel contents table (where "?" is the column number).
+- Checkboxes' hit rectangles are now assigned based on the "width" item field or, if that is omitted, the width of
+  their text labels at creation.
+- Added the Focus/Tab system. Items can use the new "focusable" return from their create functions to be added to
+  a list of items that the player can cycle between using tab and shift+tab. (See details in the description of
+  the "focusable" return in TjOptions.txt)
+- Added the "checkboxnolabel" item type.
+- Added the "tooltipWrap" baseline field and standard item field.
+- Added the "titleCenter", "OnOkay", and "OnCancel" baseline fields.
+- Background added to scrolling frames' scroll bars.
 
 v0.34
 - Added functionality intended to simplify common saved variables management tasks, including support for using a

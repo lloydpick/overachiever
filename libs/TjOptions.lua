@@ -10,7 +10,7 @@
 --  See TjOptions.txt for documentation.
 --
 
-local THIS_VERSION = 0.34
+local THIS_VERSION = 0.40
 
 if (not TjOptions or TjOptions.Version < THIS_VERSION) then
   TjOptions = TjOptions or {};
@@ -201,9 +201,14 @@ if (not TjOptions or TjOptions.Version < THIS_VERSION) then
       GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
       GameTooltip:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
       if (type(tip) == "string") then
-        GameTooltip:AddLine(tip, nil, nil, nil, 1);
+        local wrap = self.TjOpt_tab.tooltipWrap
+        if (wrap == nil) then
+          wrap = GetPanel(self).TjOpt_tab.tooltipWrap
+          if (wrap == nil) then  wrap = 1;  end
+        end
+        GameTooltip:AddLine(tip, nil, nil, nil, wrap);
         if (self.TjOpt_tab.tooltip2) then
-         GameTooltip:AddLine(self.TjOpt_tab.tooltip2, nil, nil, nil, 1)
+         GameTooltip:AddLine(self.TjOpt_tab.tooltip2, nil, nil, nil, wrap)
         end
       elseif (type(tip) == "function") then
         tip(self, GameTooltip)
@@ -275,6 +280,49 @@ if (not TjOptions or TjOptions.Version < THIS_VERSION) then
   end
 
 
+  -- FOCUS/TAB SYSTEM:
+
+  local function panelClearFocus(panel)
+    if (panel.TjOpt_FocusList and panel:IsShown()) then
+      for i,obj in ipairs(panel.TjOpt_FocusList) do
+        if (obj:HasFocus()) then
+          obj:ClearFocus()
+          return;
+        end
+      end
+    end
+  end
+
+  function TjOptions.HandleTabbing(obj)
+    local list = GetPanel(obj).TjOpt_FocusList
+    local size = list and #list
+    if (not list or size < 2) then  return;  end
+    local index
+    for i,tabobj in ipairs(list) do  -- Find current object's position in the list:
+      if (tabobj == obj) then
+        index = i
+        break;
+      end
+    end
+    if (not index) then  return;  end  -- Object not in the list.
+
+    local adjust, target = IsShiftKeyDown() and -1 or 1
+    repeat
+      index = index + adjust
+      if (index < 1) then
+        index = size
+      elseif (index > size) then
+        index = 1
+      end
+      target = list[index]
+    until ( target == obj or ((not target.IsVisible or target:IsVisible()) and
+            (not target.IsEnabled or target:IsEnabled())) )
+
+    target:SetFocus()
+    return target
+  end
+
+
 -- BUILD PANEL CONTENTS
 --------------------------
 
@@ -285,6 +333,10 @@ if (not TjOptions or TjOptions.Version < THIS_VERSION) then
       panel.titleLabel = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge");
       panel.titleLabel:SetPoint("TOPLEFT", panel, "TOPLEFT", 16, -16);
       panel.titleLabel:SetText(tab.title);
+      if (tab.titleCenter) then
+        panel.titleLabel:SetWidth(382)
+        panel.titleLabel:SetJustifyH("CENTER")
+      end
     end
 
     local workpanel
@@ -300,6 +352,12 @@ if (not TjOptions or TjOptions.Version < THIS_VERSION) then
         scrollframe:SetHeight(410)
         scrollframe:SetPoint("TOPLEFT", panel, "TOPLEFT", 0, -9)
       end
+
+      -- Create scrollbar background:
+      local scrollbarBG = _G[scrollname.."ScrollBar"]:CreateTexture("$parentBackground", "BACKGROUND")
+      scrollbarBG:SetTexture(0.025, 0.025, 0.025, 0.5)
+      scrollbarBG:SetAllPoints()
+
       local scrollchild = CreateFrame("Frame", nil, scrollframe)
       scrollchild:SetHeight(370)
       scrollchild:SetWidth(370)
@@ -307,20 +365,18 @@ if (not TjOptions or TjOptions.Version < THIS_VERSION) then
       scrollframe:SetScrollChild(scrollchild)
       panel.TjOpt_scrollchild = scrollchild
       scrollchild.TjOpt_isScrollChild = true
+
       workpanel = scrollchild
     else
       workpanel = panel
     end
 
-    local y = (tab.itemspacing or 6) * -1;
-    local callsuccess, obj, handletip
-    local obj_offx, obj_offy, obj_buffer = 0
-    local relativeObj, t, n, offy, correctx
-    local xOffset_total, nextoffy = 0, 0
+    local spacing, column1Offset = tab.itemspacing or 6
+    local callsuccess, obj, handletip, obj_offx, obj_offy, obj_buffer, focusable
+    local relativeObj, column1ready, t, n
+    local xOffset_total, lastobj_offx, lastobj_offy, nextoffy = 0, 0, 0, 0
 
     for i, v in ipairs(tab.items) do
-      correctx, offy = obj_offx * -1, nextoffy - (v.topBuffer or 0)
-      nextoffy = (v.btmBuffer or 0) * -1
       t = v.type
       if (not t) then  v.type, t = "checkbox", "checkbox";  end
       n = v.name or ItemGlobalName..(TjOptions.numItems + 1)
@@ -341,7 +397,7 @@ if (not TjOptions or TjOptions.Version < THIS_VERSION) then
       end
       if (n) then
         if (itemFuncs[t]) then
-          callsuccess, obj, handletip, obj_offx, obj_offy, obj_buffer = itemCall(t, "create", n, workpanel, v, itemFuncs[t].create_arg)
+          callsuccess, obj, handletip, obj_offx, obj_offy, obj_buffer, focusable = itemCall(t, "create", n, workpanel, v, itemFuncs[t].create_arg)
           if (not callsuccess) then
             panelerror(panel, 'Item type "'..t..'" create method failed.')
           end
@@ -349,34 +405,69 @@ if (not TjOptions or TjOptions.Version < THIS_VERSION) then
           panelerror(panel, 'Item type "'..t..'" not registered with TjOptions.')
         end
         if (obj) then
+          TjOptions.numItems = TjOptions.numItems + 1
+          v.name = n
+          obj.TjOpt_tab = v
           obj_offx, obj_offy, obj_buffer = obj_offx or 0, obj_offy or 0, obj_buffer or 0
           if (handletip) then
             obj:SetScript("OnEnter", ItemOnEnter)
             obj:SetScript("OnLeave", ItemOnLeave)
           end
-          offy = offy + obj_offy
-          nextoffy = nextoffy - obj_buffer
 
-          v.name = n
-          TjOptions.numItems = TjOptions.numItems + 1
-          obj.TjOpt_tab = v
-          local x = obj_offx + correctx
-          if (v.xOffset) then
-            x = x - xOffset_total + v.xOffset
-            xOffset_total = v.xOffset
-          end
-          if (relativeObj) then
-            obj:SetPoint("TOPLEFT", relativeObj, "BOTTOMLEFT", x, y + offy)
+          local column, x, y = v.column
+          column = column and type(column) == "number" and column or 1
+          if (column == 1) then
+            x = obj_offx - lastobj_offx
+            if (v.xOffset) then
+              x = x - xOffset_total + v.xOffset + (column1Offset or tab.column1Offset or 0)
+              xOffset_total = v.xOffset
+            elseif (not column1Offset) then
+              column1Offset = tab.column1Offset or 0
+              x = x + column1Offset
+            end
+            y = obj_offy - nextoffy - (v.topBuffer or 0)
+            nextoffy = obj_buffer + (v.btmBuffer or 0)
           else
-            if (tab.scrolling) then
-              obj:SetPoint("TOPLEFT", workpanel, "TOPLEFT", x + 14, offy - 5)
-            elseif (panel.titleLabel) then
-              obj:SetPoint("TOPLEFT", panel.titleLabel, "BOTTOMLEFT", x - 2, offy - 12)
+            x = obj_offx + (v.xOffset or 0) + (tab["column"..column.."Offset"] or 180) - xOffset_total
+            y = obj_offy - (v.topBuffer or 0)
+          end
+
+          if (focusable) then
+            local list = panel.TjOpt_FocusList or {}
+            panel.TjOpt_FocusList = list
+            list[#list+1] = obj
+            obj:SetScript("OnTabPressed", TjOptions.HandleTabbing)
+          end
+
+          if (column1ready) then
+            if (column == 1) then
+              obj:SetPoint("TOPLEFT", relativeObj, "BOTTOMLEFT", x, y - spacing)
+              relativeObj, lastobj_offx, lastobj_offy = obj, obj_offx, obj_offy
             else
-              obj:SetPoint("TOPLEFT", workpanel, "TOPLEFT", x + 14, offy - 16)
+              obj:SetPoint("TOPLEFT", relativeObj, "TOPLEFT", x - lastobj_offx, y - lastobj_offy)
+            end
+          else
+            if (relativeObj) then
+              if (column == 1) then
+                obj:SetPoint("TOPLEFT", relativeObj, "BOTTOMLEFT", x, y - spacing)
+              else
+                obj:SetPoint("TOPLEFT", relativeObj, "TOPLEFT", x - lastobj_offx, y - lastobj_offy)
+              end
+            elseif (tab.scrolling) then
+              obj:SetPoint("TOPLEFT", workpanel, "TOPLEFT", x + 14, y - 5)
+            elseif (panel.titleLabel) then
+              obj:SetPoint("TOPLEFT", panel.titleLabel, "BOTTOMLEFT", x - 2, y - 12)
+            else
+              obj:SetPoint("TOPLEFT", workpanel, "TOPLEFT", x + 14, y - 16)
+            end
+            relativeObj = obj
+            if (column == 1) then
+              column1ready = true
+              lastobj_offx, lastobj_offy = obj_offx, obj_offy
+            else
+              lastobj_offx, lastobj_offy = x, obj_offy
             end
           end
-          relativeObj = obj;
 
           if (BuiltItemsList and BuiltItemsList[t]) then  --If iterator-helper table for this item type exists
             tinsert(BuiltItemsList[t], obj)               --then add the newly built item to the list.
@@ -415,31 +506,40 @@ if (not TjOptions or TjOptions.Version < THIS_VERSION) then
     self:LoadVariables()
     self.TjOpt_possiblechange = true
     local func = self.TjOpt_tab.OnShow
-    if (type(func) == "function") then
-      func(self)
-    end
+    if (type(func) == "function") then  func(self);  end
   end
 
   local function funcOkay(self)
-    if (self.TjOpt_built and self.TjOpt_tab.variables) then
-      -- Remember current settings in case Cancel is pressed.
-      copytab(self.TjOpt_tab.variables, self.TjOpt_tab.cancelTo);
+    if (self.TjOpt_possiblechange) then
+      panelClearFocus(self)  -- Needed before copytab below since some items change their values when focus is lost.
+      if (self.TjOpt_built and self.TjOpt_tab.variables) then
+        -- Remember current settings in case Cancel is pressed after panel is shown again.
+        copytab(self.TjOpt_tab.variables, self.TjOpt_tab.cancelTo);
+      end
+      self.TjOpt_possiblechange = nil
+      local func = self.TjOpt_tab.OnOkay
+      if (type(func) == "function") then  func(self);  end
     end
-    self.TjOpt_possiblechange = nil
   end
 
   local function funcCancel(self)
-    if (self.TjOpt_tab.cancelTo and self.TjOpt_possiblechange) then
-      self.TjOpt_tab.isCanceling = true
-      -- Revert to previous settings.
-      copytab(self.TjOpt_tab.cancelTo, self.TjOpt_tab.variables);
-      sendOnChange_recursive(self.TjOpt_tab.variables, GetItems(self))
-      self.TjOpt_tab.isCanceling = nil
+    if (self.TjOpt_possiblechange) then
+      panelClearFocus(self)  -- Needed before copytab below since some items change their values when focus is lost.
+      if (self.TjOpt_tab.cancelTo) then
+        self.TjOpt_tab.isCanceling = true
+        -- Revert to previous settings.
+        copytab(self.TjOpt_tab.cancelTo, self.TjOpt_tab.variables);
+        sendOnChange_recursive(self.TjOpt_tab.variables, GetItems(self))
+        self.TjOpt_tab.isCanceling = nil
+      end
+      self.TjOpt_possiblechange = nil
+      local func = self.TjOpt_tab.OnCancel
+      if (type(func) == "function") then  func(self);  end
     end
-    self.TjOpt_possiblechange = nil
   end
 
   local function funcDefault(self)
+    panelClearFocus(self)  -- Needed before copytab below since some items change their values when focus is lost.
     if (self.TjOpt_tab.defaults) then
       self.TjOpt_tab.isDefaulting = true
       if (not self.TjOpt_built) then  BuildPanelContents(self);  end
@@ -449,18 +549,16 @@ if (not TjOptions or TjOptions.Version < THIS_VERSION) then
       -- has been released for a while.
       sendOnChange_recursive(self.TjOpt_tab.variables, GetItems(self))
       self.TjOpt_tab.isDefaulting = nil
-      if (not InterfaceOptionsFrame:IsShown()) then
+      if (InterfaceOptionsFrame:IsShown()) then
+        self.TjOpt_possiblechange = true
+      else
       -- Remember current settings if Interface Options frame isn't shown.
       -- (Allow Cancel to revert this change if it is shown.)
         copytab(self.TjOpt_tab.variables, self.TjOpt_tab.cancelTo);
-      else
-        self.TjOpt_possiblechange = true
       end
     end
     local func = self.TjOpt_tab.OnDefault
-    if (type(func) == "function") then
-      func(self)
-    end
+    if (type(func) == "function") then  func(self);  end
   end
 
 
@@ -686,7 +784,14 @@ if (not TjOptions or TjOptions.Version < THIS_VERSION) then
     template = template or "InterfaceOptionsCheckButtonTemplate"
     local frame = CreateFrame("CheckButton", name, parent, template)
     frame:SetScript("OnClick", CheckboxOnClick)
-    if (data.text) then  _G[name.."Text"]:SetText(data.text);  end
+    local label = _G[name.."Text"]
+    if (label) then
+      label:SetText(data.text)  -- nil is a valid value here.
+      local w = data.width or label:GetWidth()
+      frame:SetHitRectInsets(0, w * -1, 0, 0)
+    else
+      frame:SetHitRectInsets(0, (data.width or 0) * -1, 0, 0)
+    end
     return frame, true;
   end
 
@@ -701,13 +806,14 @@ if (not TjOptions or TjOptions.Version < THIS_VERSION) then
 
   local function CreateLabel_wrap(name, parent, data, font)
     data.justifyH = data.justifyH or "LEFT"
-    data.width = data.width or 390
+    data.width = data.width or 370
   end
 
   -- Register built-in item types:
   TjOptions.RegisterItemType("checkbox", THIS_VERSION,
     { create = CreateCheckbox, getvalue = GetCheckboxVal, setvalue = SetCheckboxVal })
   TjOptions.RegisterItemType("checkboxsmall", THIS_VERSION, "checkbox", { create_arg = "InterfaceOptionsSmallCheckButtonTemplate" })
+  TjOptions.RegisterItemType("checkboxnolabel", THIS_VERSION, "checkbox", { create_arg = "OptionsBaseCheckButtonTemplate" })
   TjOptions.RegisterItemType("label", THIS_VERSION, CreateLabel)
   TjOptions.RegisterItemType("labelwhite", THIS_VERSION, "label", { create_arg = "GameFontHighlight" })
   TjOptions.RegisterItemType("labelwrap", THIS_VERSION, "label", { create_prehook = CreateLabel_wrap })

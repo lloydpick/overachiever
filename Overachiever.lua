@@ -18,8 +18,7 @@ local L = OVERACHIEVER_STRINGS
 
 local CATEGORIES_ALL, CATEGORY_EXPLOREROOT, CATEGORIES_EXPLOREZONES
 local OptionsPanel
-local MadeDraggable_AchFrame, MadeDragSave_AchFrame, MadeDraggable_AchTracker
-local AutoTrackedAch
+local MadeDraggable_AchFrame, MadeDragSave_AchFrame
 
 Overachiever.DefaultSettings = {
   Tooltip_ShowProgress = true;
@@ -27,7 +26,6 @@ Overachiever.DefaultSettings = {
   Tooltip_ShowID = false;
   UI_SeriesTooltip = true;
   UI_RequiredForMetaTooltip = true;
-  Tracker_GreenCheck = true;
   Tracker_AutoTimer = false;
   Explore_AutoTrack = false;
   Explore_AutoTrack_Completed = false;
@@ -41,8 +39,6 @@ Overachiever.DefaultSettings = {
   Item_consumed_whencomplete = false;
   Draggable_AchFrame = true;
   DragSave_AchFrame = false;
-  Draggable_AchTracker = false;
-  DragLock_AchTracker = false;
   SoundAchIncomplete = 0;
   SoundAchIncomplete_AnglerCheckPole = true;
   Version = THIS_VERSION;
@@ -62,15 +58,6 @@ local function copytab(from, to)
     else
       to[k] = v;
     end
-  end
-end
-
-local function sethook(frame, script, handler)
-  local prev = frame:GetScript(script)
-  if (prev) then
-    frame:HookScript(script, handler)
-  else
-    frame:SetScript(script, handler)
   end
 end
 
@@ -117,23 +104,6 @@ local function openToAchievement(id, canToggleTracking)
     AchievementButton_ToggleTracking(id)
   else
     Overachiever.UI_SelectAchievement(id)
-  end
-end
-
-local function isExplorationAchievement(id, zonesOnly)
-  local cat = GetAchievementCategory(id)
-  if (cat == CATEGORY_EXPLOREROOT) then
-    if (not zonesOnly) then  return true;  end
-  else
-    local _, parentID = GetCategoryInfo(cat)
-    if (parentID == CATEGORY_EXPLOREROOT) then
-      if (not zonesOnly) then  return true;  end
-      if (id ~= OVERACHIEVER_ACHID.MediumRare and id ~= OVERACHIEVER_ACHID.BloodyRare and
-          id ~= OVERACHIEVER_ACHID.NorthernExposure and id ~= OVERACHIEVER_ACHID.Frostbitten) then
-      -- Make an exception for achievements in the category that aren't really "exploration."
-        return true
-      end
-    end
   end
 end
 
@@ -257,16 +227,25 @@ local function SearchAchievements_tab(list, argnum, pattern, anyCase)
       end
     end
   end
-  if (anyFound) then
-    return searchResults;
-  end
+  if (anyFound) then  return searchResults;  end
 end
 
 
-local function setTracking(id)
-  SetTrackedAchievement(id)
-  if (AchievementFrameAchievements_ForceUpdate) then
-    AchievementFrameAchievements_ForceUpdate()
+local function canTrackAchievement(id, allowCompleted)
+  if ( GetNumTrackedAchievements() < WATCHFRAME_MAXACHIEVEMENTS and
+       WatchFrame_GetRemainingSpace() >= WatchFrame_GetHeightNeededForAchievement(id) and
+       (allowCompleted or not select(4, GetAchievementInfo(id))) ) then
+    return true
+  end
+end
+
+local function setTracking(id, allowCompleted)
+  if (canTrackAchievement(id, allowCompleted)) then
+    AddTrackedAchievement(id)
+    if (AchievementFrameAchievements_ForceUpdate) then
+      AchievementFrameAchievements_ForceUpdate()
+    end
+    return true
   end
 end
 
@@ -290,7 +269,7 @@ do
     end
     ALL_ACHIEVEMENTS = {}
     local size, id = 0
-    for i = 1, 2750 do  -- 2750 is arbitrary. New patches with new achievements may mean this number must go up.
+    for i = 1, 3500 do  -- 3500 is arbitrary. New patches with new achievements may mean this number must go up.
       id = GetAchievementInfo(i)
       if (id and catlookup[GetAchievementCategory(id)]) then  size = size + 1; ALL_ACHIEVEMENTS[size] = id;  end
     end
@@ -420,7 +399,10 @@ local function AchievementUI_FirstShown_post()
 end
 
 local function AchievementUI_FirstShown(...)
+  AchievementFrame:SetScript("OnShow", orig_AchievementFrame_OnShow)
+  --[[ Pre-3.1 method:
   AchievementFrame_OnShow = orig_AchievementFrame_OnShow
+  --]]
   orig_AchievementFrame_OnShow = nil
   -- Delayed call to AchievementUI_FirstShown_post() - let everything else process first:
   Overachiever.MainFrame:Show()
@@ -429,65 +411,27 @@ local function AchievementUI_FirstShown(...)
   AchievementUI_FirstShown = nil
 end
 
-local hooked_UIParent_ManageFramePositions, trackerposmanaging
-local function post_UIParent_ManageFramePositions(...)
-  if (trackerposmanaging or not Overachiever_Settings.Draggable_AchTracker or not AchievementWatchFrame:IsShown()) then
-    return;
-  end
-  trackerposmanaging = true
-  local prevfunc = AchievementWatchFrame:GetScript("OnHide")
-  AchievementWatchFrame:SetScript("OnHide", nil)  -- Eliminates some of the redundancy
-  AchievementWatchFrame:Hide()  -- Prevent moving the tracker in UIParent.lua's FramePositionDelegate:UIParentManageFramePositions()
-  AchievementWatchFrame:SetScript("OnHide", prevfunc)
-  UIParent_ManageFramePositions(...)  -- Need to call again to divorce other frames' positions from the watch frame.
-    -- This call is redundant - even moreso than it appears on the surface - but the more efficient method caused
-    -- taint. Try the other way again in future versions of WoW which supposedly will fix this.
-  prevfunc = AchievementWatchFrame:GetScript("OnShow")
-  AchievementWatchFrame:SetScript("OnShow", nil)  -- Eliminates some of the redundancy
-  AchievementWatchFrame:Show()
-  AchievementWatchFrame:SetScript("OnShow", prevfunc)
-  TjDragIt.LoadPosition(AchievementWatchFrame, Overachiever_CharVars.Pos_AchievementWatchFrame)
-  trackerposmanaging = nil
-end
-
-local function CheckDraggable_AchTracker()
-  local custompos, locked = Overachiever_Settings.Draggable_AchTracker, Overachiever_Settings.DragLock_AchTracker
-  if (custompos) then
-    if (not hooked_UIParent_ManageFramePositions) then
-      hooksecurefunc("UIParent_ManageFramePositions", post_UIParent_ManageFramePositions)
-      hooked_UIParent_ManageFramePositions = true
-    end
-    if (not Overachiever_CharVars.Pos_AchievementWatchFrame) then
-      Overachiever_CharVars.Pos_AchievementWatchFrame = Overachiever_CharVars_Default and Overachiever_CharVars_Default.Pos_AchievementWatchFrame or {}
-    end
-    if (locked) then
-      TjDragIt.LoadPosition(AchievementWatchFrame, Overachiever_CharVars.Pos_AchievementWatchFrame)
-    elseif (not MadeDraggable_AchTracker) then
-      TjDragIt.EnableDragging(AchievementWatchFrame)
-      TjDragIt.EnablePositionSaving(AchievementWatchFrame, Overachiever_CharVars.Pos_AchievementWatchFrame, true)
-      MadeDraggable_AchTracker = true
-    end
-  end
-  if (MadeDraggable_AchTracker and (not custompos or locked)) then
-    TjDragIt.DisableDragging(AchievementWatchFrame)
-    AchievementWatchFrame:EnableMouse(false)
-    TjDragIt.DisablePositionSaving(AchievementWatchFrame)
-    MadeDraggable_AchTracker = nil
-  end
-  UIParent_ManageFramePositions()
-end
-
 
 -- ACHIEVEMENT HYPERLINK HOOK
 -------------------------------
 
 local orig_SetItemRef = SetItemRef
 SetItemRef = function(link, text, button, ...)
-  if ( strsub(link, 1, 11) == "achievement" and IsControlKeyDown() ) then
-    local id = strsplit(":", strsub(link, 13));
-    id = tonumber(id)
-    openToAchievement(id, true)
-    return;
+  if (strsub(link, 1, 11) == "achievement") then
+    if (IsControlKeyDown()) then
+      local id = strsplit(":", strsub(link, 13));
+      id = tonumber(id)
+      openToAchievement(id, true)
+      return;
+    elseif (IsAltKeyDown()) then
+      if (not AchievementFrame) then  AchievementFrame_LoadUI();  end
+      if (Overachiever_WatchFrame) then
+        local id = strsplit(":", strsub(link, 13));
+        id = tonumber(id)
+        Overachiever_WatchFrame.SetAchWatchList(id, true)
+        return;
+      end
+    end
   end
   return orig_SetItemRef(link, text, button, ...)
 end
@@ -495,101 +439,116 @@ end
 -- ACHIEVEMENT TRACKER CHANGES
 --------------------------------
 
--- local orig_AchievementWatchButton_OnClick = AchievementWatchButton_OnClick
+local orig_WatchFrameLinkButtonTemplate_OnLeftClick = WatchFrameLinkButtonTemplate_OnLeftClick
 
--- We're replacing this function instead of just hooking it because in addition to some new functionality, we prefer
--- an openToAchievement() call instead of a direct AchievementFrame_SelectAchievement() call.
-AchievementWatchButton_OnClick = function()
-  if (IsShiftKeyDown()) then
-    if (not ChatFrameEditBox:IsVisible()) then  ChatFrameEditBox:Show()  end
-    local link = GetAchievementLink(AchievementWatchFrame.achievementID)
-    ChatEdit_InsertLink(link)
-  else
-    openToAchievement(AchievementWatchFrame.achievementID)
+WatchFrameLinkButtonTemplate_OnLeftClick = function(self, ...)
+  if (self.type == "ACHIEVEMENT") then
+    CloseDropDownMenus()
+    if (IsShiftKeyDown()) then
+      if (not ChatFrameEditBox:IsVisible()) then  ChatFrameEditBox:Show()  end
+      ChatEdit_InsertLink( GetAchievementLink(self.index) )
+    else
+    -- We prefer an openToAchievement() call instead of a direct AchievementFrame_SelectAchievement() call, so
+    -- we do this here instead of calling orig_WatchFrameLinkButtonTemplate_OnLeftClick():
+      openToAchievement(self.index)
+    end
+    return;
   end
+  orig_WatchFrameLinkButtonTemplate_OnLeftClick(self, ...)
 end
 
 local function TrackerBtnOnEnter(self)
-  GameTooltip:SetOwner(self, "ANCHOR_NONE");
-  local x, y = self:GetCenter();
-  if (y < UIParent:GetHeight() / 6) then
-    GameTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT")
+  if (self.type ~= "ACHIEVEMENT") then  return;  end
+  GameTooltip:SetOwner(self, "ANCHOR_NONE")
+  local x, y = self:GetCenter()
+  local w = UIParent:GetWidth() / 3
+  if (x > w) then
+    GameTooltip:SetPoint("TOPRIGHT", self, "TOPLEFT", -2, 0)
   else
-    GameTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT")
+    GameTooltip:SetPoint("TOP", self, "TOP", 0, 0)
+    GameTooltip:SetPoint("LEFT", WatchFrame, "RIGHT", -8, 0)
   end
-  local link = GetAchievementLink(AchievementWatchFrame.achievementID)
-  GameTooltip:SetHyperlink(link)
+  GameTooltip:SetHyperlink( GetAchievementLink(self.index) )
 end
 
 local function TrackerBtnOnLeave()
   GameTooltip:Hide()
 end
 
--- There are normally no OnEnter or OnLeave scripts for this button, but we check for them in case something else
--- adds one.
-sethook(AchievementWatchLine1Button, "OnEnter", TrackerBtnOnEnter)
-sethook(AchievementWatchLine1Button, "OnLeave", TrackerBtnOnLeave)
-
-local function CreateGreenCheck(refobj)
-  local frame = CreateFrame("Frame", nil, refobj)
-  frame:SetWidth(20); frame:SetHeight(16);
-  frame.tex = frame:CreateTexture(nil, "ARTWORK")
-  frame.tex:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Criteria-Check")
-  frame.tex:SetTexCoord(0, 0.625, 0, 1)
-  frame.tex:SetWidth(20); frame.tex:SetHeight(16);
-  frame:SetPoint("RIGHT", refobj, "LEFT", 0, -3)
-  frame.tex:SetPoint("LEFT")
-  frame:SetFrameLevel(refobj:GetFrameLevel() + 1)
-  return frame;
+-- Hook current Watch Frame Link Buttons:
+for k, v in pairs(WATCHFRAME_LINKBUTTONS) do
+  v.OverachieverHooked = true
+  v:HookScript("OnEnter", TrackerBtnOnEnter)
+  v:HookScript("OnLeave", TrackerBtnOnLeave)
 end
 
-local function GreenCheckUpdate()
-  if (Overachiever_Settings.Tracker_GreenCheck and Overachiever_CharVars.TrackedAch) then
-    local _, _, _, complete = GetAchievementInfo(Overachiever_CharVars.TrackedAch)
-    if (complete) then
-      Overachiever.TrackingGreenCheck = Overachiever.TrackingGreenCheck or CreateGreenCheck(AchievementWatchLine1Button)
-      Overachiever.TrackingGreenCheck:Show()
-      return;
+-- Hook future Watch Frame Link Buttons when they are created:
+setmetatable(WATCHFRAME_LINKBUTTONS, { __newindex = function(t, k, v)
+  rawset(t, k, v)
+  if (not v.OverachieverHooked) then
+    v.OverachieverHooked = true
+    v:HookScript("OnEnter", TrackerBtnOnEnter)
+    v:HookScript("OnLeave", TrackerBtnOnLeave)
+  end
+end })
+
+
+local function getExplorationAch(zonesOnly, ...)
+  local id, cat
+  for i = select("#", ...), 1, -1 do
+    id = select(i, ...)
+    cat = GetAchievementCategory(id)
+    if (cat == CATEGORY_EXPLOREROOT) then
+      if (not zonesOnly) then  return id;  end
+    else
+      local _, parentID = GetCategoryInfo(cat)
+      if (parentID == CATEGORY_EXPLOREROOT) then
+        if ( not zonesOnly or
+             -- Eliminate achievements in the category that aren't really "exploration":
+             (id ~= OVERACHIEVER_ACHID.MediumRare and id ~= OVERACHIEVER_ACHID.BloodyRare and
+              id ~= OVERACHIEVER_ACHID.NorthernExposure and id ~= OVERACHIEVER_ACHID.Frostbitten) ) then
+          return id
+        end
+      end
     end
   end
-  if (Overachiever.TrackingGreenCheck and Overachiever.TrackingGreenCheck:IsVisible()) then
-    Overachiever.TrackingGreenCheck:Hide()
-  end
 end
 
-local function saveTrackedAchievement(id, ...)
-  AutoTrackedAch = nil
-  if (id == 0) then  id = nil;  end
-  Overachiever_CharVars.TrackedAch = id;
-  GreenCheckUpdate()
-end
-hooksecurefunc("SetTrackedAchievement", saveTrackedAchievement)
+local AutoTrackedAch_explore
 
 local function AutoTrackCheck_Explore(noClearing)
 -- noClearing will evaluate to true when called through TjOptions since it passes an object for this first arg.
   if (Overachiever_Settings.Explore_AutoTrack) then
-    local tracked = GetTrackedAchievement()
-    -- Don't switch tracked achievement if we're currently tracking a non-Explore achievement.
-    if (not tracked or isExplorationAchievement(tracked, true)) then
-      local id
-      if (not IsInInstance()) then
-        local zone = GetRealZoneText()
-        if (zone and zone ~= "") then
-          id = Overachiever.ExploreZoneIDLookup(zone) or
-               getAchievementID(CATEGORIES_EXPLOREZONES, ACHINFO_NAME, zone, true)
+    local id
+    if (not IsInInstance()) then
+      local zone = GetRealZoneText()
+      if (zone and zone ~= "") then
+        id = Overachiever.ExploreZoneIDLookup(zone) or
+             getAchievementID(CATEGORIES_EXPLOREZONES, ACHINFO_NAME, zone, true)
+      end
+    end
+    if (id) then
+      local tracked
+      if (GetNumTrackedAchievements() > 0) then
+        tracked = AutoTrackedAch_explore and IsTrackedAchievement(AutoTrackedAch_explore) and AutoTrackedAch_explore or
+                  getExplorationAch(true, GetTrackedAchievements())
+      end
+      if (tracked) then
+        RemoveTrackedAchievement(tracked)
+        if (setTracking(id, Overachiever_Settings.Explore_AutoTrack_Completed)) then
+          AutoTrackedAch_explore = id
+        else
+          -- If didn't successfully track new achievement, track previous achievement again:
+          AddTrackedAchievement(tracked)
+        end
+      else
+        if (setTracking(id, Overachiever_Settings.Explore_AutoTrack_Completed)) then
+          AutoTrackedAch_explore = id
         end
       end
-      if (not id) then
-        if (not noClearing) then  setTracking(0);  end
-      elseif (id ~= tracked) then
-        local _, _, _, complete = GetAchievementInfo(id)
-        if (not complete or Overachiever_Settings.Explore_AutoTrack_Completed) then
-          setTracking(id)
-          AutoTrackedAch = id
-        elseif (complete and not noClearing) then
-          setTracking(0)
-        end
-      end
+    elseif (not noClearing and AutoTrackedAch_explore and IsTrackedAchievement(AutoTrackedAch_explore)) then
+      RemoveTrackedAchievement(AutoTrackedAch_explore)
+      AutoTrackedAch_explore = nil
     end
   end
 end
@@ -825,23 +784,11 @@ function Overachiever.OnEvent(self, event, arg1, ...)
 	  tooltip = L.OPT_LETITSNOWTIPS_TIP },
 
 	{ type = "labelwrap", text = L.OPT_LABEL_TRACKING, topBuffer = 4 },
-	{ variable = "Tracker_GreenCheck", text = L.OPT_TRACKERGREENCHECK,
-	  tooltip = L.OPT_TRACKERGREENCHECK_TIP, OnChange = GreenCheckUpdate },
 	{ variable = "Tracker_AutoTimer", text = L.OPT_AUTOTRACKTIMED, tooltip = L.OPT_AUTOTRACKTIMED_TIP },
 	{ variable = "Explore_AutoTrack", text = L.OPT_AUTOTRACKEXPLORE,
 	  tooltip = L.OPT_AUTOTRACKEXPLORE_TIP, OnChange = AutoTrackCheck_Explore },
 	{ variable = "Explore_AutoTrack_Completed", text = L.OPT_AUTOTRACKEXPLORE_COMPLETED,
 	  xOffset = 10, OnChange = AutoTrackCheck_Explore },
-
-	{ type = "labelwrap", text = L.OPT_LABEL_DRAG, topBuffer = 4, xOffset = 0 },
-	{ variable = "Draggable_AchFrame", text = L.OPT_DRAG_ACHFRAME,
-	  OnChange = CheckDraggable_AchFrame },
-	{ variable = "DragSave_AchFrame", text = L.OPT_DRAGSAVE, xOffset = 10,
-	  OnChange = CheckDraggable_AchFrame },
-	{ variable = "Draggable_AchTracker", text = L.OPT_DRAG_ACHTRACKER, xOffset = 0,
-	  OnChange = CheckDraggable_AchTracker },
-	{ variable = "DragLock_AchTracker", text = L.OPT_DRAGLOCK, xOffset = 10,
-	  OnChange = CheckDraggable_AchTracker },
 
 	{ type = "sharedmedia", mediatype = "sound", variable = "SoundAchIncomplete", text = L.OPT_SELECTSOUND,
 	  tooltip = L.OPT_SELECTSOUND_TIP, tooltip2 = L.OPT_SELECTSOUND_TIP2,
@@ -854,6 +801,10 @@ function Overachiever.OnEvent(self, event, arg1, ...)
 	  tooltip = L.OPT_UI_SERIESTIP_TIP },
 	{ variable = "UI_RequiredForMetaTooltip", text = L.OPT_UI_REQUIREDFORMETATIP,
 	  tooltip = L.OPT_UI_REQUIREDFORMETATIP_TIP, OnChange = BuildCriteriaLookupTab_check },
+	{ variable = "Draggable_AchFrame", text = L.OPT_DRAGGABLE,
+	  OnChange = CheckDraggable_AchFrame },
+	{ variable = "DragSave_AchFrame", text = L.OPT_DRAGSAVE, xOffset = 10,
+	  OnChange = CheckDraggable_AchFrame },
     }
 
     local oldver
@@ -868,33 +819,46 @@ function Overachiever.OnEvent(self, event, arg1, ...)
 
     if (oldver and oldver ~= THIS_VERSION) then
       Overachiever_Settings.Version = THIS_VERSION
-      for k,v in pairs(Overachiever.DefaultSettings) do
+      local def, settings = Overachiever.DefaultSettings, Overachiever_Settings
+      -- Remove options no longer in this version:
+      for k,v in pairs(settings) do
+        if (def[k] == nil) then  settings[k] = nil;  end
+      end
       -- Add options new to this version, set to default:
-        if (Overachiever_Settings[k] == nil) then
-          Overachiever_Settings[k] = v;
-        end
+      for k,v in pairs(def) do
+        if (settings[k] == nil) then  settings[k] = v;  end
+      end
+
+      if (tonumber(oldver) < 0.40 and Overachiever_CharVars_Default) then
+        Overachiever_CharVars_Default.Pos_AchievementWatchFrame = nil
       end
     end
 
-    local tracked = GetTrackedAchievement()
     if (Overachiever_CharVars) then
-      if (not tracked) then  -- Resume tracking from last session.
-        tracked = Overachiever_CharVars.TrackedAch
+      if (tonumber(Overachiever_CharVars.Version) < 0.40) then  Overachiever_CharVars.Pos_AchievementWatchFrame = nil;  end
+
+      local tracked = Overachiever_CharVars.TrackedAch
+      if (tracked and GetNumTrackedAchievements() == 0) then
+      -- Resume tracking from last session:
+        if (type(tracked) == "table") then
+          for i,id in ipairs(tracked) do
+            AddTrackedAchievement(id)
+          end
+        else
+          AddTrackedAchievement(tracked)
+        end
       end
     else
       Overachiever_CharVars = {};
     end
     Overachiever_CharVars.Version = THIS_VERSION
-    setTracking( (tracked or 0) )
-
-    CheckDraggable_AchTracker()
 
     AutoTrackCheck_Explore(true)
 
-    sethook(GameTooltip, "OnTooltipSetUnit", Overachiever.ExamineSetUnit)
-    sethook(GameTooltip, "OnShow", Overachiever.ExamineOneLiner)
-    sethook(GameTooltip, "OnTooltipSetItem", Overachiever.ExamineItem)
-    sethook(ItemRefTooltip, "OnTooltipSetItem", Overachiever.ExamineItem)
+    GameTooltip:HookScript("OnTooltipSetUnit", Overachiever.ExamineSetUnit)
+    GameTooltip:HookScript("OnShow", Overachiever.ExamineOneLiner)
+    GameTooltip:HookScript("OnTooltipSetItem", Overachiever.ExamineItem)
+    ItemRefTooltip:HookScript("OnTooltipSetItem", Overachiever.ExamineItem)
     hooksecurefunc(ItemRefTooltip, "SetHyperlink", Overachiever.ExamineAchievementTip)
     hooksecurefunc(GameTooltip, "SetHyperlink", Overachiever.ExamineAchievementTip)
 
@@ -904,16 +868,16 @@ function Overachiever.OnEvent(self, event, arg1, ...)
   elseif (event == "ZONE_CHANGED_NEW_AREA") then
     AutoTrackCheck_Explore()
 
-  elseif (event == "ACHIEVEMENT_EARNED" and arg1 == Overachiever_CharVars.TrackedAch) then
-    GreenCheckUpdate()
-
   elseif (event == "TRACKED_ACHIEVEMENT_UPDATE") then
     local criteriaID, elapsed, duration = ...
     if (Overachiever_Settings.Tracker_AutoTimer and duration and elapsed < duration) then
-      local tracked = GetTrackedAchievement()
-      if (not tracked or tracked == AutoTrackedAch) then
-        setTracking(arg1)
-        AutoTrackedAch = arg1
+      if (not setTracking(arg1) and AutoTrackedAch_explore and IsTrackedAchievement(AutoTrackedAch_explore)) then
+        -- If failed to track this, remove an exploration achievement that was auto-tracked and try again:
+        RemoveTrackedAchievement(AutoTrackedAch_explore)
+        if (not setTracking(arg1)) then
+          -- If still didn't successfully track new achievement, track previous achievement again:
+          AddTrackedAchievement(AutoTrackedAch_explore)
+        end
       end
     end
 
@@ -933,17 +897,29 @@ function Overachiever.OnEvent(self, event, arg1, ...)
     UIPanelWindows["AchievementFrame"].area = nil
     -- - Hook the first OnShow call to complete this. (Not done now in case saved variables aren't ready or the frame
     --   isn't showing right away.)
+    orig_AchievementFrame_OnShow = AchievementFrame:GetScript("OnShow")
+    AchievementFrame:SetScript("OnShow", AchievementUI_FirstShown)
+    --[[ Pre-3.1 method:
     orig_AchievementFrame_OnShow = AchievementFrame_OnShow
     AchievementFrame_OnShow = AchievementUI_FirstShown
+    --]]
 
   elseif (event == "PLAYER_LOGOUT") then
-    local charvars = Overachiever_CharVars
-    if (charvars.Pos_AchievementFrame or charvars.Pos_AchievementWatchFrame) then
-    -- Set standard location for these frames for other characters that don't have positions saved yet:
-      Overachiever_CharVars_Default = {
-        Pos_AchievementFrame = charvars.Pos_AchievementFrame,
-        Pos_AchievementWatchFrame = charvars.Pos_AchievementWatchFrame
-      }
+    if (Overachiever_CharVars.Pos_AchievementFrame) then
+    -- Set standard location for this frame for other characters that don't have positions saved yet:
+      Overachiever_CharVars_Default = Overachiever_CharVars_Default or {}
+      Overachiever_CharVars_Default.Pos_AchievementFrame = Overachiever_CharVars.Pos_AchievementFrame
+    end
+    -- Remember tracked achievements:
+    local num = GetNumTrackedAchievements()
+    if (num > 0) then
+      if (num == 1) then
+        Overachiever_CharVars.TrackedAch = GetTrackedAchievements()
+      else
+        Overachiever_CharVars.TrackedAch = { GetTrackedAchievements() }
+      end
+    else
+      Overachiever_CharVars.TrackedAch = nil
     end
 
   end
@@ -1040,10 +1016,10 @@ end
 
 function Overachiever.UI_HookAchButtons(buttons, scrollbar)
   for i,button in ipairs(buttons) do
-    sethook(button, "OnEnter", achbtnOnEnter)
-    sethook(button, "OnLeave", achbtnOnLeave)
+    button:HookScript("OnEnter", achbtnOnEnter)
+    button:HookScript("OnLeave", achbtnOnLeave)
   end
-  sethook(scrollbar, "OnValueChanged", achBtnRedisplay)
+  scrollbar:HookScript("OnValueChanged", achBtnRedisplay)
 end
 
 function Overachiever.UI_GetValidCategories()
@@ -1193,7 +1169,7 @@ Overachiever.MainFrame = CreateFrame("Frame")
 Overachiever.MainFrame:Hide()
 Overachiever.MainFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 Overachiever.MainFrame:RegisterEvent("ADDON_LOADED")
-Overachiever.MainFrame:RegisterEvent("ACHIEVEMENT_EARNED")
+--Overachiever.MainFrame:RegisterEvent("ACHIEVEMENT_EARNED")
 Overachiever.MainFrame:RegisterEvent("TRACKED_ACHIEVEMENT_UPDATE")
 Overachiever.MainFrame:RegisterEvent("PLAYER_LOGOUT")
 
