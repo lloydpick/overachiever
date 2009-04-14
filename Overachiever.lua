@@ -293,7 +293,7 @@ do
 end
 
 local function BuildCriteriaLookupTab(...)
--- To be called in this fashion: BuildCriteriaLookupTab( <assetID1>, <table1>[, <assetID2>, <table2>[, ...]] )
+-- To be called in this fashion: BuildCriteriaLookupTab( <criteriaType1>, <table1>[, <criteriaType2>, <table2>[, ...]] )
   local num = select("#", ...)
   local list = getAllAchievements()
   local _, critType, assetID, a, tab
