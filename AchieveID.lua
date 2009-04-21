@@ -9,19 +9,21 @@ OVERACHIEVER_ACHID = {
 	Scavenger = 1257,		-- "The Scavenger"
 	OutlandAngler = 1225,		-- "Outland Angler"
 	NorthrendAngler = 1517,		-- "Northrend Angler"
-	LetItSnow = 1687,		-- "Let It Snow"
-	FistfulOfLove = 1699,		-- "Fistful of Love"
 	TastesLikeChicken = 1832,	-- "Takes Like Chicken"
 	HappyHour = 1833,		-- "It's Happy Hour Somewhere"
 
 	GourmetNorthrend = 1779,	-- "The Northrend Gourmet" (last part)
 	GourmetOutland = 1800,		-- "The Outland Gourmet"
 	--GourmetWinter = 1688,		-- "The Winter Veil Gourmet"
-	
+
 	MediumRare = 1311,		-- "Medium Rare"
 	BloodyRare = 1312,		-- "Bloody Rare"
 	NorthernExposure = 2256,	-- "Northern Exposure"
 	Frostbitten = 2257,		-- "Frostbitten"
+	
+	LetItSnow = 1687,		-- "Let It Snow"
+	FistfulOfLove = 1699,		-- "Fistful of Love"
+	BunnyMaker = 2422,		-- "Shake Your Bunny-Maker"
 };
 
 

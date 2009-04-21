@@ -632,6 +632,7 @@ end
 
 local function LeftFrame_OnShow(self)
   AchievementFrameCategoriesContainer:Hide()
+  AchievementFrameCategoriesContainerScrollBar:Hide()
   AchievementFrameFilterDropDown:Show()
   AchievementFrameHeaderRightDDLInset:Show()
 end

@@ -35,6 +35,7 @@ Overachiever.DefaultSettings = {
   AnglerTip_fished = true;
   LetItSnow_flaked = false;
   FistfulOfLove_petals = false;
+  BunnyMaker_eared = false;
   Item_consumed = false;
   Item_consumed_whencomplete = false;
   Draggable_AchFrame = true;
@@ -339,7 +340,8 @@ local function CheckDraggable_AchFrame(self, key, val, clicked, LoadPos)
       if (not MadeDraggable_AchFrame) then
         TjDragIt.EnableDragging(AchievementFrame, AchievementFrameHeader, AchievementFrameCategoriesContainer,
                                 AchievementFrameAchievementsContainer, AchievementFrameStatsContainer,
-                                Overachiever_SearchFrameContainer, Overachiever_SuggestionsFrameContainer)
+                                Overachiever_SearchFrameContainer, Overachiever_SuggestionsFrameContainer,
+                                Overachiever_WatchFrameContainer)
         MadeDraggable_AchFrame = true
       end
     elseif (MadeDraggable_AchFrame) then
@@ -721,7 +723,7 @@ function Overachiever.OnEvent(self, event, arg1, ...)
     BuildCategoryInfo = nil
 
     local _, ACH_LoveCritters, ACH_LoveCritters2, ACH_PestControl, ACH_WellRead, ACH_HigherLearning, ACH_Scavenger, ACH_OutlandAngler
-    local ACH_NorthrendAngler, ACH_LetItSnow, ACH_FistfulOfLove, ACH_HappyHour, ACH_TastesLikeChicken
+    local ACH_NorthrendAngler, ACH_LetItSnow, ACH_FistfulOfLove, ACH_BunnyMaker, ACH_HappyHour, ACH_TastesLikeChicken
     _, ACH_LoveCritters = GetAchievementInfo(OVERACHIEVER_ACHID.LoveCritters)
     _, ACH_LoveCritters2 = GetAchievementInfo(OVERACHIEVER_ACHID.LoveCritters2)
     _, ACH_PestControl = GetAchievementInfo(OVERACHIEVER_ACHID.PestControl)
@@ -732,12 +734,15 @@ function Overachiever.OnEvent(self, event, arg1, ...)
     _, ACH_NorthrendAngler = GetAchievementInfo(OVERACHIEVER_ACHID.NorthrendAngler)
     _, ACH_LetItSnow = GetAchievementInfo(OVERACHIEVER_ACHID.LetItSnow)
     _, ACH_FistfulOfLove = GetAchievementInfo(OVERACHIEVER_ACHID.FistfulOfLove)
+    _, ACH_BunnyMaker = GetAchievementInfo(OVERACHIEVER_ACHID.BunnyMaker)
     _, ACH_HappyHour = GetAchievementInfo(OVERACHIEVER_ACHID.HappyHour)
     _, ACH_TastesLikeChicken = GetAchievementInfo(OVERACHIEVER_ACHID.TastesLikeChicken)
 
     -- Handle clients that aren't at WoW 3.0.8 yet (Chinese):
     ACH_LoveCritters2 = ACH_LoveCritters2 or L.OPT_ACHUNKNOWN
     ACH_PestControl = ACH_PestControl or L.OPT_ACHUNKNOWN
+    -- Handle clients that aren't at WoW 3.1 yet (Chinese):
+    ACH_BunnyMaker = ACH_BunnyMaker or L.OPT_ACHUNKNOWN
 
     local items = {
 	{ type = "labelwrap", text = L.OPT_LABEL_TOOLTIPS, topBuffer = 1 },
@@ -778,6 +783,10 @@ function Overachiever.OnEvent(self, event, arg1, ...)
 	{ type = "labelwrap", text = '"'..ACH_FistfulOfLove..'"', topBuffer = 4, xOffset = 0 },
 	{ variable = "FistfulOfLove_petals", text = L.OPT_FISTFULOFLOVETIPS,
 	  tooltip = L.OPT_FISTFULOFLOVETIPS_TIP },
+
+	{ type = "labelwrap", text = '"'..ACH_BunnyMaker..'"', topBuffer = 4, xOffset = 0 },
+	{ variable = "BunnyMaker_eared", text = L.OPT_BUNNYMAKERTIPS,
+	  tooltip = L.OPT_BUNNYMAKERTIPS_TIP },
 
 	{ type = "labelwrap", text = '"'..ACH_LetItSnow..'"', topBuffer = 4 },
 	{ variable = "LetItSnow_flaked", text = L.OPT_LETITSNOWTIPS,

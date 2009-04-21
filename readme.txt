@@ -1,5 +1,5 @@
 
-Overachiever v0.40
+Overachiever v0.41
 ==============================
 
 Author: Tuhljin
@@ -105,6 +105,13 @@ Change log
 ==========
 
 The change log lists changes of particular note to users, not every change made.
+
+v0.41
+- "Shake Your Bunny-Maker": Options added to show whether you need to use Spring Flowers on players in their
+  tooltips.
+- Unit tooltips can now show multiple reminders when applicable.
+- Tabs module: Fixed a display glitch that occurred when switching to an Overachiever tab if the previous tab's
+  categories list was long enough to be scrollable.
 
 v0.40
 - Updated for WoW patch 3.1.

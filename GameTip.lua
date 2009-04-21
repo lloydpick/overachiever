@@ -84,26 +84,28 @@ local RaceClassAch = {
     { "Orc DEATHKNIGHT", "Human WARRIOR", "Tauren SHAMAN", "NightElf DRUID", "Scourge ROGUE", "Troll HUNTER",
       "Gnome MAGE", "Dwarf PALADIN", "BloodElf WARLOCK", "Draenei PRIEST" }
   },
+  BunnyMaker = { "BunnyMaker_eared", L.ACH_BUNNYMAKER_COMPLETE, L.ACH_BUNNYMAKER_INCOMPLETE,
+    { "BloodElf", "Draenei", "Dwarf", "Gnome", "Human", "NightElf", "Orc", "Tauren", "Troll", "Scourge" }, true,
+    function(unit)
+      if (UnitSex(unit) == 3 and UnitLevel(unit) >= 18) then  return true;  end
+    end
+  },
 };
 
-local function RaceClassCheck(ach, text)
+local function RaceClassCheck(ach, tab, raceclass, race, unit)
   local id = OVERACHIEVER_ACHID[ach]
   if (select(4, GetAchievementInfo(id))) then
     RaceClassAch[ach] = nil;
     return;
   end
-  local tab = RaceClassAch[ach]
-  local isCrit, complete
+  local func = tab[6]
+  if (func and not func(unit)) then  return;  end
+  local text = tab[5] and race or raceclass
   for i,c in ipairs(tab[4]) do
     if (c == text) then
-      local _
-      isCrit = true
-      _, _, complete = GetAchievementCriteriaInfo(id, i)
-      break;
+      local _, _, complete = GetAchievementCriteriaInfo(id, i)
+      return id, complete and tab[2] or tab[3], complete
     end
-  end
-  if (isCrit) then
-    return id, complete and tab[2] or tab[3], complete
   end
 end
 
@@ -111,41 +113,55 @@ function Overachiever.ExamineSetUnit(tooltip)
   tooltip = tooltip or GameTooltip  -- Workaround since another addon is known to break this
   local name, unit = tooltip:GetUnit()
   if (not unit) then  return;  end
-  local id, text, complete
+  local id, text, complete, needtipshow
+
   if (UnitIsPlayer(unit)) then
-    local _, r = UnitRace(unit)
-    local _, c = UnitClass(unit)
+    local _, r, c = UnitRace(unit)
+    _, c = UnitClass(unit)
     if (r and c) then
       local raceclass = r.." "..c
       for key,tab in pairs(RaceClassAch) do
         if (Overachiever_Settings[ tab[1] ]) then
-          id, text, complete = RaceClassCheck(key, raceclass)
-          if (text) then  break;  end
+          id, text, complete = RaceClassCheck(key, tab, raceclass, r, unit)
+          if (text) then
+            local r, g, b
+            if (complete) then
+              r, g, b = tooltip_complete.r, tooltip_complete.g, tooltip_complete.b
+            else
+              r, g, b = tooltip_incomplete.r, tooltip_incomplete.g, tooltip_incomplete.b
+              PlayReminder()
+              RecentReminders[id] = time()
+            end
+            tooltip:AddLine(text, r, g, b)
+            tooltip:AddTexture(AchievementIcon)
+            needtipshow = true
+          end
         end
       end
     end
+
   elseif (name and UnitCreatureType(unit) == L.CRITTER) then
     for key,tab in pairs(CritterAch) do
       if (Overachiever_Settings[ tab[1] ]) then
         id, text, complete = CritterCheck(key, name)
-        if (text) then  break;  end
+        if (text) then
+          local r, g, b
+          if (complete) then
+            r, g, b = tooltip_complete.r, tooltip_complete.g, tooltip_complete.b
+          else
+            r, g, b = tooltip_incomplete.r, tooltip_incomplete.g, tooltip_incomplete.b
+            PlayReminder()
+            RecentReminders[id] = time()
+          end
+          tooltip:AddLine(text, r, g, b)
+          tooltip:AddTexture(AchievementIcon)
+          needtipshow = true
+        end
       end
     end
   end
 
-  if (text) then
-    local r, g, b
-    if (complete) then
-      r, g, b = tooltip_complete.r, tooltip_complete.g, tooltip_complete.b
-    else
-      r, g, b = tooltip_incomplete.r, tooltip_incomplete.g, tooltip_incomplete.b
-      PlayReminder()
-      RecentReminders[id] = time()
-    end
-    tooltip:AddLine(text, r, g, b)
-    tooltip:AddTexture(AchievementIcon)
-    tooltip:Show()
-  end
+  if (needtipshow) then  tooltip:Show();  end
 end
 
 
