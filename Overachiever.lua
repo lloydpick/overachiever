@@ -75,9 +75,17 @@ local function BuildCategoryInfo()
   end
 end
 
-local function getSelectedAchievement(ignoreTab)
+local function getSelectedAchievement(ignoreTab, ignoreFilter)
   if (AchievementFrame and (ignoreTab or AchievementFrame.selectedTab == 1)) then
-    return AchievementFrameAchievements.selection;
+    if (ignoreFilter or ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrame_GetCategoryNumAchievements_All) then
+      return AchievementFrameAchievements.selection
+    end
+    local id = AchievementFrameAchievements.selection
+    local _, _, _, complete = GetAchievementInfo(id)
+    if ((complete and ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrame_GetCategoryNumAchievements_Complete) or
+        (not complete and ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrame_GetCategoryNumAchievements_Incomplete)) then
+      return id
+    end
   end
 end
 
@@ -93,18 +101,44 @@ local function expandCategory(category)
   AchievementFrameCategories_Update()
 end
 
+local function isAchievementInUI(id, checkNext)
+-- Return true if the achievement should be found in the standard UI
+  if (checkNext) then
+    local nextID, completed = GetNextAchievement(id)
+    if (nextID and completed) then
+      local newID;
+      while ( nextID and completed ) do
+        newID, completed = GetNextAchievement(nextID);
+        if ( completed ) then
+          nextID = newID;
+        end
+      end
+      id = nextID;
+    end
+  end
+  local cat = GetAchievementCategory(id)
+  for i=1,GetCategoryNumAchievements(cat) do
+    if (GetAchievementInfo(cat, i) == id) then  return true;  end
+  end
+end
+
 local function openToAchievement(id, canToggleTracking)
   assert( (type(id)=="number"), "Invalid achievement ID." )
-  local sel
-  if (not AchievementFrame or not AchievementFrame:IsShown()) then
-    ToggleAchievementFrame()
-  elseif (canToggleTracking) then
-    sel = getSelectedAchievement()
-  end
-  if (sel == id) then
-    AchievementButton_ToggleTracking(id)
+  if (GetPreviousAchievement(id) or isAchievementInUI(id, true)) then
+    local sel
+    if (not AchievementFrame or not AchievementFrame:IsShown()) then
+      ToggleAchievementFrame()
+    elseif (canToggleTracking) then
+      sel = getSelectedAchievement()
+    end
+    if (sel == id) then
+      AchievementButton_ToggleTracking(id)
+    else
+      Overachiever.UI_SelectAchievement(id)
+    end
   else
-    Overachiever.UI_SelectAchievement(id)
+    UIErrorsFrame:AddMessage(L.MSG_ACHNOTFOUND, 1.0, 0.1, 0.1, 1.0)
+    --chatprint(L.MSG_ACHNOTFOUND)
   end
 end
 
@@ -457,6 +491,13 @@ WatchFrameLinkButtonTemplate_OnLeftClick = function(self, ...)
     return;
   end
   orig_WatchFrameLinkButtonTemplate_OnLeftClick(self, ...)
+end
+
+WatchFrame_OpenAchievementFrame = function(button, arg1, arg2, checked)
+-- Take over reaction to clicking "Open Achievement" in the watch frame's right-click popup menu, preventing
+-- lock ups if tracking an achievement not in the UI as well as using openToAchievement(), which we prefer, instead of
+-- a direct AchievementFrame_SelectAchievement() call.
+  openToAchievement(arg1)
 end
 
 local function TrackerBtnOnEnter(self)
@@ -1003,7 +1044,10 @@ function Overachiever.OpenTab(name)
 end
 
 function Overachiever.UI_SelectAchievement(id, failFunc, ...)
+  AchievementFrameBaseTab_OnClick(1)
+  Overachiever.NoAlterSetFilter = true
   local retOK, ret1 = pcall(AchievementFrame_SelectAchievement, id)
+  Overachiever.NoAlterSetFilter = nil
   if (retOK) then
     local category = GetAchievementCategory(id)
     local _, parentID = GetCategoryInfo(category)
@@ -1036,6 +1080,7 @@ function Overachiever.UI_GetValidCategories()
   return CATEGORIES_ALL
 end
 
+Overachiever.IsAchievementInUI = isAchievementInUI;
 Overachiever.OpenToAchievement = openToAchievement;
 Overachiever.GetAllAchievements = getAllAchievements;
 Overachiever.BuildCriteriaLookupTab = BuildCriteriaLookupTab;

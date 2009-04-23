@@ -1,6 +1,8 @@
 
 local L = OVERACHIEVER_STRINGS
 
+local isAchievementInUI = Overachiever.IsAchievementInUI
+
 local tabs, tabselected
 local LeftFrame
 
@@ -14,8 +16,9 @@ AchievementFrame_SetFilter = function(value, tabswitch)
   if (not tabswitch) then
     local frame = tabselected or AchievementFrameAchievements
     FilterByTab[frame] = value
+    Overachiever_Tabs_Settings.AchFilters[frame:GetName()] = value
   end
-  if (tabswitch or tabselected) then
+  if (not Overachiever.NoAlterSetFilter and (tabswitch or tabselected)) then
     local orig_SetValue = AchievementFrameAchievementsContainerScrollBar.SetValue
     AchievementFrameAchievementsContainerScrollBar.SetValue = emptyfunc
     orig_AchievementFrame_SetFilter(value)
@@ -54,27 +57,6 @@ local function selectButton(button)
   achievements.selection = button.id;
   achievements.selectionIndex = button.index;
   button.selected = true;
-end
-
-local function isAchievementInUI(id, checkNext)
--- Return true if the achievement should be found in the standard UI
-  if (checkNext) then
-    local nextID, completed = GetNextAchievement(id)
-    if (nextID and completed) then
-      local newID;
-      while ( nextID and completed ) do
-        newID, completed = GetNextAchievement(nextID);
-        if ( completed ) then
-          nextID = newID;
-        end
-      end
-      id = nextID;
-    end
-  end
-  local cat = GetAchievementCategory(id)
-  for i=1,GetCategoryNumAchievements(cat) do
-    if (GetAchievementInfo(cat, i) == id) then  return true;  end
-  end
 end
 
 local function isPreviousAchievementInUI(id)
@@ -643,7 +625,9 @@ local function LeftFrame_OnHide(self)
     AchievementFrameFilterDropDown:Hide()
     AchievementFrameHeaderRightDDLInset:Hide()
   end
-  AchievementFrame_SetFilter( FilterByTab[AchievementFrameAchievements] or ACHIEVEMENT_FILTER_ALL, true )
+  if (not Overachiever.NoAlterSetFilter) then
+    AchievementFrame_SetFilter( FilterByTab[AchievementFrameAchievements] or ACHIEVEMENT_FILTER_ALL, true )
+  end
 end
 
 local function LeftFrame_OnEvent_CRITERIA_UPDATE()
@@ -696,9 +680,17 @@ do
       self:SetScript("OnEvent", LeftFrame_OnEvent_CRITERIA_UPDATE)
 
       Overachiever_Tabs_Settings = Overachiever_Tabs_Settings or {}
+      local v = Overachiever_Tabs_Settings
+      v.AchFilters = v.AchFilters or {}
+      local AchFilters = v.AchFilters
+      if (AchFilters["AchievementFrameAchievements"]) then
+        AchievementFrame_SetFilter(AchFilters["AchievementFrameAchievements"])
+      end
       if (tabs) then
-        local v = Overachiever_Tabs_Settings
+        local name
         for k,tab in ipairs(tabs) do
+          name = tab.frame:GetName()
+          if (AchFilters[name]) then  FilterByTab[tab.frame] = AchFilters[name];  end
           if (tab.loadFunc) then
             tab.loadFunc(v)
             tab.loadFunc = nil

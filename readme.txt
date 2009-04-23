@@ -107,11 +107,18 @@ Change log
 The change log lists changes of particular note to users, not every change made.
 
 v0.41
-- "Shake Your Bunny-Maker": Options added to show whether you need to use Spring Flowers on players in their
-  tooltips.
+- "Shake Your Bunny-Maker": Option added to show whether you need to use Spring Flowers on players in their tooltips.
 - Unit tooltips can now show multiple reminders when applicable.
+- Tabs module: Achievement filters ("Earned"/"Incomplete"/"All") for each tab in the main UI are now saved between
+  sessions (including the default tab).
 - Tabs module: Fixed a display glitch that occurred when switching to an Overachiever tab if the previous tab's
   categories list was long enough to be scrollable.
+- Fixed an issue that caused the client to lock up if the Objectives frame was used to attempt to open the UI to an
+  achievement that is exclusive to the opposing faction.
+- Mexican localization (esMX) is now supported. It falls back on Spanish (esES) translations when esMX-specific ones
+  are unavailable.
+- All localizations are now supported in the base code, though not all have translations. Please help contribute if
+  you are able: http://wow.curseforge.com/projects/overachiever/localization/
 
 v0.40
 - Updated for WoW patch 3.1.

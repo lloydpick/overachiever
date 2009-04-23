@@ -1,4 +1,9 @@
 ﻿
+-- Thank you to all of the translators that have helped localize Overachiever. In addition to those mentioned
+-- below in their respective sections, recognition is due to all who have used the localization system provided
+-- for Overachiever by Curse Forge. See a list of them here:
+-- http://wow.curseforge.com/projects/overachiever/localization/translators/
+
 OVERACHIEVER_STRINGS = {
 	BINDING_NAME_OVERACHIEVER_TAB_SEARCH = "Open Search Tab";
 	BINDING_NAME_OVERACHIEVER_TAB_SUGGESTIONS = "Open Suggestions Tab";
@@ -118,34 +123,41 @@ OVERACHIEVER_STRINGS = {
 	SOUND_YAR = "Yarrrr";
 }
 
-local L = OVERACHIEVER_STRINGS
+local L, locale = OVERACHIEVER_STRINGS, GetLocale()
 
-if (GetLocale() == "enGB") then  -- English (EU)
+if (locale == "enGB") then  -- English (EU)
 L["COMPLETEDATE"] = "Completed on %1$d/%2$02d/%3$02d";  -- 1 - day 2 - month 3 - year
 
-elseif (GetLocale() == "deDE") then  -- German
+elseif (locale == "deDE") then  -- German
 -- Thanks to users Svensn and Farook at wowinterface.com for these translations:
 --@localization(locale="deDE", format="lua_additive_table", handle-subnamespaces="none")@
 
-elseif (GetLocale() == "frFR") then  -- French
+elseif (locale == "frFR") then  -- French
 -- Thanks to Atropyne (EU-Garona) for these translations:
 --@localization(locale="frFR", format="lua_additive_table", handle-subnamespaces="none")@
 
-elseif (GetLocale() == "zhTW") then  -- Traditional Chinese
+elseif (locale == "zhTW") then  -- Traditional Chinese
 -- Thanks to user xyrho at wowinterface.com and laincat at curse.com for these translations:
 --@localization(locale="zhTW", format="lua_additive_table", handle-subnamespaces="none")@
 
-elseif (GetLocale() == "zhCN") then  -- Simplified Chinese
+elseif (locale == "zhCN") then  -- Simplified Chinese
 -- Thanks to user Miste(晨光麦) at wowinterface.com and yeah-chen and chrisccc at curse.com for these translations:
 --@localization(locale="zhCN", format="lua_additive_table", handle-subnamespaces="none")@
 
-elseif (GetLocale() == "ruRU") then  -- Russian
+elseif (locale == "ruRU") then  -- Russian
 -- Thanks to user Swix at wowinterface.com for these translations:
 --@localization(locale="ruRU", format="lua_additive_table", handle-subnamespaces="none")@
 
-elseif (GetLocale() == "esES") then  -- Spanish
+elseif (locale == "koKR") then  -- Korean
+--@localization(locale="koKR", format="lua_additive_table", handle-subnamespaces="none")@
+
+elseif (locale == "esES" or locale == "esMX") then  -- Spanish
 -- Thanks to user PatoDaia at wowinterface.com for these translations:
 --@localization(locale="esES", format="lua_additive_table", handle-subnamespaces="none")@
+
+	if (locale == "esMX") then  -- Spanish (Mexican)
+--@localization(locale="esMX", format="lua_additive_table", handle-subnamespaces="none")@
+	end
 
 end
 
