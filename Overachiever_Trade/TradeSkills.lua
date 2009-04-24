@@ -27,7 +27,24 @@ do
     end
   end
   TradeSkillAch = nil
+
+  local function renameObjective(tab, line, ...)
+    if (line) then
+      local old, new = strsplit("=", line)
+      if (new and tab[old]) then
+        tab[new] = tab[old]
+        tab[old] = nil
+      end
+      renameObjective(tab, ...)
+    end
+  end
+
+  if (L.TRADE_COOKING_OBJRENAME) then
+    renameObjective( TradeSkillLookup.Cooking, strsplit("\n", L.TRADE_COOKING_OBJRENAME) )
+  end
+  renameObjective = nil
 end
+
 
 local list
 

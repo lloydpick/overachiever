@@ -1,5 +1,5 @@
 ﻿
-local L = OVERACHIEVER_STRINGS
+local L, locale = OVERACHIEVER_STRINGS, GetLocale()
 
 L.SEARCH_TAB = "Search";
 L.SEARCH_HELP = "Use this tab to search for achievements. You can also search for achievements by name or ID using slash commands. See Overachiever's readme.txt file for details.";
@@ -33,22 +33,29 @@ L.TAB_SORT_POINTS = "Point value";
 L.TAB_SORT_COMPLETE = "Date completed";
 L.TAB_HELP = "|cffffffffCtrl-click|r on an achievement to jump to its place in the standard UI.|n|nA |cffffffffblue background|r means it is part of a series for which you haven't completed an earlier step.|n|nA |cffffffffred background|r means it cannot be found in the standard UI for this character because it is exclusive to the opposing faction or is an unacquired Feat of Strength.|n|nA |cffffffffgreen background|r means a reminder about this achievement was displayed in a tooltip recently.";
 
-if (GetLocale() == "deDE") then  -- German
+if (locale == "deDE") then  -- German
 --@localization(locale="deDE", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="none")@
 
-elseif (GetLocale() == "frFR") then  -- French
+elseif (locale == "frFR") then  -- French
 --@localization(locale="frFR", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="none")@
 
-elseif (GetLocale() == "zhTW") then  -- Traditional Chinese
+elseif (locale == "zhTW") then  -- Traditional Chinese
 --@localization(locale="zhTW", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="none")@
 
-elseif (GetLocale() == "zhCN") then  -- Simplified Chinese
+elseif (locale == "zhCN") then  -- Simplified Chinese
 --@localization(locale="zhCN", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="none")@
 
-elseif (GetLocale() == "ruRU") then  -- Russian
+elseif (locale == "ruRU") then  -- Russian
 --@localization(locale="ruRU", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="none")@
 
-elseif (GetLocale() == "esES") then  -- Spanish
+elseif (locale == "koKR") then  -- Korean
+--@localization(locale="koKR", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="none")@
+
+elseif (locale == "esES" or locale == "esMX") then  -- Spanish
 --@localization(locale="esES", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="none")@
+
+	if (locale == "esMX") then  -- Spanish (Mexican)
+--@localization(locale="esMX", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="none")@
+	end
 
 end

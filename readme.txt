@@ -115,6 +115,10 @@ v0.41
   categories list was long enough to be scrollable.
 - Fixed an issue that caused the client to lock up if the Objectives frame was used to attempt to open the UI to an
   achievement that is exclusive to the opposing faction.
+- Trade module: Fixed an issue where, with English clients, "The Northrend Gourmet" didn't consider Spiced Worm
+  Burger as a requirement because it is incorrectly listed as "Spiced Wyrm Burger" in the achievement itself by
+  Blizzard. A system is now in place to allow translators to make these name substitutions for cooking achievements'
+  criteria. (See the context notes for the TRADE_COOKING_OBJRENAME phrase in the Curse Forge localization system.)
 - Mexican localization (esMX) is now supported. It falls back on Spanish (esES) translations when esMX-specific ones
   are unavailable.
 - All localizations are now supported in the base code, though not all have translations. Please help contribute if
