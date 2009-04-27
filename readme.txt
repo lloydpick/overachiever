@@ -1,5 +1,5 @@
 
-Overachiever v0.41
+Overachiever v0.42
 ==============================
 
 Author: Tuhljin
@@ -105,6 +105,10 @@ Change log
 ==========
 
 The change log lists changes of particular note to users, not every change made.
+
+v0.42
+- "Shake Your Bunny-Maker": Players of an unknown level ("skulls") are now assumed to be at least level 18. (While
+  this won't always be the case, it's worth the assumption most of the time.)
 
 v0.41
 - "Shake Your Bunny-Maker": Option added to show whether you need to use Spring Flowers on players in their tooltips.

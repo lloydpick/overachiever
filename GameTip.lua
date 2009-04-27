@@ -87,7 +87,12 @@ local RaceClassAch = {
   BunnyMaker = { "BunnyMaker_eared", L.ACH_BUNNYMAKER_COMPLETE, L.ACH_BUNNYMAKER_INCOMPLETE,
     { "BloodElf", "Draenei", "Dwarf", "Gnome", "Human", "NightElf", "Orc", "Tauren", "Troll", "Scourge" }, true,
     function(unit)
-      if (UnitSex(unit) == 3 and UnitLevel(unit) >= 18) then  return true;  end
+      if (UnitSex(unit) == 3) then
+        local level = UnitLevel(unit)
+        if (level >= 18 or level == -1) then  return true;  end
+        -- Assumes that players 10 or more levels higher than you are at least level 18. (Though that's not necessarily
+        -- the case, they generally would be.)
+      end
     end
   },
 };
