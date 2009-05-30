@@ -145,18 +145,55 @@ function Overachiever.ExamineSetUnit(tooltip)
       end
     end
 
-  elseif (name and UnitCreatureType(unit) == L.CRITTER) then
-    for key,tab in pairs(CritterAch) do
-      if (Overachiever_Settings[ tab[1] ]) then
-        id, text, complete = CritterCheck(key, name)
-        if (text) then
-          local r, g, b
-          if (complete) then
+  elseif (name) then
+    if (UnitCreatureType(unit) == L.CRITTER) then
+      for key,tab in pairs(CritterAch) do
+        if (Overachiever_Settings[ tab[1] ]) then
+          id, text, complete = CritterCheck(key, name)
+          if (text) then
+            local r, g, b
+            if (complete) then
+              r, g, b = tooltip_complete.r, tooltip_complete.g, tooltip_complete.b
+            else
+              r, g, b = tooltip_incomplete.r, tooltip_incomplete.g, tooltip_incomplete.b
+              PlayReminder()
+              RecentReminders[id] = time()
+            end
+            tooltip:AddLine(text, r, g, b)
+            tooltip:AddTexture(AchievementIcon)
+            needtipshow = true
+          end
+        end
+      end
+
+    elseif (Overachiever_Settings.CreatureTip_killed) then
+      local guid = UnitGUID(unit)
+      guid = tonumber( "0x"..strsub(guid, 8, 12) )
+      local tab = Overachiever.AchLookup_kill[guid]
+      if (tab) then
+        local num, numincomplete, _, achcom, c, t = 0, 0
+        for i = 1, #tab, 2 do
+          id = tab[i]
+          _, _, _, achcom = GetAchievementInfo(id)
+          if (not achcom) then
+            num = num + 1
+            _, _, c = GetAchievementCriteriaInfo(id, tab[i+1])
+            if (not c) then
+              numincomplete = numincomplete + 1
+              t = t or time()
+              RecentReminders[id] = t
+            end
+          end
+        end
+
+        if (num > 0) then
+          if (numincomplete == 0) then
+            text = L.KILL_COMPLETE
             r, g, b = tooltip_complete.r, tooltip_complete.g, tooltip_complete.b
           else
+            text = L.KILL_INCOMPLETE
             r, g, b = tooltip_incomplete.r, tooltip_incomplete.g, tooltip_incomplete.b
             PlayReminder()
-            RecentReminders[id] = time()
           end
           tooltip:AddLine(text, r, g, b)
           tooltip:AddTexture(AchievementIcon)

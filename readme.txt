@@ -1,5 +1,5 @@
 
-Overachiever v0.42
+Overachiever v0.43
 ==============================
 
 Author: Tuhljin
@@ -30,6 +30,8 @@ Achievement-specific:
 * "The Scavenger," "Outland Angler," and "Northrend Angler": Show whether you've fished a node in its tooltip.
 * "Let It Snow" and "Fistful of Love": Show whether you need to use a Handful of Snowflakes or a Handful of Rose
   Petals on players in their tooltips.
+* "Shake Your Bunny-Maker": Show whether you need to use Spring Flowers on players in their tooltips. Enemy players
+  of an unknown level are assumed to be at least level 18.
 * "It's Happy Hour Somewhere" and "Tastes Like Chicken": Show whether you've consumed a food or drink item.
 * Select a sound effect to play when one of the above reminders show up in a tooltip if you need to do something.
 
@@ -105,6 +107,13 @@ Change log
 ==========
 
 The change log lists changes of particular note to users, not every change made.
+
+v0.43
+- Added an option to display whether you need to kill a creature for an achievement in its tooltip. This applies not
+  only to such achievements as "Northern Exposure" and "Medium Rare," but many others. See the option's tooltip
+  in-game for more information.
+- enGB clients: Fixed an issue where the completion date shown when comparing your progress with another's in an
+  achievement link appeared in the enUS format instead of dd/mm/yy.
 
 v0.42
 - "Shake Your Bunny-Maker": Players of an unknown level ("skulls") are now assumed to be at least level 18. (While

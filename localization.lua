@@ -81,11 +81,17 @@ OVERACHIEVER_STRINGS = {
 	OPT_FISTFULOFLOVETIPS_TIP = "If the achievement is incomplete, add a line to the tooltips of players of an appropriate race/class combo to indicate whether you need to use a Handful of Rose Petals on them.";
 	OPT_BUNNYMAKERTIPS = "Add whether you need to use Spring Flowers";
 	OPT_BUNNYMAKERTIPS_TIP = "If the achievement is incomplete, add a line to the tooltips of players of an appropriate gender and level to indicate whether you need to use Spring Flowers on them. Note that enemy players that are 10 or more levels higher than you are assumed to be at least level 18.";
+
 	OPT_CONSUMEITEMTIPS = "Add whether items need to consumed to their tooltips";
 	OPT_CONSUMEITEMTIPS_TIP = "If the achievement is incomplete, add a line to the tooltips of items that are part of its criteria to indicate whether you need to consume them.";
 	OPT_CONSUMEITEMTIPS_TIP2 = "Items that you are too low level to consume will not trigger a reminder sound.";
 	OPT_CONSUMEITEMTIPS_TIP3 = "Note: This option can add a few seconds to your initial load time.";
 	OPT_CONSUMEITEMTIPS_WHENCOMPLETE = "Show even if achievement is complete";
+
+	OPT_LABEL_NEEDTOKILL = 'Kill Creature Achievements ("%s," "%s," etc.)';
+	OPT_KILLCREATURETIPS = "Add whether you need to kill a creature";
+	OPT_KILLCREATURETIPS_TIP = "Add a line to the tooltips of creatures (excluding critters) that need to be killed to meet the criteria of an incomplete achievement indicating whether you still need to kill them.";
+	OPT_KILLCREATURETIPS_TIP2 = "Note: At startup (or when this is option is enabled), every achievement is scanned to find unit IDs. Not all achievements provide such IDs. Most do, but the tooltips of creatures which are the criteria of those that don't won't be altered by this option.";
 
 	OPT_LABEL_MAINUI = "Main Achievement UI Modifications";
 	OPT_UI_SERIESTIP = "Tooltip for achievements that are part of a series";
@@ -125,10 +131,15 @@ OVERACHIEVER_STRINGS = {
 
 local L, locale = OVERACHIEVER_STRINGS, GetLocale()
 
-if (locale == "enGB") then  -- English (EU)
-L["COMPLETEDATE"] = "Completed on %1$d/%2$02d/%3$02d";  -- 1 - day 2 - month 3 - year
+--if (locale == "enGB") then  -- English (EU)
+-- Unfortunately, GetLocale() returns "enUS" even when "enGB" would be more appropriate, and the SHORTDATE
+-- global string is defined incorrectly for enGB clients (it's set as it is for enUS), so we have to do things
+-- this way:
+if (ACHIEVEMENT_TOOLTIP_COMPLETE == "Achievement earned by %1$s on %3$d/%2$d/20%4$02d") then
+	L["COMPLETEDATE"] = "Completed on %1$d/%2$02d/%3$02d";  -- 1 - day 2 - month 3 - year
+end
 
-elseif (locale == "deDE") then  -- German
+if (locale == "deDE") then  -- German
 -- Thanks to users Svensn and Farook at wowinterface.com for these translations:
 --@localization(locale="deDE", format="lua_additive_table", handle-subnamespaces="none")@
 

@@ -5,7 +5,7 @@
 --
 
 
---Overachiever_Debug = true;
+-- Overachiever_Debug = true
 
 local THIS_VERSION = GetAddOnMetadata("Overachiever", "Version")
 local THIS_TITLE = GetAddOnMetadata("Overachiever", "Title")
@@ -38,6 +38,7 @@ Overachiever.DefaultSettings = {
   BunnyMaker_eared = false;
   Item_consumed = false;
   Item_consumed_whencomplete = false;
+  CreatureTip_killed = false;
   Draggable_AchFrame = true;
   DragSave_AchFrame = false;
   SoundAchIncomplete = 0;
@@ -331,23 +332,29 @@ local function BuildCriteriaLookupTab(...)
 -- To be called in this fashion: BuildCriteriaLookupTab( <criteriaType1>, <table1>[, <criteriaType2>, <table2>[, ...]] )
   local num = select("#", ...)
   local list = getAllAchievements()
-  local _, critType, assetID, a, tab
-  for i,id in ipairs(list) do
+  local _, critType, assetID, a, tab, savenum
+  for x,id in ipairs(list) do
     for i=1,GetAchievementNumCriteria(id) do
       _, critType, _, _, _, _, _, assetID = GetAchievementCriteriaInfo(id, i)
 
-      for arg=1,num,2 do
-        a, tab = select(arg, ...)
+      for arg=1,num,3 do
+        a, tab, savenum = select(arg, ...)
         if (critType == a) then
           if (tab[assetID]) then
             local v = tab[assetID]
             if (type(v) == "table") then
-              v[#v+1] = id
+              local size = #v
+              v[size+1] = id
+              if (savenum) then  v[size+2] = i;  end
             else
               tab[assetID] = { v, id }
             end
           else
-            tab[assetID] = id
+            if (savenum) then
+              tab[assetID] = { id, i }
+            else
+              tab[assetID] = id
+            end
           end
         end
       end
@@ -356,11 +363,22 @@ local function BuildCriteriaLookupTab(...)
   end
 end
 
-local AchLookup_metaach --, AchLookup_kill
+local AchLookup_metaach, AchLookup_kill
 local function BuildCriteriaLookupTab_check()
-  if (AchLookup_metaach or not Overachiever_Settings.UI_RequiredForMetaTooltip) then  return;  end
-  AchLookup_metaach = {}
-  BuildCriteriaLookupTab(8, AchLookup_metaach) -- 0, AchLookup_kill)
+  local meta = not AchLookup_metaach and Overachiever_Settings.UI_RequiredForMetaTooltip
+  local kill = not AchLookup_kill and Overachiever_Settings.CreatureTip_killed
+  if (meta and kill) then
+    AchLookup_metaach, AchLookup_kill = {}, {}
+    BuildCriteriaLookupTab(8, AchLookup_metaach, nil, 0, AchLookup_kill, true)
+    Overachiever.AchLookup_kill = AchLookup_kill
+  elseif (meta) then
+    AchLookup_metaach = {}
+    BuildCriteriaLookupTab(8, AchLookup_metaach)
+  elseif (kill) then
+    AchLookup_kill = {}
+    BuildCriteriaLookupTab(0, AchLookup_kill, true)
+    Overachiever.AchLookup_kill = AchLookup_kill
+  end
 end
 
 
@@ -765,6 +783,7 @@ function Overachiever.OnEvent(self, event, arg1, ...)
 
     local _, ACH_LoveCritters, ACH_LoveCritters2, ACH_PestControl, ACH_WellRead, ACH_HigherLearning, ACH_Scavenger, ACH_OutlandAngler
     local ACH_NorthrendAngler, ACH_LetItSnow, ACH_FistfulOfLove, ACH_BunnyMaker, ACH_HappyHour, ACH_TastesLikeChicken
+    local ACH_MediumRare, ACH_NorthernExposure
     _, ACH_LoveCritters = GetAchievementInfo(OVERACHIEVER_ACHID.LoveCritters)
     _, ACH_LoveCritters2 = GetAchievementInfo(OVERACHIEVER_ACHID.LoveCritters2)
     _, ACH_PestControl = GetAchievementInfo(OVERACHIEVER_ACHID.PestControl)
@@ -778,6 +797,8 @@ function Overachiever.OnEvent(self, event, arg1, ...)
     _, ACH_BunnyMaker = GetAchievementInfo(OVERACHIEVER_ACHID.BunnyMaker)
     _, ACH_HappyHour = GetAchievementInfo(OVERACHIEVER_ACHID.HappyHour)
     _, ACH_TastesLikeChicken = GetAchievementInfo(OVERACHIEVER_ACHID.TastesLikeChicken)
+    _, ACH_MediumRare = GetAchievementInfo(OVERACHIEVER_ACHID.MediumRare)
+    _, ACH_NorthernExposure = GetAchievementInfo(OVERACHIEVER_ACHID.NorthernExposure)
 
     -- Handle clients that aren't at WoW 3.0.8 yet (Chinese):
     ACH_LoveCritters2 = ACH_LoveCritters2 or L.OPT_ACHUNKNOWN
@@ -832,6 +853,10 @@ function Overachiever.OnEvent(self, event, arg1, ...)
 	{ type = "labelwrap", text = '"'..ACH_LetItSnow..'"', topBuffer = 4 },
 	{ variable = "LetItSnow_flaked", text = L.OPT_LETITSNOWTIPS,
 	  tooltip = L.OPT_LETITSNOWTIPS_TIP },
+
+	{ type = "labelwrap", text = L.OPT_LABEL_NEEDTOKILL:format(ACH_MediumRare, ACH_NorthernExposure), topBuffer = 4 },
+        { variable = "CreatureTip_killed", text = L.OPT_KILLCREATURETIPS, tooltip = L.OPT_KILLCREATURETIPS_TIP,
+	  tooltip2 = L.OPT_KILLCREATURETIPS_TIP2, OnChange = BuildCriteriaLookupTab_check },
 
 	{ type = "labelwrap", text = L.OPT_LABEL_TRACKING, topBuffer = 4 },
 	{ variable = "Tracker_AutoTimer", text = L.OPT_AUTOTRACKTIMED, tooltip = L.OPT_AUTOTRACKTIMED_TIP },
@@ -1135,6 +1160,18 @@ SlashCmdList["ACHIEVEMENTUI"] = slashHandler;
 --------------------------
 
 if (Overachiever_Debug) then
+
+  function Overachiever.Debug_GetKillCriteriaAchs()
+    if (not Overachiever.AchLookup_kill) then  return;  end
+    local tab, _, a = {}
+    for k,v in pairs(Overachiever.AchLookup_kill) do
+      for i = 1, #v, 2 do
+        _, a = GetAchievementInfo( v[i] )
+        tab[a] = (tab[a] or 0) + 1
+      end
+    end
+    return tab
+  end
 
   -- Achievement and criteria data gathering:
 
