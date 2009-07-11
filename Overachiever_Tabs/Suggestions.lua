@@ -80,10 +80,12 @@ local ACHID_ZONE_MISC = {
 	["Dalaran"] = { 2096, 1956, 1958, 545, 1998, IsAlliance and 1782 or 1783 },
 	["Sholazar Basin"] =		-- "The Snows of Northrend", "Honorary Frenzyheart",
 		{ 938, 961, 962 },	-- "Savior of the Oracles"
-	["Wintergrasp"] = { 1752, 2199, 1737, 1717, 1739, 1751, 1755, 1727, 1731, 1723 },
+	["Wintergrasp"] = { 2199, 1717, 1739, 1751, 1755, 1727, 1731, 1723 },
 }
 if (IsAlliance) then
   ACHID_ZONE_MISC["Grizzly Hills"] = 2016	-- "Grizzled Veteran"
+  tinsert(ACHID_ZONE_MISC["Wintergrasp"], 1737)	-- "Destruction Derby"
+  tinsert(ACHID_ZONE_MISC["Wintergrasp"], 1752)	-- "Master of Wintergrasp"
   -- "City Defender", "Shave and a Haircut":
   ACHID_ZONE_MISC["Stormwind City"] = { 388, 545 }
   ACHID_ZONE_MISC["Ironforge"] = { 388, 545 }
@@ -96,6 +98,8 @@ if (IsAlliance) then
   ACHID_ZONE_MISC["Silvermoon City"] = { 604, 613, 614 }
 else
   ACHID_ZONE_MISC["Grizzly Hills"] = 2017	-- "Grizzled Veteran"
+  tinsert(ACHID_ZONE_MISC["Wintergrasp"], 2476)	-- "Destruction Derby"
+  tinsert(ACHID_ZONE_MISC["Wintergrasp"], 2776)	-- "Master of Wintergrasp"
   -- "City Defender", "Shave and a Haircut":
   ACHID_ZONE_MISC["Orgrimmar"] = { 1006, 545 }
   ACHID_ZONE_MISC["Thunder Bluff"] = 1006

@@ -6,10 +6,10 @@ L.TRADE_SKILLET_ACHSORT = "By Achievement";
 if (locale == "enUS" or locale == "enGB") then  -- English
 	L.TRADE_COOKING_OBJRENAME = [[
 Spiced Wyrm Burger=Spiced Worm Burger
+Rhinolicious Wyrmsteak=Rhinolicious Wormsteak
 ]]
-end
 
-if (locale == "deDE") then  -- German
+elseif (locale == "deDE") then  -- German
 --@localization(locale="deDE", format="lua_additive_table", namespace="Trade", handle-subnamespaces="none")@
 
 elseif (locale == "frFR") then  -- French

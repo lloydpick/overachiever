@@ -1,5 +1,7 @@
 
 local L = OVERACHIEVER_STRINGS
+local OVERACHIEVER_ACHID = OVERACHIEVER_ACHID
+local GetStatistic = GetStatistic
 
 local AchievementIcon = "Interface\\AddOns\\Overachiever\\AchShield"
 local tooltip_complete = { r = 0.2, g = 0.5, b = 0.2 }
@@ -269,10 +271,14 @@ end
 -----------------------
 
 local FoodCriteria, DrinkCriteria, ItemLookupTabBuilt = {}, {}
+local numDrinksConsumed, numFoodConsumed
 
 --local lastitemTime, lastitemLink = 0
 
 function Overachiever.BuildItemLookupTab()
+  numDrinksConsumed = GetStatistic(OVERACHIEVER_ACHID.Stat_ConsumeDrinks)
+  numFoodConsumed = GetStatistic(OVERACHIEVER_ACHID.Stat_ConsumeFood)
+
 -- Build lookup tables (since examining the criteria each time is time-consuming)
   local foodID, drinkID = OVERACHIEVER_ACHID.TastesLikeChicken, OVERACHIEVER_ACHID.HappyHour
   if ( ItemLookupTabBuilt or not Overachiever_Settings.Item_consumed or
@@ -283,10 +289,15 @@ function Overachiever.BuildItemLookupTab()
     return;
   end
 
+  Overachiever_CharVars_Consumed = Overachiever_CharVars_Consumed or {}
+  Overachiever_CharVars_Consumed.Food = Overachiever_CharVars_Consumed.Food or {}
+  Overachiever_CharVars_Consumed.Drink = Overachiever_CharVars_Consumed.Drink or {}
+  local ConsumedFood, ConsumedDrink = Overachiever_CharVars_Consumed.Food, Overachiever_CharVars_Consumed.Drink
+
   local i, _, asset = 1
   _, _, _, _, _, _, _, asset = GetAchievementCriteriaInfo(foodID, i)
   while (asset) do -- while loop used because these are "hidden" criteria: GetAchievementNumCriteria returns only 1.
-    FoodCriteria[asset] = i
+    FoodCriteria[asset] = ConsumedFood[asset] or 0
     i = i + 1
     _, _, _, _, _, _, _, asset = GetAchievementCriteriaInfo(foodID, i)
   end
@@ -294,7 +305,7 @@ function Overachiever.BuildItemLookupTab()
   i = 1
   _, _, _, _, _, _, _, asset = GetAchievementCriteriaInfo(drinkID, i)
   while (asset) do
-    DrinkCriteria[asset] = i
+    DrinkCriteria[asset] = ConsumedDrink[asset] or 0
     i = i + 1
     _, _, _, _, _, _, _, asset = GetAchievementCriteriaInfo(drinkID, i)
   end
@@ -316,9 +327,9 @@ local function ItemConsumedCheck(ach, itemID)
   if (achcomplete and not Overachiever_Settings[ ach[1].."_whencomplete" ]) then
     return;
   end
-  local critNum = ach[5][itemID]
-  if (critNum) then
-    local n, t, complete = GetAchievementCriteriaInfo(id, critNum)
+  local isCrit = ach[5][itemID]
+  if (isCrit) then
+    local complete = isCrit == true
     return id, complete and ach[2] or achcomplete and ach[4] or ach[3], complete, achcomplete
   end
 end
@@ -358,6 +369,35 @@ function Overachiever.ExamineItem(tooltip)
     end
   end
 end
+
+local function BagUpdate(...)
+  local oldF, oldD = numFoodConsumed, numDrinksConsumed
+  numFoodConsumed = GetStatistic(OVERACHIEVER_ACHID.Stat_ConsumeFood)
+  numDrinksConsumed = GetStatistic(OVERACHIEVER_ACHID.Stat_ConsumeDrinks)
+
+  local changeF, changeD = oldF < numFoodConsumed, oldD < numDrinksConsumed
+  if (changeF or changeD) then
+    local itemID, old, new
+    for i=1,select("#", ...),3 do
+      itemID, old, new = select(i, ...)
+
+      if (changeF and FoodCriteria[itemID]) then
+        --local _, link = GetItemInfo(itemID)
+        --print("You ate:",link)
+        FoodCriteria[itemID] = true
+        Overachiever_CharVars_Consumed.Food[itemID] = true
+      end
+      if (changeD and DrinkCriteria[itemID]) then
+        --local _, link = GetItemInfo(itemID)
+        --print("You drank:",link)
+        DrinkCriteria[itemID] = true
+        Overachiever_CharVars_Consumed.Drink[itemID] = true
+      end
+    end
+  end
+end
+
+TjBagWatch.RegisterFunc(BagUpdate, true)
 
 
 -- Register some Blizzard sounds

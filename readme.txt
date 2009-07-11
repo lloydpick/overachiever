@@ -1,5 +1,5 @@
 
-Overachiever v0.43
+Overachiever v0.44
 ==============================
 
 Author: Tuhljin
@@ -107,6 +107,18 @@ Change log
 ==========
 
 The change log lists changes of particular note to users, not every change made.
+
+v0.44
+- "It's Happy Hour Somewhere" and "Tastes Like Chicken": Implemented a system to work around the fact that, since
+  WoW 3.1, addons cannot use Blizzard's API to query whether a specific item has already been consumed. The new system
+  tracks whether items have been consumed itself and stores this on a per-character basis. The primary drawback to this
+  is that all items are labeled as unconsumed until Overachiever v0.44+ "sees" you consume them (even if you consumed
+  them before). (Additionally, in the rare event of a rollback, items may be marked as consumed when the character
+  hasn't actually consumed them.)
+- Trade module: Fixed an issue where, with English clients, "The Northrend Gourmet" didn't consider Rhinolicious
+  Wormsteak as a requirement because WoW lists it as "Rhinolicious Wyrmsteak" in the achievement itself.
+- Suggestions Tab: The Horde-specific versions of "Destruction Derby" and "Master of Wintergrasp" are now suggested
+  to Horde players in Wintergrasp instead of the Alliance versions.
 
 v0.43
 - Added an option to display whether you need to kill a creature for an achievement in its tooltip. This applies not

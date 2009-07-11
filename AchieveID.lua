@@ -20,10 +20,14 @@ OVERACHIEVER_ACHID = {
 	BloodyRare = 1312,		-- "Bloody Rare"
 	NorthernExposure = 2256,	-- "Northern Exposure"
 	Frostbitten = 2257,		-- "Frostbitten"
-	
+
 	LetItSnow = 1687,		-- "Let It Snow"
 	FistfulOfLove = 1699,		-- "Fistful of Love"
 	BunnyMaker = 2422,		-- "Shake Your Bunny-Maker"
+
+	-- Statistics:
+	Stat_ConsumeDrinks = 346,	-- "Beverages consumed"
+	Stat_ConsumeFood = 347,		-- "Food eaten"
 };
 
 
