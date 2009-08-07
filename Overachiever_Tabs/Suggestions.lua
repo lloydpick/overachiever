@@ -112,8 +112,8 @@ else
   ACHID_ZONE_MISC["The Exodar"] = { 603, 618, 619 }
 end
 -- "The Fishing Diplomat":
-tinsert(ACHID_ZONE_MISC["Stormwind City"], 150)
-tinsert(ACHID_ZONE_MISC["Orgrimmar"], 150)
+tinsert(ACHID_ZONE_MISC["Stormwind City"], "150:2")
+tinsert(ACHID_ZONE_MISC["Orgrimmar"], "150:1")
 -- "Old Crafty" and "Old Ironjaw":
 tinsert(ACHID_ZONE_MISC["Orgrimmar"], 1836)
 tinsert(ACHID_ZONE_MISC["Ironforge"], 1837)
@@ -286,10 +286,10 @@ local ACHID_TRADESKILL_ZONE = {
 	["Fishing"] = {
 		["Dalaran"] = 2096,		-- "The Coin Master"
 		["Ironforge"] = 1837,		-- "Old Ironjaw"
-		["Orgrimmar"] = { 1836, 150 },	-- "Old Crafty", "The Fishing Diplomat"
+		["Orgrimmar"] = {1836,"150:1"},	-- "Old Crafty", "The Fishing Diplomat"
 		["Shattrath City"] = 905,	-- "Old Man Barlowned"
 		["Stranglethorn Vale"] = 306,	-- "Master Angler of Stranglethorn"
-		["Stormwind City"] = 150,	-- "The Fishing Diplomat"
+		["Stormwind City"] = "150:2",	-- "The Fishing Diplomat"
 		["Terokkar Forest"] = 905,	-- "Old Man Barlowned"
         }
 }
@@ -349,14 +349,41 @@ local function Refresh_Add(...)
   for i=1, select("#", ...) do
     id = select(i, ...)
     if (id) then
+
       if (type(id) == "table") then
         Refresh_Add(unpack(id))
+
+      elseif (type(id) == "string") then
+        local crit
+        id, crit = strsplit(":", id)
+        id, crit = tonumber(id), tonumber(crit)
+        _, _, _, complete = GetAchievementInfo(id)
+        if (complete) then
+          nextid, complete = GetNextAchievement(id)
+          if (nextid) then
+            local name = GetAchievementCriteriaInfo(id, crit)
+            while (complete and GetAchievementCriteriaInfo(nextid, crit) == name) do
+            -- Find first incomplete achievement in the chain that has this criteria:
+              id = nextid
+              nextid, complete = GetNextAchievement(id)
+            end
+            if (nextid and GetAchievementCriteriaInfo(nextid, crit) == name) then
+              id = nextid
+            end
+          end
+        end
+        suggested[id] = crit
+        -- Known limitation (of no consequence at this time due to which suggestions actually use this feature):
+        -- If an achievement is suggested due to multiple criteria, only one of them is reflected by this.
+        -- (A future fix may involve making it a table when there's more than one, though it would need to check
+        -- against adding the same criteria number twice.)
+
       else
         _, _, _, complete = GetAchievementInfo(id)
         if (complete) then
           nextid, complete = GetNextAchievement(id)
           if (nextid) then
-            while (complete) do  -- Find first incomplete achievement in the chain
+            while (complete) do  -- Find first incomplete achievement in the chain:
               id = nextid
               nextid, complete = GetNextAchievement(id)
             end
@@ -365,6 +392,7 @@ local function Refresh_Add(...)
         end
         suggested[id] = true
       end
+
     end
   end
 end
@@ -415,7 +443,7 @@ local function Refresh()
       -- have subzones with the instance name when you're near the instance entrance and some instance entrances are
       -- actually in their own "zone" using the instance's zone name):
       Refresh_Add(ACHID_INSTANCES[subz] or ACHID_INSTANCES[zone])
-      if (GetCurrentDungeonDifficulty() > 1) then  -- If option currently set to Heroic difficulty
+      if (GetDungeonDifficulty() > 1) then  -- If option currently set to Heroic difficulty
         Refresh_Add(ACHID_INSTANCES_HEROIC[subz] or ACHID_INSTANCES_HEROIC[zone],
           ACHID_INSTANCES_HEROIC_EXTRA[subz] or ACHID_INSTANCES_HEROIC_EXTRA[zone])
       end
@@ -430,9 +458,17 @@ local function Refresh()
 
   local list, count = frame.AchList, 0
   wipe(list)
-  for id in pairs(suggested) do
+  local critlist = frame.AchList_criteria and wipe(frame.AchList_criteria)
+  if (not critlist) then
+    critlist = {}
+    frame.AchList_criteria = critlist
+  end
+  for id,v in pairs(suggested) do
     count = count + 1
     list[count] = id
+    if (v ~= true) then
+      critlist[id] = v
+    end
   end
 
   Overachiever_SuggestionsFrameContainerScrollBar:SetValue(0)

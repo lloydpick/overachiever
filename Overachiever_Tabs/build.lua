@@ -126,17 +126,17 @@ local function displayAchievement(button, frame, achievement, index, selectionID
       if (RecentReminders and RecentReminders[id]) then
         local name = button:GetName()
         --button:SetBackdropBorderColor(.8, .5, .5)
-        getglobal(name .. "Background"):SetTexture("Interface\\AddOns\\Overachiever_Tabs\\ParchmentDesaturateGreen")
-        getglobal(name.."Glow"):SetVertexColor(.13, .52, .17)
+        _G[name .. "Background"]:SetTexture("Interface\\AddOns\\Overachiever_Tabs\\ParchmentDesaturateGreen")
+        _G[name.."Glow"]:SetVertexColor(.13, .52, .17)
       elseif (not isAchievementInUI(id)) then
         local name = button:GetName()
         --button:SetBackdropBorderColor(.8, .5, .5)
         if (isPreviousAchievementInUI(id)) then
-          getglobal(name .. "Background"):SetTexture("Interface\\AddOns\\Overachiever_Tabs\\ParchmentDesaturateBlue")
-          getglobal(name.."Glow"):SetVertexColor(.22, .17, .43)
+          _G[name .. "Background"]:SetTexture("Interface\\AddOns\\Overachiever_Tabs\\ParchmentDesaturateBlue")
+          _G[name.."Glow"]:SetVertexColor(.22, .17, .43)
         else
-          getglobal(name .. "Background"):SetTexture("Interface\\AddOns\\Overachiever_Tabs\\ParchmentDesaturateRed")
-          getglobal(name.."Glow"):SetVertexColor(.52, .17, .13)
+          _G[name .. "Background"]:SetTexture("Interface\\AddOns\\Overachiever_Tabs\\ParchmentDesaturateRed")
+          _G[name.."Glow"]:SetVertexColor(.52, .17, .13)
         end
       end
     end
@@ -270,7 +270,7 @@ do
 end
 
 local FilteredList, FilteredList_current
-local function applyAchievementFilter(list, completed, built, checkprev)
+local function applyAchievementFilter(list, completed, built, checkprev, critlist)
   FilteredList = FilteredList or {}
   local list2 = FilteredList[list]
   if (list2) then
@@ -282,7 +282,11 @@ local function applyAchievementFilter(list, completed, built, checkprev)
   end
   local count, _, c = 0
   for i,id in pairs(list) do  -- Using pairs instead of ipairs so we can safely nil things out.
-    _, _, _, c = GetAchievementInfo(id)
+    if (critlist and critlist[id]) then
+      _, _, c = GetAchievementCriteriaInfo(id, critlist[id])
+    else
+      _, _, _, c = GetAchievementInfo(id)
+    end
     if (c == completed) then
       count = count + 1
       list2[count] = id
@@ -309,9 +313,9 @@ end
 local function updateAchievementsList(frame)
   local list, sorted = frame.AchList, frame.AchList_sorted
   if (ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrame_GetCategoryNumAchievements_Complete) then
-    list = applyAchievementFilter(list, true, sorted, frame.AchList_checkprev)
+    list = applyAchievementFilter(list, true, sorted, frame.AchList_checkprev, frame.AchList_criteria)
   elseif (ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrame_GetCategoryNumAchievements_Incomplete) then
-    list = applyAchievementFilter(list, false, sorted, frame.AchList_checkprev)
+    list = applyAchievementFilter(list, false, sorted, frame.AchList_checkprev, frame.AchList_criteria)
   end
   if (not sorted) then
     sortList(list, frame.sort)
@@ -330,7 +334,7 @@ local function updateAchievementsList(frame)
   end
 
   local extraHeight = scrollFrame.largeButtonHeight or ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT
-  
+
   Overachiever.RecentReminders_Check()
   local displayedHeight, index = 0;
   for i = 1, numButtons do
@@ -342,7 +346,7 @@ local function updateAchievementsList(frame)
   local totalHeight = numAchievements * ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT;
   totalHeight = totalHeight + (extraHeight - ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT);
 
-  HybridScrollFrame_Update(scrollFrame, numAchievements, totalHeight, displayedHeight);
+  HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
 
   if ( selection ) then
     frame.selection = selection;
@@ -396,7 +400,7 @@ local function tabOnClick(self, button)
   local i, tab = 0
   repeat
     i = i + 1
-    tab = getglobal("AchievementFrameTab"..i)
+    tab = _G["AchievementFrameTab"..i]
     if (tab and tab ~= self) then
       tab.text:SetPoint("CENTER", tab, "CENTER", 0, -3)
     end
@@ -491,7 +495,7 @@ function Overachiever.BuildNewTab(name, text, watermark, helptip, loadFunc, filt
   local numtabs, tab = 0
   repeat
     numtabs = numtabs + 1
-  until (not getglobal("AchievementFrameTab"..numtabs))
+  until (not _G["AchievementFrameTab"..numtabs])
   tab = CreateFrame("Button", "AchievementFrameTab"..numtabs, AchievementFrame, "AchievementFrameTabButtonTemplate")
   tab:SetText(text)
   tab:SetPoint("LEFT", "AchievementFrameTab"..numtabs-1, "RIGHT", -5, 0)
@@ -567,7 +571,7 @@ function Overachiever.BuildNewTab(name, text, watermark, helptip, loadFunc, filt
   frame.ForceUpdate = forceUpdate
 
   scrollframe.update = function() updateAchievementsList(frame) end;  -- Needed in this fashion for HybridScrollFrame_SetOffset calls.
-  getglobal(name.."ContainerScrollBarBG"):Show()
+  _G[name.."ContainerScrollBarBG"]:Show()
   frame.buttons = {}
   redir_btn_tinsert = frame.buttons
   HybridScrollFrame_CreateButtons(scrollframe, "AchievementTemplate", 0, -2);

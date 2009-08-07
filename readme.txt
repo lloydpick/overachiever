@@ -1,5 +1,5 @@
 
-Overachiever v0.44
+Overachiever v0.45
 ==============================
 
 Author: Tuhljin
@@ -107,6 +107,15 @@ Change log
 ==========
 
 The change log lists changes of particular note to users, not every change made.
+
+v0.45
+- Updated for WoW patch 3.2.
+- Suggestions Tab: Now only displays "The Fishing Diplomat" when appropriate for your current location as determined
+  by whether the relevant criteria is complete and the current filter ("Earned"/"Incomplete"/"All"). For instance, if
+  you are in Stormwind and the "Stormwind" criteria is complete, "The Fishing Diplomat" is only suggested when the
+  filter is set to "All" or "Earned."
+- Trade module: Fixed an issue where, with English clients, Worm Delight wasn't considered a requirement of "The
+  Northrend Gourmet" because WoW lists it as "Wyrm Delight" in the achievement itself.
 
 v0.44
 - "It's Happy Hour Somewhere" and "Tastes Like Chicken": Implemented a system to work around the fact that, since

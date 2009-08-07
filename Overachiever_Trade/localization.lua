@@ -5,8 +5,9 @@ L.TRADE_SKILLET_ACHSORT = "By Achievement";
 
 if (locale == "enUS" or locale == "enGB") then  -- English
 	L.TRADE_COOKING_OBJRENAME = [[
-Spiced Wyrm Burger=Spiced Worm Burger
 Rhinolicious Wyrmsteak=Rhinolicious Wormsteak
+Spiced Wyrm Burger=Spiced Worm Burger
+Wyrm Delight=Worm Delight
 ]]
 
 elseif (locale == "deDE") then  -- German
