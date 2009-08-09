@@ -15,7 +15,7 @@ L.SEARCH_RESET = "Reset";
 L.SEARCH_RESULTS = "Found %s |4achievement:achievements;.";
 
 L.SUGGESTIONS_TAB = "Suggestions";
-L.SUGGESTIONS_HELP = "Suggested achievements are listed here based on your current location. Also listed are any achievements you were reminded about through a tooltip within the last 2 minutes.";
+L.SUGGESTIONS_HELP = "Suggested achievements are listed here based on your current location. Also listed are any achievements you were reminded about through a tooltip within the last 2 minutes or that have a timer which started recently.";
 L.SUGGESTIONS_REFRESH = "Refresh";
 L.SUGGESTIONS_EMPTY = "Overachiever has no suggestions for you at this time.";
 L.SUGGESTIONS_RESULTS = "%d |4suggestion:suggestions; found.";
@@ -31,7 +31,7 @@ L.TAB_SORT_NAME = "Name";
 L.TAB_SORT_ID = "ID";
 L.TAB_SORT_POINTS = "Point value";
 L.TAB_SORT_COMPLETE = "Date completed";
-L.TAB_HELP = "|cffffffffCtrl-click|r on an achievement to jump to its place in the standard UI.|n|nA |cffffffffblue background|r means it is part of a series for which you haven't completed an earlier step.|n|nA |cffffffffred background|r means it cannot be found in the standard UI for this character because it is exclusive to the opposing faction or is an unacquired Feat of Strength.|n|nA |cffffffffgreen background|r means a reminder about this achievement was displayed in a tooltip recently.";
+L.TAB_HELP = "|cffffffffCtrl-click|r on an achievement to jump to its place in the standard UI.|n|nA |cffffffffblue background|r means it is part of a series for which you haven't completed an earlier step.|n|nA |cffffffffred background|r means it cannot be found in the standard UI for this character because it is exclusive to the opposing faction or is an unacquired Feat of Strength.|n|nA |cffffffffgreen background|r means a reminder about this achievement was displayed in a tooltip recently or it has a timer which started recently.";
 
 if (locale == "deDE") then  -- German
 --@localization(locale="deDE", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="none")@

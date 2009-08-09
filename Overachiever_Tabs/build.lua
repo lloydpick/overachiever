@@ -199,6 +199,14 @@ do
   local function sortList_simple(a, b)
     local aV = select(getret, GetAchievementInfo(a))
     local bV = select(getret, GetAchievementInfo(b))
+    if (aV == nil) then
+      a, getret = tostringall(a, getret)
+      error("nil value found while sorting: ID="..a..", getret="..getret)
+    elseif (bV == nil) then
+      b, getret = tostringall(b, getret)
+      error("nil value found while sorting: ID="..b..", getret="..getret)
+    end
+
     -- If values are the same, fall back to alphabetical order by name:
     if (aV == bV) then
       local aID, bID

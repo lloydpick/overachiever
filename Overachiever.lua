@@ -305,7 +305,7 @@ do
     end
     ALL_ACHIEVEMENTS = {}
     local size, id = 0
-    for i = 1, 3500 do  -- 3500 is arbitrary. New patches with new achievements may mean this number must go up.
+    for i = 1, 5000 do  -- 5000 is arbitrary. New patches with new achievements may mean this number must go up.
       id = GetAchievementInfo(i)
       if (id and catlookup[GetAchievementCategory(id)]) then  size = size + 1; ALL_ACHIEVEMENTS[size] = id;  end
     end
@@ -945,8 +945,10 @@ function Overachiever.OnEvent(self, event, arg1, ...)
 
   elseif (event == "TRACKED_ACHIEVEMENT_UPDATE") then
     local criteriaID, elapsed, duration = ...
-    if (Overachiever_Settings.Tracker_AutoTimer and duration and elapsed < duration) then
-      if (not setTracking(arg1) and AutoTrackedAch_explore and IsTrackedAchievement(AutoTrackedAch_explore)) then
+    if (duration and elapsed < duration) then
+      Overachiever.RecentReminders[arg1] = time()
+      if (Overachiever_Settings.Tracker_AutoTimer and
+          not setTracking(arg1) and AutoTrackedAch_explore and IsTrackedAchievement(AutoTrackedAch_explore)) then
         -- If failed to track this, remove an exploration achievement that was auto-tracked and try again:
         RemoveTrackedAchievement(AutoTrackedAch_explore)
         if (not setTracking(arg1)) then

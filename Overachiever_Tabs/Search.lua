@@ -284,5 +284,5 @@ function Overachiever.Debug_GetIDRange()
   until (gap > 1000)
   print("ID range: {", firstid, ",", lastid, "}")
 end
--- Last check: WoW 3.1.2: { 6 , 3336 }
+-- Last check: WoW 3.2: { 6 , 4316 }
 --]]

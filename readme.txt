@@ -1,5 +1,5 @@
 
-Overachiever v0.45
+Overachiever v0.46
 ==============================
 
 Author: Tuhljin
@@ -107,6 +107,11 @@ Change log
 ==========
 
 The change log lists changes of particular note to users, not every change made.
+
+v0.46
+- Timed achievements are now added to the Suggestions list when the timer starts.
+- Achievements added in WoW 3.2 are now included in search results.
+- Suggestions Tab: Fixed an error that occurred when looking at Suggestions while in Wintergrasp.
 
 v0.45
 - Updated for WoW patch 3.2.

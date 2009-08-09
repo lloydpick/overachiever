@@ -80,7 +80,7 @@ local ACHID_ZONE_MISC = {
 	["Dalaran"] = { 2096, 1956, 1958, 545, 1998, IsAlliance and 1782 or 1783 },
 	["Sholazar Basin"] =		-- "The Snows of Northrend", "Honorary Frenzyheart",
 		{ 938, 961, 962 },	-- "Savior of the Oracles"
-	["Wintergrasp"] = { 2199, 1717, 1739, 1751, 1755, 1727, 1731, 1723 },
+	["Wintergrasp"] = { 2199, 1717, 1751, 1755, 1727, 1723 },
 }
 if (IsAlliance) then
   ACHID_ZONE_MISC["Grizzly Hills"] = 2016	-- "Grizzled Veteran"
