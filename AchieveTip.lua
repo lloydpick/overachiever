@@ -16,13 +16,11 @@ local function isLastLineEmpty(tooltip)
 -- This check is needed because default achievement tooltips are inconsistent:
 -- Some put an extra blank line at the end; others don't.
   local n, i = tooltip:GetName(), tooltip:NumLines()
-  local left = n.."TextLeft"..i, n.."TextRight"..i
-  left = getglobal(left)
+  local left = _G[n.."TextLeft"..i]
   left = left:GetText() or ""
   left = strtrim(left)
   if (left ~= "") then  return false;  end
-  local right = n.."TextRight"..i
-  right = getglobal(right)
+  local right = _G[n.."TextRight"..i]
   right = right:GetText() or ""
   right = strtrim(right)
   return (right == "")
@@ -51,16 +49,18 @@ local function addline(tooltip, textL, textR, colors)
       lLineText = nil
     end
     tooltip:AddDoubleLine( (textL or " "), textR, lLineColors.r, lLineColors.g, lLineColors.b, colors.r, colors.g, colors.b )
-  elseif (lLineText) then
-    tooltip:AddDoubleLine(lLineText, textL, lLineColors.r, lLineColors.g, lLineColors.b, colors.r, colors.g, colors.b)
-    lLineText = nil
-  elseif (not textL and not textR) then
+  elseif (textL) then  -- and not textR
+    if (lLineText) then
+      tooltip:AddDoubleLine(lLineText, textL, lLineColors.r, lLineColors.g, lLineColors.b, colors.r, colors.g, colors.b)
+      lLineText = nil
+    else
+      lLineText, lLineColors = textL, colors
+    end
+  else  -- not textL and not textR
     if (lLineText) then
       tooltip:AddLine(lLineText, lLineColors.r, lLineColors.g, lLineColors.b)
       lLineText = nil
     end
-  else
-    lLineText, lLineColors = textL, colors
   end
 end
 
@@ -105,10 +105,10 @@ local function InsertProgressInTooltip(tooltip, id)
       quantityString = getProgressString(quantity, totalQuantity, quantityString)
       if (quantityString) then
         while linenum <= maxlines do
-          line = getglobal(name.."TextLeft"..linenum)
+          line = _G[name.."TextLeft"..linenum]
           text = line:GetText()
           if (text ~= criteriaString) then
-            line = getglobal(name.."TextRight"..linenum)
+            line = _G[name.."TextRight"..linenum]
             text = line:GetText()
             if (text == criteriaString) then
               linenum = linenum + 1

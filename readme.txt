@@ -1,5 +1,5 @@
 
-Overachiever v0.46
+Overachiever v0.47
 ==============================
 
 Author: Tuhljin
@@ -107,6 +107,9 @@ Change log
 ==========
 
 The change log lists changes of particular note to users, not every change made.
+
+v0.47
+- Work in progress.
 
 v0.46
 - Timed achievements are now added to the Suggestions list when the timer starts.

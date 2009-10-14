@@ -329,7 +329,7 @@ do
 end
 
 local function BuildCriteriaLookupTab(...)
--- To be called in this fashion: BuildCriteriaLookupTab( <criteriaType1>, <table1>[, <criteriaType2>, <table2>[, ...]] )
+-- To be called in this fashion: BuildCriteriaLookupTab( <criteriaType1>, <table1>, <saveCriteriaNumber1>[, <criteriaType2>, <table2>, <saveCriteriaNumber2>[, ...]] )
   local num = select("#", ...)
   local list = getAllAchievements()
   local _, critType, assetID, a, tab, savenum
@@ -347,7 +347,7 @@ local function BuildCriteriaLookupTab(...)
               v[size+1] = id
               if (savenum) then  v[size+2] = i;  end
             else
-              tab[assetID] = { v, id }
+              tab[assetID] = { v, id }  -- Safe to assume savenum isn't true since this wasn't already a table
             end
           else
             if (savenum) then
@@ -745,6 +745,20 @@ do
       GameTooltip:AddLine(" ")
       AddAchListToTooltip(GameTooltip, AchLookup_metaach[id])
       GameTooltip:AddLine(" ")
+    end
+
+    if (Overachiever_Settings.Tooltip_ShowID) then
+      if (not tipset) then
+        GameTooltip:SetOwner(self, "ANCHOR_NONE")
+        GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 8, 0)
+        GameTooltip:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b)
+        tipset = true
+      end
+      if (GameTooltip:NumLines() > 0) then
+        GameTooltip:AddDoubleLine(" ", "|cff7eff00ID:|r "..id, nil, nil, nil, 0.741, 1, 0.467)
+      else
+        GameTooltip:AddLine("|cff7eff00ID:|r "..id, 0.741, 1, 0.467)
+      end
     end
 
     if (tipset) then

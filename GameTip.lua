@@ -380,7 +380,7 @@ local function BagUpdate(...)
     local itemID, old, new
     for i=1,select("#", ...),3 do
       itemID, old, new = select(i, ...)
-
+      --if (old > new) then
       if (changeF and FoodCriteria[itemID]) then
         --local _, link = GetItemInfo(itemID)
         --print("You ate:",link)
@@ -393,6 +393,7 @@ local function BagUpdate(...)
         DrinkCriteria[itemID] = true
         Overachiever_CharVars_Consumed.Drink[itemID] = true
       end
+      --end
     end
   end
 end

@@ -4,11 +4,15 @@ local L, locale = OVERACHIEVER_STRINGS, GetLocale()
 L.TRADE_SKILLET_ACHSORT = "By Achievement";
 
 if (locale == "enUS" or locale == "enGB") then  -- English
-	L.TRADE_COOKING_OBJRENAME = [[
-Rhinolicious Wyrmsteak=Rhinolicious Wormsteak
-Spiced Wyrm Burger=Spiced Worm Burger
-Wyrm Delight=Worm Delight
-]]
+	--If an achievement's criteria list gives an incorrect name for an item to be cooked, correct it with
+	--the string L.TRADE_COOKING_OBJRENAME using the format "<incorrect name>=<correct name>" (without
+	--quotes), separating different items with a carriage return. Example usage (commented out because
+	--it's no longer needed for English clients):
+	--L.TRADE_COOKING_OBJRENAME = [[
+--Rhinolicious Wyrmsteak=Rhinolicious Wormsteak
+--Spiced Wyrm Burger=Spiced Worm Burger
+--Wyrm Delight=Worm Delight
+--]]
 
 elseif (locale == "deDE") then  -- German
 --@localization(locale="deDE", format="lua_additive_table", namespace="Trade", handle-subnamespaces="none")@
