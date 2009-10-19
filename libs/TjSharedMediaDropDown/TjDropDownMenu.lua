@@ -138,7 +138,7 @@
 --
 
 
-local THIS_VERSION = 0.52
+local THIS_VERSION = 0.53
 
 if (not TjDropDownMenu or TjDropDownMenu.Version < THIS_VERSION) then
   TjDropDownMenu = TjDropDownMenu or {};
@@ -155,7 +155,7 @@ if (not TjDropDownMenu or TjDropDownMenu.Version < THIS_VERSION) then
     menuFrameList = {};
   end
 
-  local NumCreated = 0;
+  TjDropDownMenu.NumCreated = TjDropDownMenu.NumCreated or 0
   local hooksComplete, TjMenuOpen, prevTjMenuOpen, clickedButton;
 
   local function SelectEntry(dropdown, tab, fromClick)
@@ -188,7 +188,7 @@ if (not TjDropDownMenu or TjDropDownMenu.Version < THIS_VERSION) then
 
     -- Just redraws the existing menu
     for i=1, UIDROPDOWNMENU_MAXBUTTONS do
-      button = getglobal("DropDownList"..dropdownLevel.."Button"..i);
+      button = _G["DropDownList"..dropdownLevel.."Button"..i];
       checked = nil;
       -- See if checked or not
       -- TjDDM: This is what we changed: It now properly knows what is checked (that is, what was just clicked).
@@ -197,7 +197,7 @@ if (not TjDropDownMenu or TjDropDownMenu.Version < THIS_VERSION) then
       end
 
       -- If checked show check image
-      checkImage = getglobal("DropDownList"..dropdownLevel.."Button"..i.."Check");
+      checkImage = _G["DropDownList"..dropdownLevel.."Button"..i.."Check"];
       if ( checked ) then
         if ( useValue ) then
           UIDropDownMenu_SetText(frame, button.value);
@@ -212,7 +212,7 @@ if (not TjDropDownMenu or TjDropDownMenu.Version < THIS_VERSION) then
       end
 
       if ( button:IsShown() ) then
-        normalText = getglobal(button:GetName().."NormalText");
+        normalText = _G[button:GetName().."NormalText"];
         -- Determine the maximum width of a button
         width = normalText:GetWidth() + 40;
         -- Add padding if has and expand arrow or color swatch
@@ -228,10 +228,10 @@ if (not TjDropDownMenu or TjDropDownMenu.Version < THIS_VERSION) then
       end
     end
     for i=1, UIDROPDOWNMENU_MAXBUTTONS do
-      button = getglobal("DropDownList"..dropdownLevel.."Button"..i);
+      button = _G["DropDownList"..dropdownLevel.."Button"..i];
       button:SetWidth(maxWidth);
     end
-    getglobal("DropDownList"..dropdownLevel):SetWidth(maxWidth+15);
+    _G["DropDownList"..dropdownLevel]:SetWidth(maxWidth+15);
 
     -- TjDDM: Added the following to recursively refresh lower levels.
     if (dropdownLevel > 1) then
@@ -254,15 +254,15 @@ if (not TjDropDownMenu or TjDropDownMenu.Version < THIS_VERSION) then
     local prevchecked = checked
     local dropdown
     if (TjMenuOpen) then
-      dropdown = getglobal(TjMenuOpen)
+      dropdown = _G[TjMenuOpen]
     else
-      dropdown = getglobal(prevTjMenuOpen)
+      dropdown = _G[prevTjMenuOpen]
     end
 
     if (tab.TjDDM_notCheckable) then
       checked = nil;
       tab.checked = nil;
-      getglobal(clickedButton:GetName().."Check"):Hide();
+      _G[clickedButton:GetName().."Check"]:Hide();
     elseif (not checked or tab.keepShownOnClick) then
     -- Overrides default keepShownOnClick functionality, which toggles between checked and unchecked.
       ClearChecks(dropdown.TjDDM.menuList, true)
@@ -420,20 +420,20 @@ if (not TjDropDownMenu or TjDropDownMenu.Version < THIS_VERSION) then
   end
 
   local function SetDropDownWidth(frame, width)
-    getglobal(frame:GetName().."Middle"):SetWidth(width)
+    _G[frame:GetName().."Middle"]:SetWidth(width)
     frame:SetWidth(width+8)
   end
 
   local function GetDropDownWidth(frame, ...)
-    return getglobal(frame:GetName().."Middle"):GetWidth()
+    return _G[frame:GetName().."Middle"]:GetWidth()
   end
 
   local function SetText(frame, ...)
-    getglobal(frame:GetName().."Text"):SetText(...)
+    _G[frame:GetName().."Text"]:SetText(...)
   end
 
   local function GetText(frame)
-    return getglobal(frame:GetName().."Text"):GetText()
+    return _G[frame:GetName().."Text"]:GetText()
   end
 
   local function GetSelectedValue(frame)
@@ -479,20 +479,21 @@ if (not TjDropDownMenu or TjDropDownMenu.Version < THIS_VERSION) then
 
   local function Enable(frame)
     local name = frame:GetName()
-    getglobal(name.."Button"):Enable()
-    getglobal(name.."Text"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
+    _G[name.."Button"]:Enable()
+    _G[name.."Text"]:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
     if (frame.TjDDM.label) then
-      frame.TjDDM.label:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b)
+      frame.TjDDM.label:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b)
     end
     frame.TjDDM.enabled = true
   end
 
   local function Disable(frame)
     local name = frame:GetName()
-    getglobal(name.."Button"):Disable()
-    getglobal(name.."Text"):SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
+    _G[name.."Button"]:Disable()
+    local r, g, b = GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b
+    _G[name.."Text"]:SetVertexColor(r, g, b) -- :SetTextColor(r, g, b)
     if (frame.TjDDM.label) then
-      frame.TjDDM.label:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
+      frame.TjDDM.label:SetVertexColor(r, g, b) -- :SetTextColor(r, g, b)
     end
     frame.TjDDM.enabled = nil
     if (TjMenuOpen == name) then
@@ -591,8 +592,8 @@ if (not TjDropDownMenu or TjDropDownMenu.Version < THIS_VERSION) then
       error("TjDropDownMenu.CreateDropDown(): Argument 3 invalid (menuList). Expected table. Got "..type(type)..".")
     end
 
-    NumCreated = NumCreated + 1;
-    name = name or "TjDropDownMenu_Num"..NumCreated
+    TjDropDownMenu.NumCreated = TjDropDownMenu.NumCreated + 1;
+    name = name or "TjDropDownMenu_Num"..TjDropDownMenu.NumCreated
     local dropdown = CreateFrame("Frame", name, parent, "UIDropDownMenuTemplate")
     dropdown.TjDDM = {};
     dropdown.TjDDM.menuList = menuList;
@@ -613,7 +614,7 @@ if (not TjDropDownMenu or TjDropDownMenu.Version < THIS_VERSION) then
       end
     end
 
-    getglobal(name.."Button"):SetScript("OnClick", TjDropDownMenu.DropBtnOnClick)
+    _G[name.."Button"]:SetScript("OnClick", TjDropDownMenu.DropBtnOnClick)
     dropdown:SetScript("OnEnter", OnEnter)
     dropdown:SetScript("OnLeave", OnLeave)
     dropdown:EnableMouse(true)

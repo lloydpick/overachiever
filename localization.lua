@@ -40,6 +40,8 @@ OVERACHIEVER_STRINGS = {
 	ACH_FISTFULOFLOVE_COMPLETE = "Already used Handful of Rose Petals";
 	ACH_BUNNYMAKER_INCOMPLETE = "Need to use Spring Flowers";
 	ACH_BUNNYMAKER_COMPLETE = "Already used Spring Flowers";
+	ACH_CHECKYOURHEAD_INCOMPLETE = "Needs a pumpkin head";
+	ACH_CHECKYOURHEAD_COMPLETE = "Already pumpkin-headed";
 
 	MSG_INVALIDID = "Invalid input: No achievement with that ID.";
 	MSG_NAMENOTFOUND = 'No achievement with name containing "|cffffffff%s|r" was found.';
@@ -81,6 +83,8 @@ OVERACHIEVER_STRINGS = {
 	OPT_FISTFULOFLOVETIPS_TIP = "If the achievement is incomplete, add a line to the tooltips of players of an appropriate race/class combo to indicate whether you need to use a Handful of Rose Petals on them.";
 	OPT_BUNNYMAKERTIPS = "Add whether you need to use Spring Flowers";
 	OPT_BUNNYMAKERTIPS_TIP = "If the achievement is incomplete, add a line to the tooltips of players of an appropriate gender and level to indicate whether you need to use Spring Flowers on them. Note that enemy players that are 10 or more levels higher than you are assumed to be at least level 18.";
+	OPT_CHECKYOURHEADTIPS = "Add whether you need to use a Weighted Jack-o'-Lantern";
+	OPT_CHECKYOURHEADTIPS_TIP = "If the achievement is incomplete, add a line to the tooltips of players to indicate whether you need to use a Weighted Jack-o'-Lantern on them.";
 
 	OPT_CONSUMEITEMTIPS = "Add whether items need to consumed to their tooltips";
 	OPT_CONSUMEITEMTIPS_TIP = "If the achievement is incomplete, add a line to the tooltips of items that are part of its criteria to indicate whether you need to consume them.";

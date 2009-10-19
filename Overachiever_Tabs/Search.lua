@@ -204,7 +204,7 @@ end
 
 local function focusEditBox(self)
   for i,editbox in ipairs(EditBoxes) do
-    getglobal(editbox):SetAutoFocus(false)
+    _G[editbox]:SetAutoFocus(false)
   end
   self:SetAutoFocus(true)
 end
@@ -248,7 +248,7 @@ end)
 local function resetEditBoxes()
   PlaySound("igMainMenuOptionCheckBoxOff")
   for i,editbox in ipairs(EditBoxes) do
-    getglobal(editbox):SetText("")
+    _G[editbox]:SetText("")
   end
 end
 

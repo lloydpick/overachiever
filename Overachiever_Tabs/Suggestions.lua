@@ -16,6 +16,8 @@ local LBIR = LibStub:GetLibrary("LibBabble-Inventory-3.0"):GetReverseLookupTable
 local RecentReminders = Overachiever.RecentReminders
 
 local IsAlliance = UnitFactionGroup("player") == "Alliance"
+local suggested = {}
+
 
 -- ZONE-SPECIFIC ACHIEVEMENTS
 ----------------------------------------------------
@@ -79,6 +81,10 @@ local ACHID_ZONE_MISC = {
 	["Dragonblight"] = { 1277, 547 },	-- "Rapid Defense", "Veteran of the Wrathgate"
 	["Dalaran"] = { 2096, 1956, 1958, 545, 1998, IsAlliance and 1782 or 1783, 3217 },
 	["Grizzly Hills"] = { "1596:1" },	-- "Guru of Drakuru"
+	["Icecrown"] = { SUBZONES = {
+		["Argent Tournament Grounds"] = { 2756, 2772, 2836, 2773, 3736 },
+		-- "Argent Aspiration", "Tilted!", "Lance a Lot", "It's Just a Flesh Wound", "Pony Up!"
+	} },
 	["Sholazar Basin"] =		-- "The Snows of Northrend", "Honorary Frenzyheart",
 		{ 938, 961, 962 },	-- "Savior of the Oracles"
 	["Zul'Drak"] = { "1576:2", "1596:2" },	-- "Of Blood and Anguish", "Guru of Drakuru"
@@ -98,6 +104,9 @@ if (IsAlliance) then
   ACHID_ZONE_MISC["Thunder Bluff"] = { 604, 611, 614 }
   ACHID_ZONE_MISC["Undercity"] = { 604, 612, 614 }
   ACHID_ZONE_MISC["Silvermoon City"] = { 604, 613, 614 }
+  -- "A Silver Confidant", "Champion of the Alliance":
+  tinsert(ACHID_ZONE_MISC["Icecrown"], 3676)
+  tinsert(ACHID_ZONE_MISC["Icecrown"], 2782)
 else
   tinsert(ACHID_ZONE_MISC["Grizzly Hills"], 2017) -- "Grizzled Veteran"
   tinsert(ACHID_ZONE_MISC["Wintergrasp"], 2476)	-- "Destruction Derby"
@@ -112,6 +121,9 @@ else
   ACHID_ZONE_MISC["Ironforge"] = { 603, 616, 619 }
   ACHID_ZONE_MISC["Darnassus"] = { 603, 617, 619 }
   ACHID_ZONE_MISC["The Exodar"] = { 603, 618, 619 }
+  -- "The Sunreavers", "Champion of the Horde":
+  tinsert(ACHID_ZONE_MISC["Icecrown"], 3677)
+  tinsert(ACHID_ZONE_MISC["Icecrown"], 2788)
 end
 -- "The Fishing Diplomat":
 tinsert(ACHID_ZONE_MISC["Stormwind City"], "150:2")
@@ -251,8 +263,35 @@ local ACHID_INSTANCES_10 = {
 -- Lich King Raids
 	["Naxxramas"] = { 2146, 576, 578, 572, 1856, 2176, 2178, 2180, 568, 2187, 1996, 1997, 1858, 564, 2182, 2184,
 		566, 574, 562 },
+	["Onyxia's Lair"] = { 4396, 4402, 4403, 4404 },
 	["The Eye of Eternity"] = { 622, 1874, 2148, 1869 },
 	["The Obsidian Sanctum"] = { 1876, 2047, 2049, 2050, 2051, 624 },
+	["Ulduar"] = { 2957, 2903, 2894,
+		SUBZONES = {
+			--["*Formation Grounds*The Colossal Forge*Razorscale's Aerie*The Scrapyard*"] = 2886, -- Siege
+			["Formation Grounds"] = { 3097, 2905, 2907, 2909, 2911, 2913 },
+			["Razorscale's Aerie"] = { 2919, 2923 },
+			["The Colossal Forge"] = { 2925, 2927, 2930 },
+			["The Scrapyard"] = { 2931, 2933, 2934, 2937, 3058 },
+
+			--["*The Assembly of Iron*The Shattered Walkway*The Observation Ring*"] = 2888, -- Antechamber
+			["The Assembly of Iron"] = { 2939, 2940, 2941, 2945, 2947 },
+			["The Shattered Walkway"] = { 2951, 2953, 2955, 2959 },
+			["The Observation Ring"] = { 3006, 3076 },
+
+			--["*The Spark of Imagination*The Conservatory of Life*The Clash of Thunder*The Halls of Winter*"] = 2890, -- Keepers
+			["The Halls of Winter"] = { 2961, 2963, 2967, 3182, 2969 },
+			["The Clash of Thunder"] = { 2971, 2973, 2975, 2977 },
+			["The Conservatory of Life"] = { 2979, 2980, 2985, 2982, 3177 },
+			["The Spark of Imagination"] = { 2989, 3138, 3180 },
+
+			--["*The Descent into Madness*The Prison of Yogg-Saron*"] = 2892, -- Descent
+			["The Descent into Madness"] = { 2996, 3181 },
+			["The Prison of Yogg-Saron"] = { 3009, 3157, 3008, 3012, 3014, 3015 },
+
+			["The Celestial Planetarium"] = { 3036, 3003, 3004, 3316 }, -- Alganon
+		},
+	},
 	["Vault of Archavon"] = { 1722, 3136, 3836, 4016 },
 }
 
@@ -261,9 +300,36 @@ local ACHID_INSTANCES_25 = {
 -- Lich King Raids
 	["Naxxramas"] = { 2186, 579, 565, 577, 575, 2177, 563, 567, 1857, 569, 573, 1859, 2139, 2181, 2183, 2185,
 		2147, 2140, 2179 },
-	["Vault of Archavon"] = { 1721, 3137, 3837, 4017 },
+	["Onyxia's Lair"] = { 4397, 4405, 4406, 4407 },
 	["The Eye of Eternity"] = { 623, 1875, 1870, 2149 },
 	["The Obsidian Sanctum"] = { 625, 2048, 2052, 2053, 2054, 1877 },
+	["Ulduar"] = { 2958, 2904, 2895,
+		SUBZONES = {
+			--["*Formation Grounds*The Colossal Forge*Razorscale's Aerie*The Scrapyard*"] = 2887, -- Siege
+			["Formation Grounds"] = { 3098, 2906, 2908, 2910, 2912, 2918 },
+			["Razorscale's Aerie"] = { 2921, 2924 },
+			["The Colossal Forge"] = { 2926, 2928, 2929 },
+			["The Scrapyard"] = { 2932, 2935, 2936, 2938, 3059 },
+
+			--["*The Assembly of Iron*The Shattered Walkway*The Observation Ring*"] = 2889, -- Antechamber
+			["The Assembly of Iron"] = { 2942, 2943, 2944, 2946, 2948 },
+			["The Shattered Walkway"] = { 2952, 2954, 2956, 2960 },
+			["The Observation Ring"] = { 3007, 3077 },
+
+			--["*The Spark of Imagination*The Conservatory of Life*The Clash of Thunder*The Halls of Winter*"] = 2891, -- Keepers
+			["The Halls of Winter"] = { 2962, 2965, 2968, 3184, 2970 },
+			["The Clash of Thunder"] = { 2972, 2974, 2976, 2978 },
+			["The Conservatory of Life"] = { 3118, 2981, 2984, 2983, 3185 },
+			["The Spark of Imagination"] = { 3237, 2995, 3189 },
+
+			--["*The Descent into Madness*The Prison of Yogg-Saron*"] = 2893, -- Descent
+			["The Descent into Madness"] = { 2997, 3188 },
+			["The Prison of Yogg-Saron"] = { 3011, 3161, 3010, 3013, 3017, 3016 },
+
+			["The Celestial Planetarium"] = { 3037, 3002, 3005 }, -- Alganon
+		},
+	},
+	["Vault of Archavon"] = { 1721, 3137, 3837, 4017 },
 }
 
 -- INSTANCES - NORMAL 10-MAN ONLY:
@@ -283,8 +349,20 @@ local ACHID_INSTANCES_25_HEROIC = {
 }
 
 
-local function ZoneLookup(zoneName)
-  return LBZ[zoneName] or zoneName
+-- Turn L.SUBZONES into reverse lookup table:
+if (GetLocale() ~= "enUS") then
+  for k,v in pairs(L.SUBZONES) do
+    suggested[v] = k
+  end
+  wipe(L.SUBZONES)
+  for k,v in pairs(suggested) do
+    L.SUBZONES[k] = v
+  end
+  wipe(suggested)
+end
+
+local function ZoneLookup(zoneName, isSub)
+  return isSub and L.SUBZONES[zoneName] or LBZ[zoneName] or zoneName
 end
 
 
@@ -316,6 +394,7 @@ local ACHID_TRADESKILL_ZONE = {
 }
 
 local ACHID_TRADESKILL_BG = { Cooking = 1785 }	-- "Dinner Impossible"
+
 
 
 -- SUGGESTIONS TAB CREATION AND HANDLING
@@ -363,7 +442,7 @@ sortdrop:SetLabel(L.TAB_SORT, true)
 sortdrop:SetPoint("TOPLEFT", panel, "TOPLEFT", -16, -22)
 sortdrop:OnSelect(SortDrop_OnSelect)
 
-local suggested
+local CurrentSubzone
 
 local function Refresh_Add(...)
   local id, _, complete, nextid
@@ -373,6 +452,14 @@ local function Refresh_Add(...)
 
       if (type(id) == "table") then
         Refresh_Add(unpack(id))
+        if (id.SUBZONES) then
+          for subz, subzsuggest in pairs(id.SUBZONES) do
+            if (subz == CurrentSubzone or strfind(subz, "*"..CurrentSubzone.."*", 1, true)) then
+            -- Asterisks surround subzone names since they aren't used in any actual subzone names.
+              Refresh_Add(subzsuggest)
+            end
+          end
+        end
 
       elseif (type(id) == "string") then
         local crit
@@ -439,7 +526,8 @@ end
 
 local function Refresh()
   if (not frame:IsVisible()) then  return;  end
-  suggested = suggested and wipe(suggested) or {}
+  wipe(suggested)
+  CurrentSubzone = ZoneLookup( strtrim(GetSubZoneText() or ""), true )
 
   -- Suggestions based on an open tradeskill window or whether a fishing pole is equipped:
   TradeskillSuggestions = GetTradeSkillLine()
@@ -464,7 +552,7 @@ local function Refresh()
     local inInstance, instype = IsInInstance()
     if (inInstance) then
       local zone = GetRealZoneText()
-      if (not zone or zone == "") then  zone = GetSubZoneText();  end
+      if (not zone or zone == "") then  zone = CurrentSubzone;  end
       zone = ZoneLookup(zone)
       Refresh_Add(ACHID_INSTANCES[zone])
       if (instype == "pvp") then  -- If in a battleground:
@@ -487,40 +575,40 @@ local function Refresh()
       end
 
     else
-      local zone, subz = GetRealZoneText(), GetSubZoneText()
-      zone, subz = ZoneLookup(zone), ZoneLookup(subz)
+      local zone = GetRealZoneText()
+      zone = ZoneLookup(zone)
       Refresh_Add(Overachiever.ExploreZoneIDLookup(zone), ACHID_ZONE_NUMQUESTS[zone], ACHID_ZONE_MISC[zone])
       -- Also look for instance achievements for an instance you're near if we can look it up easily (since many zones
       -- have subzones with the instance name when you're near the instance entrance and some instance entrances are
       -- actually in their own "zone" using the instance's zone name):
-      Refresh_Add(ACHID_INSTANCES[subz] or ACHID_INSTANCES[zone])
+      Refresh_Add(ACHID_INSTANCES[CurrentSubzone] or ACHID_INSTANCES[zone])
 
       local heroicD, heroicR, twentyfive = getDifficulty(false)
-      local ach10, ach25 = ACHID_INSTANCES_10[subz] or ACHID_INSTANCES_10[zone], ACHID_INSTANCES_25[subz] or ACHID_INSTANCES_25[zone]
-      local achH10, achH25 = ACHID_INSTANCES_10_HEROIC[subz] or ACHID_INSTANCES_10_HEROIC[zone], ACHID_INSTANCES_25_HEROIC[subz] or ACHID_INSTANCES_25_HEROIC[zone]
-      local achN10, achN25 = ACHID_INSTANCES_10_NORMAL[subz] or ACHID_INSTANCES_10_NORMAL[zone], ACHID_INSTANCES_25_NORMAL[subz] or ACHID_INSTANCES_25_NORMAL[zone]
+      local ach10, ach25 = ACHID_INSTANCES_10[CurrentSubzone] or ACHID_INSTANCES_10[zone], ACHID_INSTANCES_25[CurrentSubzone] or ACHID_INSTANCES_25[zone]
+      local achH10, achH25 = ACHID_INSTANCES_10_HEROIC[CurrentSubzone] or ACHID_INSTANCES_10_HEROIC[zone], ACHID_INSTANCES_25_HEROIC[CurrentSubzone] or ACHID_INSTANCES_25_HEROIC[zone]
+      local achN10, achN25 = ACHID_INSTANCES_10_NORMAL[CurrentSubzone] or ACHID_INSTANCES_10_NORMAL[zone], ACHID_INSTANCES_25_NORMAL[CurrentSubzone] or ACHID_INSTANCES_25_NORMAL[zone]
       local heroic
 
       if (ach10 or ach25 or achH10 or achH25 or achN10 or achN25) then
       -- If there are 10-man or 25-man specific achievements, this is a raid:
         if (heroicR) then
           if (twentyfive) then
-            Refresh_Add(ACHID_INSTANCES_HEROIC[subz] or ACHID_INSTANCES_HEROIC[zone], ach25, achH25)
+            Refresh_Add(ACHID_INSTANCES_HEROIC[CurrentSubzone] or ACHID_INSTANCES_HEROIC[zone], ach25, achH25)
           else
-            Refresh_Add(ACHID_INSTANCES_HEROIC[subz] or ACHID_INSTANCES_HEROIC[zone], ach10, achH10)
+            Refresh_Add(ACHID_INSTANCES_HEROIC[CurrentSubzone] or ACHID_INSTANCES_HEROIC[zone], ach10, achH10)
           end
         else
           if (twentyfive) then
-            Refresh_Add(ACHID_INSTANCES_NORMAL[subz] or ACHID_INSTANCES_NORMAL[zone], ach25, achN25)
+            Refresh_Add(ACHID_INSTANCES_NORMAL[CurrentSubzone] or ACHID_INSTANCES_NORMAL[zone], ach25, achN25)
           else
-            Refresh_Add(ACHID_INSTANCES_NORMAL[subz] or ACHID_INSTANCES_NORMAL[zone], ach10, achN10)
+            Refresh_Add(ACHID_INSTANCES_NORMAL[CurrentSubzone] or ACHID_INSTANCES_NORMAL[zone], ach10, achN10)
           end
         end
       -- Not a raid:
       elseif (heroicD) then
-        Refresh_Add(ACHID_INSTANCES_HEROIC[subz] or ACHID_INSTANCES_HEROIC[zone])
+        Refresh_Add(ACHID_INSTANCES_HEROIC[CurrentSubzone] or ACHID_INSTANCES_HEROIC[zone])
       else
-        Refresh_Add(ACHID_INSTANCES_NORMAL[subz] or ACHID_INSTANCES_NORMAL[zone])
+        Refresh_Add(ACHID_INSTANCES_NORMAL[CurrentSubzone] or ACHID_INSTANCES_NORMAL[zone])
       end
     end
 
@@ -616,6 +704,55 @@ Overachiever.SUGGESTIONS = {
 }
 
 
+
+-- MISCELLANEOUS
+----------------------------------------------------
+
+--[[
+local function grabFromCategory(cat, ...)
+  wipe(suggested)
+  -- Get achievements in the category except those with a previous one in the chain that are also in the category:
+  local id, prev, p2
+  for i = 1, GetCategoryNumAchievements(cat) do
+    id = GetAchievementInfo(cat, i)
+    prev, p2 = nil, GetPreviousAchievement(id)
+    while (p2 and GetAchievementCategory(p2) == cat) do
+      prev = p2
+      p2 = GetPreviousAchievement(id)
+    end
+    suggested[ (prev or id) ] = true
+  end
+  -- Add achievements specified by function call (useful for meta-achievements in a different category):
+  for i=1, select("#", ...) do
+    id = select(i, ...)
+    suggested[id] = true
+  end
+  -- Fold achievements into their meta-achievements on the list:
+  local tab, _, critType, assetID = {}
+  for id in pairs(suggested) do
+    for i=1,GetAchievementNumCriteria(id) do
+      _, critType, _, _, _, _, _, assetID = GetAchievementCriteriaInfo(id, i)
+      if (critType == 8 and suggested[assetID]) then
+        tab[assetID] = true -- Not removed immediately in case there are meta-achievements within meta-achievements
+      end
+    end
+  end
+  for assetID in pairs(tab) do  suggested[assetID] = nil;  end
+  -- Format list:
+  local count = 0
+  wipe(tab)
+  for id in pairs(suggested) do
+    count = count + 1
+    tab[count] = id
+  end
+  return tab
+end
+--]]
+
+-- ULDUAR 10: Results from grabFromCategory(14961, 2957):
+--	{ 2894, 2903, 2905, 2907, 2909, 2911, 2913, 2919, 2925, 2927, 2931, 2933, 2934, 2937, 2939, 2940, 2945, 2947, 2951, 2955, 2957, 2959, 2961, 2963, 2967, 2969, 2971, 2973, 2975, 2977, 2979, 2980, 2982, 2985, 2989, 2996, 3003, 3004, 3008, 3009, 3012, 3014, 3015, 3036, 3076, 3097, 3138, 3157, 3177, 3316 }
+-- ULDUAR 25: Results from grabFromCategory(14962, 2958):
+--	{ 2895, 2904, 2906, 2908, 2910, 2912, 2918, 2921, 2926, 2928, 2932, 2935, 2936, 2938, 2942, 2943, 2946, 2948, 2952, 2956, 2958, 2960, 2962, 2965, 2968, 2970, 2972, 2974, 2976, 2978, 2981, 2983, 2984, 2995, 2997, 3002, 3005, 3010, 3011, 3013, 3016, 3017, 3037, 3077, 3098, 3118, 3161, 3185, 3237 }
 
 --[[
 -- /run Overachiever.Debug_GetIDsInCat( GetAchievementCategory(GetTrackedAchievements()) )

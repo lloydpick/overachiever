@@ -36,6 +36,7 @@ Overachiever.DefaultSettings = {
   LetItSnow_flaked = false;
   FistfulOfLove_petals = false;
   BunnyMaker_eared = false;
+  CheckYourHead_pumpkin = false;
   Item_consumed = false;
   Item_consumed_whencomplete = false;
   CreatureTip_killed = false;
@@ -304,11 +305,20 @@ do
       catlookup[c] = true
     end
     ALL_ACHIEVEMENTS = {}
-    local size, id = 0
-    for i = 1, 5000 do  -- 5000 is arbitrary. New patches with new achievements may mean this number must go up.
+    local gap, i, size, id = 0, 0, 0
+    --local debug_largestgap = 0
+    repeat
+      i = i + 1
       id = GetAchievementInfo(i)
-      if (id and catlookup[GetAchievementCategory(id)]) then  size = size + 1; ALL_ACHIEVEMENTS[size] = id;  end
-    end
+      if (id) then
+        --if (gap > debug_largestgap) then debug_largestgap = gap; print("high gap:",debug_largestgap); end
+        gap = 0
+        if (catlookup[GetAchievementCategory(id)]) then  size = size + 1; ALL_ACHIEVEMENTS[size] = id;  end
+      else
+        gap = gap + 1
+      end
+    until (gap > 1000) -- 1000 is arbitrary. As of this writing, the largest gap is 79, but this is more future-safe.
+    --print("last ach ID:",ALL_ACHIEVEMENTS[size], "/ size:",size)
     catlookup = nil
     return ALL_ACHIEVEMENTS
   end
@@ -796,7 +806,7 @@ function Overachiever.OnEvent(self, event, arg1, ...)
     BuildCategoryInfo = nil
 
     local _, ACH_LoveCritters, ACH_LoveCritters2, ACH_PestControl, ACH_WellRead, ACH_HigherLearning, ACH_Scavenger, ACH_OutlandAngler
-    local ACH_NorthrendAngler, ACH_LetItSnow, ACH_FistfulOfLove, ACH_BunnyMaker, ACH_HappyHour, ACH_TastesLikeChicken
+    local ACH_NorthrendAngler, ACH_LetItSnow, ACH_FistfulOfLove, ACH_BunnyMaker, ACH_CheckYourHead, ACH_HappyHour, ACH_TastesLikeChicken
     local ACH_MediumRare, ACH_NorthernExposure
     _, ACH_LoveCritters = GetAchievementInfo(OVERACHIEVER_ACHID.LoveCritters)
     _, ACH_LoveCritters2 = GetAchievementInfo(OVERACHIEVER_ACHID.LoveCritters2)
@@ -807,6 +817,7 @@ function Overachiever.OnEvent(self, event, arg1, ...)
     _, ACH_OutlandAngler = GetAchievementInfo(OVERACHIEVER_ACHID.OutlandAngler)
     _, ACH_NorthrendAngler = GetAchievementInfo(OVERACHIEVER_ACHID.NorthrendAngler)
     _, ACH_LetItSnow = GetAchievementInfo(OVERACHIEVER_ACHID.LetItSnow)
+    _, ACH_CheckYourHead = GetAchievementInfo(OVERACHIEVER_ACHID.CheckYourHead)
     _, ACH_FistfulOfLove = GetAchievementInfo(OVERACHIEVER_ACHID.FistfulOfLove)
     _, ACH_BunnyMaker = GetAchievementInfo(OVERACHIEVER_ACHID.BunnyMaker)
     _, ACH_HappyHour = GetAchievementInfo(OVERACHIEVER_ACHID.HappyHour)
@@ -867,6 +878,10 @@ function Overachiever.OnEvent(self, event, arg1, ...)
 	{ type = "labelwrap", text = '"'..ACH_LetItSnow..'"', topBuffer = 4 },
 	{ variable = "LetItSnow_flaked", text = L.OPT_LETITSNOWTIPS,
 	  tooltip = L.OPT_LETITSNOWTIPS_TIP },
+
+	{ type = "labelwrap", text = '"'..ACH_CheckYourHead..'"', topBuffer = 4 },
+	{ variable = "CheckYourHead_pumpkin", text = L.OPT_CHECKYOURHEADTIPS,
+	  tooltip = L.OPT_CHECKYOURHEADTIPS_TIP },
 
 	{ type = "labelwrap", text = L.OPT_LABEL_NEEDTOKILL:format(ACH_MediumRare, ACH_NorthernExposure), topBuffer = 4 },
         { variable = "CreatureTip_killed", text = L.OPT_KILLCREATURETIPS, tooltip = L.OPT_KILLCREATURETIPS_TIP,
@@ -1080,7 +1095,7 @@ function Overachiever.OpenTab(name)
   if (not AchievementFrame or not AchievementFrame:IsShown()) then
     ToggleAchievementFrame()
   end
-  local frame = getglobal(name)
+  local frame = _G[name]
   if (frame) then  Overachiever.OpenTab_frame(frame);  end
 end
 

@@ -86,6 +86,9 @@ local RaceClassAch = {
     { "Orc DEATHKNIGHT", "Human WARRIOR", "Tauren SHAMAN", "NightElf DRUID", "Scourge ROGUE", "Troll HUNTER",
       "Gnome MAGE", "Dwarf PALADIN", "BloodElf WARLOCK", "Draenei PRIEST" }
   },
+  CheckYourHead = { "CheckYourHead_pumpkin", L.ACH_CHECKYOURHEAD_COMPLETE, L.ACH_CHECKYOURHEAD_INCOMPLETE,
+    { "BloodElf", "Draenei", "Dwarf", "Gnome", "Human", "NightElf", "Orc", "Tauren", "Troll", "Scourge" }, true
+  },
   BunnyMaker = { "BunnyMaker_eared", L.ACH_BUNNYMAKER_COMPLETE, L.ACH_BUNNYMAKER_INCOMPLETE,
     { "BloodElf", "Draenei", "Dwarf", "Gnome", "Human", "NightElf", "Orc", "Tauren", "Troll", "Scourge" }, true,
     function(unit)
@@ -168,7 +171,7 @@ function Overachiever.ExamineSetUnit(tooltip)
         end
       end
 
-    elseif (Overachiever_Settings.CreatureTip_killed) then
+    elseif (Overachiever_Settings.CreatureTip_killed and UnitCanAttack("player", unit)) then
       local guid = UnitGUID(unit)
       guid = tonumber( "0x"..strsub(guid, 8, 12) )
       local tab = Overachiever.AchLookup_kill[guid]
@@ -238,8 +241,8 @@ function Overachiever.ExamineOneLiner(tooltip)
   tooltip = tooltip or GameTooltip  -- Workaround since another addon is known to break this
   if (tooltip:NumLines() == 1) then
     local n = tooltip:GetName()
-    if (getglobal(n.."TextRight1"):GetText()) then  return;  end
-    local tiptext = getglobal(n.."TextLeft1"):GetText()
+    if (_G[n.."TextRight1"]:GetText()) then  return;  end
+    local tiptext = _G[n.."TextLeft1"]:GetText()
     local id, text, complete, angler
     for key,tab in pairs(WorldObjAch) do
       if (Overachiever_Settings[ tab[1] ]) then
@@ -253,10 +256,10 @@ function Overachiever.ExamineOneLiner(tooltip)
         r, g, b = tooltip_complete.r, tooltip_complete.g, tooltip_complete.b
       else
         r, g, b = tooltip_incomplete.r, tooltip_incomplete.g, tooltip_incomplete.b
+        RecentReminders[id] = time()
         if (not angler or not Overachiever_Settings.SoundAchIncomplete_AnglerCheckPole or
             not IsEquippedItemType("Fishing Poles")) then
           PlayReminder()
-          RecentReminders[id] = time()
         end
       end
       tooltip:AddLine(text, r, g, b)

@@ -109,7 +109,18 @@ Change log
 The change log lists changes of particular note to users, not every change made.
 
 v0.47
-- Work in progress.
+- "Check Your Head": Option added to show whether you need to use a Weighted Jack-o'-Lantern on players in their
+  tooltips.
+- Suggestions Tab: Implemented proper differentiation between 10- and 25-man raid achievements and proper detection
+  of whether the player is in a Heroic instance, whether it is a 10- or 25-man raid instance, and (when not in an
+  instance) the current raid/dungeon difficulty settings.
+- Suggestions Tab: Many new suggestions added: Ulduar, Icecrown's Argent Tournament, Isle of Conquest, Onyxia's Lair
+  (level 80 version), and more.
+- Kill Creature Achievements: Now only shows a reminder if the player can attack the unit. This prevents reminders to
+  destroy certain siege weapons (which can be either friendly or hostile) while they are friendly, for example.
+- The option to not play a reminder sound for fishing node reminders if a fishing pole is equipped no longer affects
+  whether achievements are added to the list of recent reminders.
+- "Show achievement IDs" option now affects tooltips in the main achievement UI.
 
 v0.46
 - Timed achievements are now added to the Suggestions list when the timer starts.

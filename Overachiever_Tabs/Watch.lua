@@ -101,3 +101,18 @@ AchievementButton_OnClick = function(self, ignoreModifiers, ...)
   orig_AchievementButton_OnClick(self, ignoreModifiers, ...)
 end
 
+
+
+--[[
+-- /run Overachiever.Debug_DumpWatch()
+function Overachiever.Debug_DumpWatch()
+  local tab = {}
+  for id in pairs(VARS.WatchedList) do
+    tab[#tab+1] = id
+  end
+  sort(tab)
+  local s = "{ "..strjoin(", ", unpack(tab)).." }"
+  print(s)
+  error(s)
+end
+--]]

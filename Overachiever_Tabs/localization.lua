@@ -34,28 +34,46 @@ L.TAB_SORT_COMPLETE = "Date completed";
 L.TAB_HELP = "|cffffffffCtrl-click|r on an achievement to jump to its place in the standard UI.|n|nA |cffffffffblue background|r means it is part of a series for which you haven't completed an earlier step.|n|nA |cffffffffred background|r means it cannot be found in the standard UI for this character because it is exclusive to the opposing faction or is an unacquired Feat of Strength.|n|nA |cffffffffgreen background|r means a reminder about this achievement was displayed in a tooltip recently or it has a timer which started recently.";
 
 if (locale == "deDE") then  -- German
---@localization(locale="deDE", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="none")@
+--@localization(locale="deDE", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="subtable")@
 
 elseif (locale == "frFR") then  -- French
---@localization(locale="frFR", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="none")@
+--@localization(locale="frFR", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="subtable")@
 
 elseif (locale == "zhTW") then  -- Traditional Chinese
---@localization(locale="zhTW", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="none")@
+--@localization(locale="zhTW", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="subtable")@
 
 elseif (locale == "zhCN") then  -- Simplified Chinese
---@localization(locale="zhCN", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="none")@
+--@localization(locale="zhCN", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="subtable")@
 
 elseif (locale == "ruRU") then  -- Russian
---@localization(locale="ruRU", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="none")@
+--@localization(locale="ruRU", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="subtable")@
 
 elseif (locale == "koKR") then  -- Korean
---@localization(locale="koKR", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="none")@
+--@localization(locale="koKR", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="subtable")@
 
 elseif (locale == "esES" or locale == "esMX") then  -- Spanish
---@localization(locale="esES", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="none")@
+--@localization(locale="esES", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="subtable")@
 
 	if (locale == "esMX") then  -- Spanish (Mexican)
---@localization(locale="esMX", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="none")@
+--@localization(locale="esMX", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="subtable")@
 	end
+
+else
+	L.SUBZONES = {
+		["Formation Grounds"] = "Formation Grounds",
+		["Razorscale's Aerie"] = "Razorscale's Aerie",
+		["The Assembly of Iron"] = "The Assembly of Iron",
+		["The Celestial Planetarium"] = "The Celestial Planetarium",
+		["The Clash of Thunder"] = "The Clash of Thunder",
+		["The Colossal Forge"] = "The Colossal Forge",
+		["The Conservatory of Life"] = "The Conservatory of Life",
+		["The Descent into Madness"] = "The Descent into Madness",
+		["The Halls of Winter"] = "The Halls of Winter",
+		["The Observation Ring"] = "The Observation Ring",
+		["The Prison of Yogg-Saron"] = "The Prison of Yogg-Saron",
+		["The Scrapyard"] = "The Scrapyard",
+		["The Shattered Walkway"] = "The Shattered Walkway",
+		["The Spark of Imagination"] = "The Spark of Imagination",
+	}
 
 end
