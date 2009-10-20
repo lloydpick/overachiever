@@ -58,7 +58,8 @@ elseif (locale == "esES" or locale == "esMX") then  -- Spanish
 --@localization(locale="esMX", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="subtable")@
 	end
 
-else
+end
+if (not L.SUBZONES) then
 	L.SUBZONES = {
 	-- Ulduar:
 		["Formation Grounds"] = "Formation Grounds",

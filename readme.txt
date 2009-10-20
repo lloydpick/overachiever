@@ -1,5 +1,5 @@
 
-Overachiever v0.47
+Overachiever v0.48
 ==============================
 
 Author: Tuhljin
@@ -107,6 +107,9 @@ Change log
 ==========
 
 The change log lists changes of particular note to users, not every change made.
+
+v0.48
+- "Check Your Head": Fixed an issue where some races were associated with the wrong criteria.
 
 v0.47
 - "Check Your Head": Option added to show whether you need to use a Weighted Jack-o'-Lantern on players in their
