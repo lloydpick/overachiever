@@ -60,6 +60,7 @@ elseif (locale == "esES" or locale == "esMX") then  -- Spanish
 
 else
 	L.SUBZONES = {
+	-- Ulduar:
 		["Formation Grounds"] = "Formation Grounds",
 		["Razorscale's Aerie"] = "Razorscale's Aerie",
 		["The Assembly of Iron"] = "The Assembly of Iron",
@@ -74,6 +75,16 @@ else
 		["The Scrapyard"] = "The Scrapyard",
 		["The Shattered Walkway"] = "The Shattered Walkway",
 		["The Spark of Imagination"] = "The Spark of Imagination",
+	-- Icecrown:
+		["Argent Tournament Grounds"] = "Argent Tournament Grounds",
+		["The Ring of Champions"] = "The Ring of Champions",
+		["Argent Pavilion"] = "Argent Pavilion",
+		["The Argent Valiants' Ring"] = "The Argent Valiants' Ring",
+		["The Aspirants' Ring"] = "The Aspirants' Ring",
+		["The Alliance Valiants' Ring"] = "The Alliance Valiants' Ring",
+		["Silver Covenant Pavilion"] = "Silver Covenant Pavilion",
+		["Sunreaver Pavilion"] = "Sunreaver Pavilion",
+		["The Horde Valiants' Ring"] = "The Horde Valiants' Ring",
 	}
 
 end

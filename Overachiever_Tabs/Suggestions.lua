@@ -82,7 +82,8 @@ local ACHID_ZONE_MISC = {
 	["Dalaran"] = { 2096, 1956, 1958, 545, 1998, IsAlliance and 1782 or 1783, 3217 },
 	["Grizzly Hills"] = { "1596:1" },	-- "Guru of Drakuru"
 	["Icecrown"] = { SUBZONES = {
-		["Argent Tournament Grounds"] = { 2756, 2772, 2836, 2773, 3736 },
+		["*Argent Tournament Grounds*The Ring of Champions*Argent Pavilion*The Argent Valiants' Ring*The Aspirants' Ring*The Alliance Valiants' Ring*Silver Covenant Pavilion*Sunreaver Pavilion*The Horde Valiants' Ring*"] =
+			{ 2756, 2772, 2836, 2773, 3736 },
 		-- "Argent Aspiration", "Tilted!", "Lance a Lot", "It's Just a Flesh Wound", "Pony Up!"
 	} },
 	["Sholazar Basin"] =		-- "The Snows of Northrend", "Honorary Frenzyheart",
