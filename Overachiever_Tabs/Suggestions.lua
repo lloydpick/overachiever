@@ -773,6 +773,7 @@ end
 EditZoneOverride:SetScript("OnEditFocusGained", function(self)
   self:SetTextColor(1, 1, 1)
   self:HighlightText()
+  CloseMenus()
 end)
 
 EditZoneOverride:SetScript("OnChar", function(self)
@@ -902,6 +903,12 @@ do
     end
   end
 end
+
+local orig_subzdropBtn_OnClick = Overachiever_SuggestionsFrameSubzoneDropButton:GetScript("OnClick")
+Overachiever_SuggestionsFrameSubzoneDropButton:SetScript("OnClick", function(...)
+  Refresh()
+  if (subzdrop:IsEnabled()) then  orig_subzdropBtn_OnClick(...);  end
+end)
 
 
 RefreshBtn:SetPoint("TOPLEFT", subzdrop, "BOTTOMLEFT", 16, -14)
