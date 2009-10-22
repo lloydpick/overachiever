@@ -9,7 +9,8 @@
 
 local L = OVERACHIEVER_STRINGS
 
-local LBZ = LibStub("LibBabble-Zone-3.0"):GetReverseLookupTable()
+local LBZ = LibStub("LibBabble-Zone-3.0"):GetUnstrictLookupTable()
+local LBZR = LibStub("LibBabble-Zone-3.0"):GetReverseLookupTable()
 local LBI = LibStub:GetLibrary("LibBabble-Inventory-3.0"):GetLookupTable()
 local LBIR = LibStub:GetLibrary("LibBabble-Inventory-3.0"):GetReverseLookupTable()
 
@@ -17,6 +18,7 @@ local RecentReminders = Overachiever.RecentReminders
 
 local IsAlliance = UnitFactionGroup("player") == "Alliance"
 local suggested = {}
+
 
 
 -- ZONE-SPECIFIC ACHIEVEMENTS
@@ -350,20 +352,14 @@ local ACHID_INSTANCES_25_HEROIC = {
 }
 
 
--- Turn L.SUBZONES into reverse lookup table:
-if (GetLocale() ~= "enUS") then
-  for k,v in pairs(L.SUBZONES) do
-    suggested[v] = k
-  end
-  wipe(L.SUBZONES)
-  for k,v in pairs(suggested) do
-    L.SUBZONES[k] = v
-  end
-  wipe(suggested)
-end
+-- Create reverse lookup table for L.SUBZONES:
+local SUBZONES_REV = {}
+for k,v in pairs(L.SUBZONES) do  SUBZONES_REV[v] = k;  end
 
-local function ZoneLookup(zoneName, isSub)
-  return isSub and L.SUBZONES[zoneName] or LBZ[zoneName] or zoneName
+local function ZoneLookup(zoneName, isSub, subz)
+  zoneName = zoneName or subz or ""
+  local trimz = strtrim(zoneName)
+  return isSub and SUBZONES_REV[trimz] or LBZR[trimz] or LBZR[zoneName] or trimz
 end
 
 
@@ -403,7 +399,8 @@ local ACHID_TRADESKILL_BG = { Cooking = 1785 }	-- "Dinner Impossible"
 
 local VARS
 local frame, panel, sortdrop
-local RefreshBtn, NoSuggestionsLabel, ResultsLabel
+local LocationsList, EditZoneOverride, subzdrop, subzdrop_menu, subzdrop_Update = {}
+local RefreshBtn, ResetBtn, NoSuggestionsLabel, ResultsLabel
 
 local function SortDrop_OnSelect(self, value)
   VARS.SuggestionsSort = value
@@ -525,10 +522,30 @@ local function getDifficulty(inInstance)
   end
 end
 
-local function Refresh()
-  if (not frame:IsVisible()) then  return;  end
+local Refresh_stoploop
+
+local function Refresh(self)
+  if (not frame:IsVisible() or Refresh_stoploop) then  return;  end
+  if (self == RefreshBtn or self == EditZoneOverride) then  PlaySound("igMainMenuOptionCheckBoxOn");  end
+
   wipe(suggested)
-  CurrentSubzone = ZoneLookup( strtrim(GetSubZoneText() or ""), true )
+  EditZoneOverride:ClearFocus()
+  CurrentSubzone = ZoneLookup(GetSubZoneText(), true)
+  local zone = LocationsList[ strtrim(strlower(EditZoneOverride:GetText())) ]
+  if (zone) then
+    zone = LocationsList[zone]
+    EditZoneOverride:SetText(zone)
+    if (self ~= subzdrop) then  subzdrop_Update(zone);  end
+    local subz = subzdrop:GetSelectedValue()
+    if (subz ~= 0) then  CurrentSubzone = subz;  end
+  else
+    zone = ZoneLookup(GetRealZoneText(), nil, CurrentSubzone)
+    EditZoneOverride:SetTextColor(0.75, 0.1, 0.1)
+    Refresh_stoploop = true
+    subzdrop:SetMenu(subzdrop_menu)
+    Refresh_stoploop = nil
+    subzdrop:Disable()
+  end
 
   -- Suggestions based on an open tradeskill window or whether a fishing pole is equipped:
   TradeskillSuggestions = GetTradeSkillLine()
@@ -539,7 +556,6 @@ local function Refresh()
   if (ACHID_TRADESKILL[tradeskill]) then
     Refresh_Add(ACHID_TRADESKILL[tradeskill])
     if (ACHID_TRADESKILL_ZONE[tradeskill]) then
-      local zone = GetRealZoneText()
       Refresh_Add(ACHID_TRADESKILL_ZONE[tradeskill][zone])
     end
     local _, instype = IsInInstance()
@@ -552,9 +568,6 @@ local function Refresh()
   -- Suggestions for your location:
     local inInstance, instype = IsInInstance()
     if (inInstance) then
-      local zone = GetRealZoneText()
-      if (not zone or zone == "") then  zone = CurrentSubzone;  end
-      zone = ZoneLookup(zone)
       Refresh_Add(ACHID_INSTANCES[zone])
       if (instype == "pvp") then  -- If in a battleground:
         Refresh_Add(ACHID_BATTLEGROUNDS)
@@ -576,8 +589,6 @@ local function Refresh()
       end
 
     else
-      local zone = GetRealZoneText()
-      zone = ZoneLookup(zone)
       Refresh_Add(Overachiever.ExploreZoneIDLookup(zone), ACHID_ZONE_NUMQUESTS[zone], ACHID_ZONE_MISC[zone])
       -- Also look for instance achievements for an instance you're near if we can look it up easily (since many zones
       -- have subzones with the instance name when you're near the instance entrance and some instance entrances are
@@ -660,7 +671,7 @@ end
 
 RefreshBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
 RefreshBtn:SetWidth(75); RefreshBtn:SetHeight(21)
-RefreshBtn:SetPoint("TOPLEFT", sortdrop, "BOTTOMLEFT", 16, -14)
+--RefreshBtn:SetPoint("TOPLEFT", sortdrop, "BOTTOMLEFT", 16, -14)
 RefreshBtn:SetText(L.SUGGESTIONS_REFRESH)
 RefreshBtn:SetScript("OnClick", Refresh)
 
@@ -703,6 +714,207 @@ Overachiever.SUGGESTIONS = {
 	tradeskill_zone = ACHID_TRADESKILL_ZONE,
 	tradeskill_bg = ACHID_TRADESKILL_BG,
 }
+
+
+
+-- ZONE/INSTANCE OVERRIDE INPUT
+----------------------------------------------------
+
+EditZoneOverride = CreateFrame("EditBox", "Overachiever_SuggestionsFrameZoneOverrideEdit", panel, "InputBoxTemplate")
+EditZoneOverride:SetWidth(170); EditZoneOverride:SetHeight(16)
+EditZoneOverride:SetAutoFocus(false)
+EditZoneOverride:SetPoint("TOPLEFT", sortdrop, "BOTTOMLEFT", 22, -19)
+do
+  local label = EditZoneOverride:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  label:SetPoint("BOTTOMLEFT", EditZoneOverride, "TOPLEFT", -6, 4)
+  label:SetText(L.SUGGESTIONS_LOCATION)
+
+  -- CREATE LIST OF VALID LOCATIONS:
+  -- Add all zones to the list:
+  local zonetab = {}
+  for i=1,select("#",GetMapContinents()) do  zonetab[i] = { GetMapZones(i) };  end
+  for i,tab in ipairs(zonetab) do
+    for n,z in ipairs(tab) do  suggested[z] = true;  end  -- Already localized so no need for LBZ here.
+  end
+  zonetab = nil
+  -- Add instances for which we have suggestions:
+  local function addtolist(list, ...)
+    local tab
+    for i=1,select("#", ...) do
+      tab = select(i, ...)
+      for k,v in pairs(tab) do  list[ LBZ[k] or k ] = true;  end  -- Add localized version of instance names.
+    end
+  end
+  addtolist(suggested, ACHID_INSTANCES, ACHID_INSTANCES_10, ACHID_INSTANCES_25, ACHID_INSTANCES_10_NORMAL,
+            ACHID_INSTANCES_25_NORMAL, ACHID_INSTANCES_10_HEROIC, ACHID_INSTANCES_25_HEROIC)
+  addtolist = nil
+  -- Arrange into alphabetically-sorted array:
+  local count = 0
+  for k in pairs(suggested) do
+    count = count + 1
+    LocationsList[count] = k
+  end
+  wipe(suggested)
+  sort(LocationsList)
+  -- Cross-reference by lowercase key to place in the array:
+  for i,v in ipairs(LocationsList) do  LocationsList[strlower(v)] = i;  end
+end
+
+EditZoneOverride:SetScript("OnEnterPressed", Refresh)
+
+local function findFirstLocation(text)
+  if (strtrim(text) == "") then  return;  end
+  local len = strlen(text)
+  for i,v in ipairs(LocationsList) do
+    if (strsub(strlower(v), 1, len) == text) then  return i, v, len, text;  end
+  end
+end
+
+EditZoneOverride:SetScript("OnEditFocusGained", function(self)
+  self:SetTextColor(1, 1, 1)
+  self:HighlightText()
+end)
+
+EditZoneOverride:SetScript("OnChar", function(self)
+  local i, v, len = findFirstLocation(strlower(self:GetText()))
+  if (i) then
+    self:SetText(v)
+    self:HighlightText(len, strlen(v))
+    self:SetCursorPosition(len)
+  end
+end)
+
+EditZoneOverride:SetScript("OnTabPressed", function(self)
+  local text = strlower(self:GetText())
+  local text2, len
+  if (text == "") then
+    text2 = LocationsList[IsShiftKeyDown() and #LocationsList or 1]
+    len = 0
+  elseif (not LocationsList[text]) then
+    if (IsShiftKeyDown()) then
+      len = strlen(text)
+      for i = #LocationsList, 1, -1 do
+        if (strsub(strlower(LocationsList[i]), 1, len) == text) then
+          text2 = LocationsList[i]
+          break;
+        end
+      end
+    else
+      local i
+      i, text2, len = findFirstLocation(text)
+    end
+  else
+    local i, v
+    i, v, len, text = findFirstLocation(text)
+    if (i) then
+      local pos = self:GetUTF8CursorPosition()
+      text = strsub(text, 1, pos)
+      len = strlen(text)
+      local mod = IsShiftKeyDown() and -1 or 1
+      repeat
+        i = i + mod
+        text2 = LocationsList[i]
+        if (not text2) then  i = (mod == 1 and 0) or #LocationsList + 1;  end
+      until (text2 and strsub(strlower(text2), 1, pos) == text)
+    end
+  end
+  if (text2) then
+    self:SetText(text2)
+    self:HighlightText(len, strlen(text2))
+    self:SetCursorPosition(len)
+  end
+end)
+
+EditZoneOverride:SetScript("OnEnter", function(self)
+  GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+  GameTooltip:AddLine(L.SUGGESTIONS_LOCATION_TIP, 1, 1, 1)
+  GameTooltip:AddLine(L.SUGGESTIONS_LOCATION_TIP2, nil, nil, nil, 1)
+  GameTooltip:Show()
+end)
+
+EditZoneOverride:SetScript("OnLeave", function(self)
+  GameTooltip:Hide()
+end)
+
+
+subzdrop_menu = {  {  text = L.SUGGESTIONS_LOCATION_NOSUBZONE, value = 0  };  }
+subzdrop = TjDropDownMenu.CreateDropDown("Overachiever_SuggestionsFrameSubzoneDrop", panel, subzdrop_menu)
+subzdrop:SetLabel(L.SUGGESTIONS_LOCATION_SUBZONE, true)
+subzdrop:SetPoint("LEFT", sortdrop, "LEFT")
+subzdrop:SetPoint("TOP", EditZoneOverride, "BOTTOM", 0, -21)
+subzdrop:SetDropDownWidth(158)
+subzdrop:OnSelect(Refresh)
+
+do
+  local menu
+
+  local function addtosubzlist(list, key, ...)
+    local tab
+    for i=1,select("#", ...) do
+      tab = select(i, ...)
+      tab = tab[key]
+      tab = type(tab) == "table" and tab.SUBZONES
+      if (tab) then
+        for k in pairs(tab) do
+          if (strsub(k, 1, 1) == "*") then
+            for subz in gmatch(k, "%*([^%*]+)%*") do  list[ L.SUBZONES[subz] or subz ] = true;  end
+          else
+            list[ L.SUBZONES[k] or k ] = true
+          end
+        end
+      end
+    end
+  end
+
+  function subzdrop_Update(zone)
+    menu = menu or {}
+    if (menu[zone] == nil) then
+      local tab = {}
+      addtosubzlist(suggested, zone, ACHID_ZONE_MISC, ACHID_INSTANCES, ACHID_INSTANCES_10, ACHID_INSTANCES_25,
+                ACHID_INSTANCES_10_NORMAL, ACHID_INSTANCES_25_NORMAL, ACHID_INSTANCES_10_HEROIC, ACHID_INSTANCES_25_HEROIC)
+      -- Arrange into alphabetically-sorted array:
+      local count = 0
+      for k in pairs(suggested) do
+        count = count + 1
+        tab[count] = k
+      end
+      wipe(suggested)
+      if (count > 0) then
+        sort(tab)  -- Sort alphabetically.
+        -- Turn into dropdown menu format:
+        for i,name in ipairs(tab) do  tab[i] = {  text = name, value = name  };  end
+        tinsert(tab, 1, {  text = L.SUGGESTIONS_LOCATION_NOSUBZONE, value = 0  })
+        menu[zone] = tab
+        subzdrop:SetMenu(tab)
+        subzdrop:SetSelectedValue(0)
+        subzdrop:Enable()
+        return;
+      else
+        menu[zone] = false
+      end
+    end
+    if (menu[zone]) then
+      subzdrop:SetMenu(menu[zone])
+      subzdrop:Enable()
+    else
+      subzdrop:SetMenu(subzdrop_menu)
+      subzdrop:Disable()
+    end
+  end
+end
+
+
+RefreshBtn:SetPoint("TOPLEFT", subzdrop, "BOTTOMLEFT", 16, -14)
+
+ResetBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+ResetBtn:SetWidth(75); ResetBtn:SetHeight(21)
+ResetBtn:SetPoint("LEFT", RefreshBtn, "RIGHT", 4, 0)
+ResetBtn:SetText(L.SEARCH_RESET)
+ResetBtn:SetScript("OnClick", function(self)
+  PlaySound("igMainMenuOptionCheckBoxOff")
+  EditZoneOverride:SetText("")
+  Refresh()
+end)
 
 
 

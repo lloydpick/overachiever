@@ -138,7 +138,7 @@
 --
 
 
-local THIS_VERSION = 0.53
+local THIS_VERSION = 0.54
 
 if (not TjDropDownMenu or TjDropDownMenu.Version < THIS_VERSION) then
   TjDropDownMenu = TjDropDownMenu or {};
@@ -149,6 +149,8 @@ if (not TjDropDownMenu or TjDropDownMenu.Version < THIS_VERSION) then
   local generateNewMenuFrameForAll = nil;   -- Set to true to generate a new menuFrame object for every dropdown.
      -- Otherwise, those of the same displayMode are shared. This is a static option, to be set here in the Lua only
      -- (not meant to be changed dynamically).
+  
+  local TEXTCUTOFF = 10   -- How much of the dropdown Middle frame's width to reduce from the display text's width.
 
   local menuFrameList
   if (not generateNewMenuFrameForAll) then
@@ -421,6 +423,7 @@ if (not TjDropDownMenu or TjDropDownMenu.Version < THIS_VERSION) then
 
   local function SetDropDownWidth(frame, width)
     _G[frame:GetName().."Middle"]:SetWidth(width)
+    _G[frame:GetName().."Text"]:SetWidth(width - TEXTCUTOFF)
     frame:SetWidth(width+8)
   end
 
@@ -638,6 +641,8 @@ if (not TjDropDownMenu or TjDropDownMenu.Version < THIS_VERSION) then
     dropdown.IsEnabled = IsEnabled;
     dropdown.OpenMenu = OpenMenu;
     
+    _G[name.."Text"]:SetWidth( _G[name.."Middle"]:GetWidth() - TEXTCUTOFF )
+
     SetupFunctions(dropdown, dropdown.TjDDM.menuList)
 
     return dropdown;

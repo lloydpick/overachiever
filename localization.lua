@@ -64,9 +64,9 @@ OVERACHIEVER_STRINGS = {
 
 	OPT_LABEL_TRACKING = "Achievement Tracking";
 	OPT_AUTOTRACKTIMED = "Auto-track timed achievements";
-	OPT_AUTOTRACKTIMED_TIP = "Automatically track achievements with timed criteria when the timer starts. Does not switch if tracking another achievement unless it was automatically tracked by Overachiever.";
+	OPT_AUTOTRACKTIMED_TIP = "Automatically track achievements with timed criteria when the timer starts. If you are already tracking the maximum number of achievements, it will attempt to take the place of an auto-tracked exploration achievement; otherwise, it won't be tracked.";
 	OPT_AUTOTRACKEXPLORE = "Auto-track exploration achievements as you travel";
-	OPT_AUTOTRACKEXPLORE_TIP = "When you enter a zone, automatically track the exploration achievement associated with it. Does not switch if currently tracking something other than another zone's exploration achievement.";
+	OPT_AUTOTRACKEXPLORE_TIP = "When you enter a zone, automatically track its exploration achievement. If already tracking an exploration achievement, this will replace the previous automatically-tracked one if there is one or another exploration achievement otherwise.";
 	OPT_AUTOTRACKEXPLORE_COMPLETED = "Including completed achievements";
 
 	OPT_CRITTERTIPS = "Add /loved status of critters to their tooltips";

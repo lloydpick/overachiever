@@ -21,6 +21,11 @@ L.SUGGESTIONS_EMPTY = "Overachiever has no suggestions for you at this time.";
 L.SUGGESTIONS_RESULTS = "%d |4suggestion:suggestions; found.";
 L.SUGGESTIONS_RESULTS_TRADESKILL = "%s: %d |4suggestion:suggestions; found.";
 L.SUGGESTIONS_EMPTY_TRADESKILL = "%s: Overachiever has no suggestions for you at this time.";
+L.SUGGESTIONS_LOCATION = "Location:"
+L.SUGGESTIONS_LOCATION_TIP = "Override Zone/Instance Location"
+L.SUGGESTIONS_LOCATION_TIP2 = "Leave blank to get suggestions for your current location or start typing to get a matching valid zone or instance name to use instead. Press |cffffffffTab|r to cycle between locations that match the text to the left of the cursor. |cffffffffShift+Tab|r cycles in reverse order. If the cursor is at the leftmost position, it cycles between all valid locations."
+L.SUGGESTIONS_LOCATION_SUBZONE = "Subzone:"
+L.SUGGESTIONS_LOCATION_NOSUBZONE = "(unspecified)"
 
 L.WATCH_TAB = "Watch";
 L.WATCH_HELP = "Create your watch list by |cffffffffalt+clicking|r on achievements in the other tabs or achievement chat links. |cffffffffAlt+click|r on one displayed here to stop watching it.";
@@ -87,5 +92,4 @@ if (not L.SUBZONES) then
 		["Sunreaver Pavilion"] = "Sunreaver Pavilion",
 		["The Horde Valiants' Ring"] = "The Horde Valiants' Ring",
 	}
-
 end

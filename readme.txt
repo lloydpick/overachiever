@@ -109,6 +109,8 @@ Change log
 The change log lists changes of particular note to users, not every change made.
 
 v0.48
+- Suggestions Tab: Zone/instance and subzone override options added. Use them to see suggestions for locations far and
+  near without actually traveling there!
 - "Check Your Head": Fixed an issue where some races were associated with the wrong criteria.
 
 v0.47
