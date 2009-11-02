@@ -792,17 +792,22 @@ EditZoneOverride:SetScript("OnTabPressed", function(self)
     text2 = LocationsList[IsShiftKeyDown() and #LocationsList or 1]
     len = 0
   elseif (not LocationsList[text]) then
-    if (IsShiftKeyDown()) then
-      len = strlen(text)
-      for i = #LocationsList, 1, -1 do
-        if (strsub(strlower(LocationsList[i]), 1, len) == text) then
-          text2 = LocationsList[i]
-          break;
-        end
-      end
+    len = self:GetUTF8CursorPosition()
+    if (len == 0) then
+      text2 = LocationsList[IsShiftKeyDown() and #LocationsList or 1]
     else
-      local i
-      i, text2, len = findFirstLocation(text)
+      text = strsub(text, 1, len)
+      if (IsShiftKeyDown()) then
+        for i = #LocationsList, 1, -1 do
+          if (strsub(strlower(LocationsList[i]), 1, len) == text) then
+            text2 = LocationsList[i]
+            break;
+          end
+        end
+      else
+        local i
+        i, text2, len = findFirstLocation(text)
+      end
     end
   else
     local i, v

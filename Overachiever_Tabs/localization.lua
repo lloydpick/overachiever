@@ -60,7 +60,8 @@ elseif (locale == "esES" or locale == "esMX") then  -- Spanish
 --@localization(locale="esES", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="subtable")@
 
 	if (locale == "esMX") then  -- Spanish (Mexican)
---@localization(locale="esMX", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="subtable")@
+-- asdf Testing concat:
+--@localization(locale="esMX", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="concat")@
 	end
 
 end

@@ -10,7 +10,7 @@
 --  See TjOptions.txt for documentation.
 --
 
-local THIS_VERSION = 0.40
+local THIS_VERSION = 0.41
 
 if (not TjOptions or TjOptions.Version < THIS_VERSION) then
   TjOptions = TjOptions or {};
@@ -59,6 +59,24 @@ if (not TjOptions or TjOptions.Version < THIS_VERSION) then
         copytab(v, to[k]);
       else
         to[k] = v;
+      end
+    end
+  end
+
+  local function copyvars(panel, tab, reverse)
+    local from = reverse and tab or panel.TjOpt_tab.variables
+    local to = not reverse and tab or panel.TjOpt_tab.variables
+    local v, f
+    for i,item in ipairs(panel.TjOpt_tab.items) do
+      v = item.variable
+      if (v) then
+        f = from[v]
+        if (type(f) == "table") then
+          to[v] = type(to[v]) == "table" and wipe(to[v]) or {}
+          copytab(f, to[v])
+        else
+          to[v] = f
+        end
       end
     end
   end
@@ -269,7 +287,7 @@ if (not TjOptions or TjOptions.Version < THIS_VERSION) then
             return;
           end
         end
-        -- Prevent nil value from causing inconsistencies when copytab function is used:
+        -- Prevent nil value from causing inconsistencies if copytab function is used:
         if (val == nil) then  val = false;  end
 
         local key = obj.TjOpt_tab.variable
@@ -484,7 +502,8 @@ if (not TjOptions or TjOptions.Version < THIS_VERSION) then
     if (tab.variables) then
     -- Remember current settings in case Cancel is pressed. (Happens after OnBuild in case that changed something.)
       tab.cancelTo = {}
-      copytab(tab.variables, tab.cancelTo);
+      --copytab(tab.variables, tab.cancelTo);
+      copyvars(panel, tab.cancelTo)
     end
   end
 
@@ -511,10 +530,11 @@ if (not TjOptions or TjOptions.Version < THIS_VERSION) then
 
   local function funcOkay(self)
     if (self.TjOpt_possiblechange) then
-      panelClearFocus(self)  -- Needed before copytab below since some items change their values when focus is lost.
+      panelClearFocus(self)  -- Needed before copyvars below since some items change their values when focus is lost.
       if (self.TjOpt_built and self.TjOpt_tab.variables) then
         -- Remember current settings in case Cancel is pressed after panel is shown again.
-        copytab(self.TjOpt_tab.variables, self.TjOpt_tab.cancelTo);
+        --copytab(self.TjOpt_tab.variables, self.TjOpt_tab.cancelTo);
+        copyvars(self, self.TjOpt_tab.cancelTo);
       end
       self.TjOpt_possiblechange = nil
       local func = self.TjOpt_tab.OnOkay
@@ -524,11 +544,12 @@ if (not TjOptions or TjOptions.Version < THIS_VERSION) then
 
   local function funcCancel(self)
     if (self.TjOpt_possiblechange) then
-      panelClearFocus(self)  -- Needed before copytab below since some items change their values when focus is lost.
+      panelClearFocus(self)  -- Needed before copyvars below since some items change their values when focus is lost.
       if (self.TjOpt_tab.cancelTo) then
         self.TjOpt_tab.isCanceling = true
         -- Revert to previous settings.
-        copytab(self.TjOpt_tab.cancelTo, self.TjOpt_tab.variables);
+        --copytab(self.TjOpt_tab.cancelTo, self.TjOpt_tab.variables);
+        copyvars(self, self.TjOpt_tab.cancelTo, true);
         sendOnChange_recursive(self.TjOpt_tab.variables, GetItems(self))
         self.TjOpt_tab.isCanceling = nil
       end
@@ -539,11 +560,14 @@ if (not TjOptions or TjOptions.Version < THIS_VERSION) then
   end
 
   local function funcDefault(self)
-    panelClearFocus(self)  -- Needed before copytab below since some items change their values when focus is lost.
+    panelClearFocus(self)  -- Needed before copyvars below since some items change their values when focus is lost.
     if (self.TjOpt_tab.defaults) then
       self.TjOpt_tab.isDefaulting = true
       if (not self.TjOpt_built) then  BuildPanelContents(self);  end
-      copytab(self.TjOpt_tab.defaults, self.TjOpt_tab.variables);
+
+      --copytab(self.TjOpt_tab.defaults, self.TjOpt_tab.variables);
+      copyvars(self, self.TjOpt_tab.defaults, true);
+
       self:LoadVariables()  -- This has switched between being necessary and being redundant (due to OnShow being
       -- called automatically) multiple times as the beta has progressed. Leaving it in for now; test it after WotLK
       -- has been released for a while.
@@ -554,7 +578,8 @@ if (not TjOptions or TjOptions.Version < THIS_VERSION) then
       else
       -- Remember current settings if Interface Options frame isn't shown.
       -- (Allow Cancel to revert this change if it is shown.)
-        copytab(self.TjOpt_tab.variables, self.TjOpt_tab.cancelTo);
+        --copytab(self.TjOpt_tab.variables, self.TjOpt_tab.cancelTo);
+        copyvars(self, self.TjOpt_tab.cancelTo);
       end
     end
     local func = self.TjOpt_tab.OnDefault

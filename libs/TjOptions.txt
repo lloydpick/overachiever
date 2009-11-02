@@ -1,5 +1,5 @@
 
-TjOptions v0.40
+TjOptions v0.41
 ========================================
 
 Author: Tuhljin
@@ -111,14 +111,12 @@ Baseline Fields:
   itemspacing   Integer. The size of the empty buffer space between items. A default value is used if nil.
 
   variables     Table or string. The variables that will be altered when the player manipulates the panel's items.
-                See "Variables Table," below. It is expected that any given table will be used for only one panel,
-                and only variables to be handled by TjOptions are contained therein; unexpected results may occur
-                otherwise. If this key is used, you will most likely want to make sure that the call to
-                TjOpions.CreatePanel() occurs after your addon's saved variables have been initialized by WoW.
+                See "Variables Table," below. If this key is used, you will most likely want to make sure that the
+                call to TjOpions.CreatePanel() occurs after your addon's saved variables have been initialized by
+                WoW.
 
-  defaults      Table. Default settings for the variables. This should be a duplicate of the "variables" table
-                except its values are what you want variables to be set to when the player sets this panels'
-                settings to the default.
+  defaults      Table. Settings for the variables to be used when the player sets this panels' settings to the
+                default. See "Variables Table," below.
 
   OnChange      Function. The given function will be called when TjOptions may have changed the value of any of
                 the panel's items' saved variables. It is called once for each item that may have changed and is
@@ -489,6 +487,13 @@ Example usage:
 
 Recent changes
 ================
+
+v0.41
+- TjOptions now supports the use of a single variables table for multiple options "pages" and other miscellaneous
+  use. Previously, if other entries were contained in the table, undesired results could occur when one page's
+  settings were set to the default or its settings were reverted (e.g., due to the Cancel button being clicked),
+  etc., since the entire table would be examined instead of just those keys that correspond to items on the
+  relevant page.
 
 v0.40
 - Now supports columns to align items to the right of a previous item, using the "column" key in item tables and
