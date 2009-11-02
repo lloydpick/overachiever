@@ -60,8 +60,18 @@ elseif (locale == "esES" or locale == "esMX") then  -- Spanish
 --@localization(locale="esES", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="subtable")@
 
 	if (locale == "esMX") then  -- Spanish (Mexican)
--- asdf Testing concat:
 --@localization(locale="esMX", format="lua_additive_table", namespace="Tabs", handle-subnamespaces="concat")@
+
+	-- We had to use "concat" instead of "subtable" for Curse's handle-subnamespaces substitution scheme so
+	-- esMX's L.SUBZONES doesn't entirely overwrite esES's. This puts them in the format "SUBZONES/<key>";
+	-- we'll iterate over the table to find those and put the values in the proper place:
+		local tab = L.SUBZONES
+		for k,v in pairs(L) do
+			if (strsub(k, 1, 9) == "SUBZONES/") then
+				tab[strsub(k, 10)] = v
+				L[k] = nil
+			end
+		end
 	end
 
 end
