@@ -273,7 +273,7 @@ end
 -- ITEM TOOLTIP HOOK
 -----------------------
 
-local FoodCriteria, DrinkCriteria, ItemLookupTabBuilt = {}, {}
+local FoodCriteria, DrinkCriteria = {}, {}
 local numDrinksConsumed, numFoodConsumed
 
 --local lastitemTime, lastitemLink = 0
@@ -284,13 +284,18 @@ function Overachiever.BuildItemLookupTab()
 
 -- Build lookup tables (since examining the criteria each time is time-consuming)
   local foodID, drinkID = OVERACHIEVER_ACHID.TastesLikeChicken, OVERACHIEVER_ACHID.HappyHour
+  
+--[[  -- Tables are always built now because Blizzard's API doesn't track what is consumed. To be reliable,
+      -- Overachiever needs to "see" what is consumed so from now on we'll always use the tracking table.
+      -- (Variable ItemLookupTabBuilt is no longer used.)
   if ( ItemLookupTabBuilt or not Overachiever_Settings.Item_consumed or
        (not Overachiever_Settings.Item_consumed_whencomplete and select(4, GetAchievementInfo(foodID)) and
        select(4, GetAchievementInfo(drinkID))) ) then
-  -- If the tables are built, or we don't add this info to tooltips, or we don't add this info to tooltips if the
-  -- achievement is complete AND both achievements are complete, then do nothing.
+  -- OLD: If the tables are built, or we don't add this info to tooltips, or we don't add this info to tooltips if
+  -- the achievement is complete AND both achievements are complete, then do nothing.
     return;
   end
+--]]
 
   Overachiever_CharVars_Consumed = Overachiever_CharVars_Consumed or {}
   Overachiever_CharVars_Consumed.Food = Overachiever_CharVars_Consumed.Food or {}
@@ -312,8 +317,6 @@ function Overachiever.BuildItemLookupTab()
     i = i + 1
     _, _, _, _, _, _, _, asset = GetAchievementCriteriaInfo(drinkID, i)
   end
-
-  ItemLookupTabBuilt = true
 end
 
 local LBI = LibStub:GetLibrary("LibBabble-Inventory-3.0"):GetLookupTable()

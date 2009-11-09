@@ -89,7 +89,7 @@ OVERACHIEVER_STRINGS = {
 	OPT_CONSUMEITEMTIPS = "Add whether items need to consumed to their tooltips";
 	OPT_CONSUMEITEMTIPS_TIP = "If the achievement is incomplete, add a line to the tooltips of items that are part of its criteria to indicate whether you need to consume them.";
 	OPT_CONSUMEITEMTIPS_TIP2 = "Items that you are too low level to consume will not trigger a reminder sound.";
-	OPT_CONSUMEITEMTIPS_TIP3 = "Note: This option can add a few seconds to your initial load time.";
+	--OPT_CONSUMEITEMTIPS_TIP3 = "Note: This option can add a few seconds to your initial load time.";
 	OPT_CONSUMEITEMTIPS_WHENCOMPLETE = "Show even if achievement is complete";
 
 	OPT_LABEL_NEEDTOKILL = 'Kill Creature Achievements ("%s," "%s," etc.)';

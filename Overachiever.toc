@@ -23,3 +23,4 @@ Overachiever.lua
 AchieveID.lua
 AchieveTip.lua
 GameTip.lua
+Options.lua
