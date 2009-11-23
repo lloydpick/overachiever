@@ -52,6 +52,10 @@ OVERACHIEVER_STRINGS = {
 	MSG_NUMFOUNDLIST = "%s other achievements found:";
 	MSG_ACHNOTFOUND = "Achievement not found.";
 
+	OPTPANEL_REMINDERTOOLTIPS = "Reminder Tooltips";
+
+	OPT_LABEL_SEASONALACHS = "SEASONAL ACHIEVEMENTS";
+
 	OPT_LABEL_ACHTWO = '"%s" and "%s"';
 	OPT_LABEL_ACHTHREE = '"%s," "%s," and|n"%s"';
 
@@ -71,33 +75,34 @@ OVERACHIEVER_STRINGS = {
 	OPT_AUTOTRACKEXPLORE_TIP = "When you enter a zone, automatically track its exploration achievement. If already tracking an exploration achievement, this will replace the previous automatically-tracked one if there is one or another exploration achievement otherwise.";
 	OPT_AUTOTRACKEXPLORE_COMPLETED = "Including completed achievements";
 
-	OPT_CRITTERTIPS = "Add /loved status of critters to their tooltips";
+	OPT_CRITTERTIPS = "Critter /loved?";
 	OPT_CRITTERTIPS_TIP = "If this achievement is incomplete, add a line to the tooltips of critters that are part of its criteria to indicate whether you still need to /love that type of critter.";
-	OPT_PESTCONTROLTIPS = "Add whether you've exterminated a pest to its tooltip";
+	OPT_PESTCONTROLTIPS = "Pest exterminated?";
 	OPT_PESTCONTROLTIPS_TIP = "If this achievement is incomplete, add a line to the tooltips of critters that are part of its criteria to indicate whether you still need to exterminate them.";
-	OPT_WELLREADTIPS = "Add whether you've read a book to its tooltip";
+	OPT_WELLREADTIPS = "Book read?";
 	OPT_WELLREADTIPS_TIP = "If the achievement is incomplete, add a line to the tooltips of books that are part of its criteria to indicate whether you need to read them.";
-	OPT_ANGLERTIPS = "Add whether you've fished a node to its tooltip";
+	OPT_ANGLERTIPS = "Fishing node fished?";
 	OPT_ANGLERTIPS_TIP = "If the achievement is incomplete, add a line to the tooltips of fishing nodes that are part of its criteria to indicate whether you need to fish from them.";
-	OPT_LETITSNOWTIPS = "Add whether you need to use a Handful of Snowflakes";
+
+	OPT_LETITSNOWTIPS = "Handful of Snowflakes used?";
 	OPT_LETITSNOWTIPS_TIP = "If the achievement is incomplete, add a line to the tooltips of players of an appropriate race/class combo to indicate whether you need to use a Handful of Snowflakes on them.";
-	OPT_FISTFULOFLOVETIPS = "Add whether you need to use a Handful of Rose Petals";
+	OPT_FISTFULOFLOVETIPS = "Handful of Rose Petals used?";
 	OPT_FISTFULOFLOVETIPS_TIP = "If the achievement is incomplete, add a line to the tooltips of players of an appropriate race/class combo to indicate whether you need to use a Handful of Rose Petals on them.";
-	OPT_BUNNYMAKERTIPS = "Add whether you need to use Spring Flowers";
+	OPT_BUNNYMAKERTIPS = "Spring Flowers used?";
 	OPT_BUNNYMAKERTIPS_TIP = "If the achievement is incomplete, add a line to the tooltips of players of an appropriate gender and level to indicate whether you need to use Spring Flowers on them. Note that enemy players that are 10 or more levels higher than you are assumed to be at least level 18.";
-	OPT_CHECKYOURHEADTIPS = "Add whether you need to use a Weighted Jack-o'-Lantern";
+	OPT_CHECKYOURHEADTIPS = "Weighted Jack-o'-Lantern used?";
 	OPT_CHECKYOURHEADTIPS_TIP = "If the achievement is incomplete, add a line to the tooltips of players to indicate whether you need to use a Weighted Jack-o'-Lantern on them.";
-	OPT_TURKEYLURKEYTIPS = "Add whether you need to use your Turkey Shooter";
+	OPT_TURKEYLURKEYTIPS = "Turkey Shooter used?";
 	OPT_TURKEYLURKEYTIPS_TIP = "If the achievement is incomplete, add a line to the tooltips of players to indicate whether you need to use your Turkey Shooter on them.";
 
-	OPT_CONSUMEITEMTIPS = "Add whether items need to consumed to their tooltips";
+	OPT_CONSUMEITEMTIPS = "Item consumed?";
 	OPT_CONSUMEITEMTIPS_TIP = "If the achievement is incomplete, add a line to the tooltips of items that are part of its criteria to indicate whether you need to consume them.";
 	OPT_CONSUMEITEMTIPS_TIP2 = "Items that you are too low level to consume will not trigger a reminder sound.";
 	--OPT_CONSUMEITEMTIPS_TIP3 = "Note: This option can add a few seconds to your initial load time.";
 	OPT_CONSUMEITEMTIPS_WHENCOMPLETE = "Show even if achievement is complete";
 
 	OPT_LABEL_NEEDTOKILL = 'Kill Creature Achievements ("%s," "%s," etc.)';
-	OPT_KILLCREATURETIPS = "Add whether you need to kill a creature";
+	OPT_KILLCREATURETIPS = "Creature killed?";
 	OPT_KILLCREATURETIPS_TIP = "Add a line to the tooltips of creatures (excluding critters) that need to be killed to meet the criteria of an incomplete achievement indicating whether you still need to kill them.";
 	OPT_KILLCREATURETIPS_TIP2 = "Note: At startup (or when this is option is enabled), every achievement is scanned to find unit IDs. Not all achievements provide such IDs. Most do, but the tooltips of creatures which are the criteria of those that don't won't be altered by this option.";
 

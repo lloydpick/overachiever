@@ -36,13 +36,40 @@ end
 
 function Overachiever.CreateOptions(THIS_TITLE, BuildCriteriaLookupTab_check, AutoTrackCheck_Explore, CheckDraggable_AchFrame)
   local IDs = OVERACHIEVER_ACHID
-  local items = {
+
+  local items_general = {
 	{ type = "labelwrap", text = L.OPT_LABEL_TOOLTIPS, topBuffer = 1 },
 	{ variable = "Tooltip_ShowProgress", text = L.OPT_SHOWPROGRESS,
 	  tooltip = L.OPT_SHOWPROGRESS_TIP },
 	{ variable = "Tooltip_ShowProgress_Other", text = L.OPT_SHOWPROGRESS_OTHER,
 	  tooltip = L.OPT_SHOWPROGRESS_OTHER_TIP },
 	{ variable = "Tooltip_ShowID", text = L.OPT_SHOWID },
+	
+	{ type = "labelwrap", text = L.OPT_LABEL_TRACKING, topBuffer = 4 },
+	{ variable = "Tracker_AutoTimer", text = L.OPT_AUTOTRACKTIMED, tooltip = L.OPT_AUTOTRACKTIMED_TIP },
+	{ variable = "Explore_AutoTrack", text = L.OPT_AUTOTRACKEXPLORE,
+	  tooltip = L.OPT_AUTOTRACKEXPLORE_TIP, OnChange = AutoTrackCheck_Explore },
+	{ variable = "Explore_AutoTrack_Completed", text = L.OPT_AUTOTRACKEXPLORE_COMPLETED,
+	  xOffset = 10, OnChange = AutoTrackCheck_Explore },
+
+	{ type = "labelwrap", text = L.OPT_LABEL_MAINUI, topBuffer = 4, xOffset = 0 },
+	{ variable = "UI_SeriesTooltip", text = L.OPT_UI_SERIESTIP, tooltip = L.OPT_UI_SERIESTIP_TIP },
+	{ variable = "UI_RequiredForMetaTooltip", text = L.OPT_UI_REQUIREDFORMETATIP,
+	  tooltip = L.OPT_UI_REQUIREDFORMETATIP_TIP, OnChange = BuildCriteriaLookupTab_check },
+	{ variable = "Draggable_AchFrame", text = L.OPT_DRAGGABLE, OnChange = CheckDraggable_AchFrame },
+	{ variable = "DragSave_AchFrame", text = L.OPT_DRAGSAVE, xOffset = 10, OnChange = CheckDraggable_AchFrame },
+	
+	{ type = "sharedmedia", mediatype = "sound", variable = "SoundAchIncomplete", text = L.OPT_SELECTSOUND,
+	  tooltip = L.OPT_SELECTSOUND_TIP, tooltip2 = L.OPT_SELECTSOUND_TIP2,
+	  xOffset = 0, topBuffer = 10, OnChange = SoundSelected },
+	{ variable = "SoundAchIncomplete_AnglerCheckPole", text = L.OPT_SELECTSOUND_ANGLERCHECKPOLE,
+	  tooltip = L.OPT_SELECTSOUND_ANGLERCHECKPOLE_TIP, xOffset = 10 },
+  }
+
+  local items_reminders = {
+	{ type = "Oa_AchLabel", text = L.OPT_LABEL_NEEDTOKILL, topBuffer = 4, id1 = IDs.MediumRare, id2 = IDs.NorthernExposure },
+	{ variable = "CreatureTip_killed", text = L.OPT_KILLCREATURETIPS, tooltip = L.OPT_KILLCREATURETIPS_TIP,
+	  tooltip2 = L.OPT_KILLCREATURETIPS_TIP2, OnChange = BuildCriteriaLookupTab_check },
 
 	{ type = "Oa_AchLabel", text = L.OPT_LABEL_ACHTWO, topBuffer = 4, id1 = IDs.LoveCritters, id2 = IDs.LoveCritters2 },
 	{ variable = "CritterTip_loved", text = L.OPT_CRITTERTIPS, tooltip = L.OPT_CRITTERTIPS_TIP },
@@ -60,6 +87,8 @@ function Overachiever.CreateOptions(THIS_TITLE, BuildCriteriaLookupTab_check, Au
 	{ variable = "Item_consumed", text = L.OPT_CONSUMEITEMTIPS, tooltip = L.OPT_CONSUMEITEMTIPS_TIP, tooltip2 = L.OPT_CONSUMEITEMTIPS_TIP2 },
 	{ variable = "Item_consumed_whencomplete", text = L.OPT_CONSUMEITEMTIPS_WHENCOMPLETE, xOffset = 10 },
 
+	{ type = "labelwrap", text = L.OPT_LABEL_SEASONALACHS, justifyH = "CENTER", topBuffer = 16 },
+
 	{ type = "Oa_AchLabel", topBuffer = 4, xOffset = 0, id1 = IDs.FistfulOfLove },
 	{ variable = "FistfulOfLove_petals", text = L.OPT_FISTFULOFLOVETIPS, tooltip = L.OPT_FISTFULOFLOVETIPS_TIP },
 
@@ -74,41 +103,29 @@ function Overachiever.CreateOptions(THIS_TITLE, BuildCriteriaLookupTab_check, Au
 
 	{ type = "Oa_AchLabel", topBuffer = 4, id1 = IDs.TurkeyLurkey },
 	{ variable = "TurkeyLurkey_feathered", text = L.OPT_TURKEYLURKEYTIPS, tooltip = L.OPT_TURKEYLURKEYTIPS_TIP },
-
---	{ type = "labelwrap", text = L.OPT_LABEL_NEEDTOKILL:format(ACH_MediumRare, ACH_NorthernExposure), topBuffer = 4 },
-	{ type = "Oa_AchLabel", text = L.OPT_LABEL_NEEDTOKILL, topBuffer = 4, id1 = IDs.MediumRare, id2 = IDs.NorthernExposure },
-	{ variable = "CreatureTip_killed", text = L.OPT_KILLCREATURETIPS, tooltip = L.OPT_KILLCREATURETIPS_TIP,
-	  tooltip2 = L.OPT_KILLCREATURETIPS_TIP2, OnChange = BuildCriteriaLookupTab_check },
-
-	{ type = "labelwrap", text = L.OPT_LABEL_TRACKING, topBuffer = 4 },
-	{ variable = "Tracker_AutoTimer", text = L.OPT_AUTOTRACKTIMED, tooltip = L.OPT_AUTOTRACKTIMED_TIP },
-	{ variable = "Explore_AutoTrack", text = L.OPT_AUTOTRACKEXPLORE,
-	  tooltip = L.OPT_AUTOTRACKEXPLORE_TIP, OnChange = AutoTrackCheck_Explore },
-	{ variable = "Explore_AutoTrack_Completed", text = L.OPT_AUTOTRACKEXPLORE_COMPLETED,
-	  xOffset = 10, OnChange = AutoTrackCheck_Explore },
-
-	{ type = "sharedmedia", mediatype = "sound", variable = "SoundAchIncomplete", text = L.OPT_SELECTSOUND,
-	  tooltip = L.OPT_SELECTSOUND_TIP, tooltip2 = L.OPT_SELECTSOUND_TIP2,
-	  xOffset = 0, topBuffer = 10, OnChange = SoundSelected },
-	{ variable = "SoundAchIncomplete_AnglerCheckPole", text = L.OPT_SELECTSOUND_ANGLERCHECKPOLE,
-	  tooltip = L.OPT_SELECTSOUND_ANGLERCHECKPOLE_TIP, xOffset = 10 },
-
-	{ type = "labelwrap", text = L.OPT_LABEL_MAINUI, topBuffer = 4, xOffset = 0 },
-	{ variable = "UI_SeriesTooltip", text = L.OPT_UI_SERIESTIP, tooltip = L.OPT_UI_SERIESTIP_TIP },
-	{ variable = "UI_RequiredForMetaTooltip", text = L.OPT_UI_REQUIREDFORMETATIP,
-	  tooltip = L.OPT_UI_REQUIREDFORMETATIP_TIP, OnChange = BuildCriteriaLookupTab_check },
-	{ variable = "Draggable_AchFrame", text = L.OPT_DRAGGABLE, OnChange = CheckDraggable_AchFrame },
-	{ variable = "DragSave_AchFrame", text = L.OPT_DRAGSAVE, xOffset = 10, OnChange = CheckDraggable_AchFrame },
   }
 
-  return TjOptions.CreatePanel(THIS_TITLE, nil, {
-	title = THIS_TITLE.." v"..THIS_VERSION,
+  local title = THIS_TITLE.." v"..THIS_VERSION
+
+  local mainpanel, oldver = TjOptions.CreatePanel(THIS_TITLE, nil, {
+	title = title,
 	itemspacing = 3,
 	scrolling = true,
-	items = items,
+	items = items_general,
 	variables = "Overachiever_Settings",
 	defaults = Overachiever.DefaultSettings
   });
+
+  local reminderspanel = TjOptions.CreatePanel(L.OPTPANEL_REMINDERTOOLTIPS, THIS_TITLE, {
+	title = title..": |cffffffff"..L.OPTPANEL_REMINDERTOOLTIPS,
+	itemspacing = 3,
+	scrolling = true,
+	items = items_reminders,
+	variables = Overachiever_Settings,
+	defaults = Overachiever.DefaultSettings
+  });
+
+  return reminderspanel, oldver
 end
 
 
