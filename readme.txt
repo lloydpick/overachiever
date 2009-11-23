@@ -110,6 +110,7 @@ The change log lists changes of particular note to users, not every change made.
 
 v0.50
 - Work in progress.
+- "Turkey Lurkey": Option added to show whether you need to use your Turkey Shooter on players in their tooltips.
 
 v0.48
 - Suggestions Tab: Zone/instance and subzone override options added. Use them to see suggestions for locations far and

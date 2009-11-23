@@ -22,6 +22,7 @@ Overachiever.DefaultSettings = {
   FistfulOfLove_petals = false;
   BunnyMaker_eared = false;
   CheckYourHead_pumpkin = false;
+  TurkeyLurkey_feathered = false;
   Draggable_AchFrame = true;
   DragSave_AchFrame = false;
   SoundAchIncomplete = 0;
@@ -70,6 +71,9 @@ function Overachiever.CreateOptions(THIS_TITLE, BuildCriteriaLookupTab_check, Au
 
 	{ type = "Oa_AchLabel", topBuffer = 4, id1 = IDs.CheckYourHead },
 	{ variable = "CheckYourHead_pumpkin", text = L.OPT_CHECKYOURHEADTIPS, tooltip = L.OPT_CHECKYOURHEADTIPS_TIP },
+
+	{ type = "Oa_AchLabel", topBuffer = 4, id1 = IDs.TurkeyLurkey },
+	{ variable = "TurkeyLurkey_feathered", text = L.OPT_TURKEYLURKEYTIPS, tooltip = L.OPT_TURKEYLURKEYTIPS_TIP },
 
 --	{ type = "labelwrap", text = L.OPT_LABEL_NEEDTOKILL:format(ACH_MediumRare, ACH_NorthernExposure), topBuffer = 4 },
 	{ type = "Oa_AchLabel", text = L.OPT_LABEL_NEEDTOKILL, topBuffer = 4, id1 = IDs.MediumRare, id2 = IDs.NorthernExposure },

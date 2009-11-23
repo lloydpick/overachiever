@@ -42,6 +42,8 @@ OVERACHIEVER_STRINGS = {
 	ACH_BUNNYMAKER_COMPLETE = "Already used Spring Flowers";
 	ACH_CHECKYOURHEAD_INCOMPLETE = "Needs a pumpkin head";
 	ACH_CHECKYOURHEAD_COMPLETE = "Already pumpkin-headed";
+	ACH_TURKEYLURKEY_INCOMPLETE = "Needs feathers";
+	ACH_TURKEYLURKEY_COMPLETE = "Already feathered";
 
 	MSG_INVALIDID = "Invalid input: No achievement with that ID.";
 	MSG_NAMENOTFOUND = 'No achievement with name containing "|cffffffff%s|r" was found.';
@@ -85,6 +87,8 @@ OVERACHIEVER_STRINGS = {
 	OPT_BUNNYMAKERTIPS_TIP = "If the achievement is incomplete, add a line to the tooltips of players of an appropriate gender and level to indicate whether you need to use Spring Flowers on them. Note that enemy players that are 10 or more levels higher than you are assumed to be at least level 18.";
 	OPT_CHECKYOURHEADTIPS = "Add whether you need to use a Weighted Jack-o'-Lantern";
 	OPT_CHECKYOURHEADTIPS_TIP = "If the achievement is incomplete, add a line to the tooltips of players to indicate whether you need to use a Weighted Jack-o'-Lantern on them.";
+	OPT_TURKEYLURKEYTIPS = "Add whether you need to use your Turkey Shooter";
+	OPT_TURKEYLURKEYTIPS_TIP = "If the achievement is incomplete, add a line to the tooltips of players to indicate whether you need to use your Turkey Shooter on them.";
 
 	OPT_CONSUMEITEMTIPS = "Add whether items need to consumed to their tooltips";
 	OPT_CONSUMEITEMTIPS_TIP = "If the achievement is incomplete, add a line to the tooltips of items that are part of its criteria to indicate whether you need to consume them.";

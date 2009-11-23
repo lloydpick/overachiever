@@ -25,6 +25,7 @@ OVERACHIEVER_ACHID = {
 	FistfulOfLove = 1699,		-- "Fistful of Love"
 	BunnyMaker = 2422,		-- "Shake Your Bunny-Maker"
 	CheckYourHead = 291,		-- "Check Your Head"
+	TurkeyLurkey = 3559,		-- "Turkey Lurkey"
 
 	-- Statistics:
 	Stat_ConsumeDrinks = 346,	-- "Beverages consumed"
