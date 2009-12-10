@@ -243,7 +243,6 @@ end
 
 local function canTrackAchievement(id, allowCompleted)
   if ( GetNumTrackedAchievements() < WATCHFRAME_MAXACHIEVEMENTS and
-       WatchFrame_GetRemainingSpace() >= WatchFrame_GetHeightNeededForAchievement(id) and
        (allowCompleted or not select(4, GetAchievementInfo(id))) ) then
     return true
   end

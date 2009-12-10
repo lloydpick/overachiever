@@ -8,6 +8,7 @@ local LeftFrame
 
 local function emptyfunc() end
 
+local ACHIEVEMENTUI_FONTHEIGHT
 
 local FilterByTab = {}
 local orig_AchievementFrame_SetFilter = AchievementFrame_SetFilter
@@ -38,13 +39,15 @@ local function clearSelection(frame)
   AchievementButton_ResetObjectives();
   for _, button in next, frame.buttons do
     button:Collapse();
-    if ( not MouseIsOver(button) ) then
+    if ( not button:IsMouseOver() ) then
       button.highlight:Hide();
     end
     button.selected = nil;
     if ( not button.tracked:GetChecked() ) then
       button.tracked:Hide();
     end
+    button.description:Show();
+    button.hiddenDescription:Hide();
   end
 
   frame.selection = nil;
@@ -99,15 +102,9 @@ local function displayAchievement(button, frame, achievement, index, selectionID
     else
       button.shield.icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields-NoPoints]]);
     end
-
     button.description:SetText(description);
     button.hiddenDescription:SetText(description);
-    if ( button.hiddenDescription:GetWidth() > ACHIEVEMENTUI_MAXCONTENTWIDTH ) then
-      button.description:SetWidth(ACHIEVEMENTUI_MAXCONTENTWIDTH);
-    else
-      button.description:SetWidth(0);
-    end
-
+    button.numLines = ceil(button.hiddenDescription:GetHeight() / ACHIEVEMENTUI_FONTHEIGHT);
     button.icon.texture:SetTexture(icon);
     if ( completed and not button.completed ) then
       button.completed = true;
@@ -183,10 +180,12 @@ local function displayAchievement(button, frame, achievement, index, selectionID
     end
   elseif ( button.selected ) then
     button.selected = nil;
-    if ( not MouseIsOver(button) ) then
+    if ( not button:IsMouseOver() ) then
       button.highlight:Hide();
     end
     button:Collapse();
+    button.description:Show();
+    button.hiddenDescription:Hide();
   end
 
   return id;
@@ -463,7 +462,7 @@ local function achbtnOnClick(self, button)
 
   local frame = getFrameOfButton(self)
   if ( self.selected ) then
-    if ( not MouseIsOver(self) ) then
+    if ( not self:IsMouseOver() ) then
       self.highlight:Hide();
     end
     clearSelection(frame)
@@ -476,7 +475,7 @@ local function achbtnOnClick(self, button)
   Overachiever.RecentReminders_Check()
   displayAchievement(self, frame, self.id, self.index, self.id)
   HybridScrollFrame_ExpandButton(frame.scrollFrame, ((self.index - 1) * ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT), self:GetHeight());
-  updateAchievementsList(getFrameOfButton(self))
+  updateAchievementsList(frame)
 end
 
 local redir_btn_tinsert
@@ -486,6 +485,11 @@ local function post_AchievementButton_OnLoad(self)
     tinsert(redir_btn_tinsert, self);
     -- Undo the last addition to the table normally used (we don't want our buttons listed there):
     tremove(AchievementFrameAchievements.buttons);
+    
+    if ( not ACHIEVEMENTUI_FONTHEIGHT ) then
+      local _, fontHeight = self.description:GetFont();
+      ACHIEVEMENTUI_FONTHEIGHT = fontHeight;
+    end
   end
 end
 
@@ -649,10 +653,12 @@ local function LeftFrame_OnEvent_CRITERIA_UPDATE()
       local button = AchievementFrameAchievementsObjectives:GetParent();
       AchievementFrameAchievementsObjectives.id = nil;
       AchievementButton_DisplayObjectives(button, id, button.completed);
+      updateAchievementsList(getFrameOfButton(button))
       return; -- This only needs to happen once, no matter which frame it is that's currently shown.
     end
   end
 end
+
 
 do
   LeftFrame = CreateFrame("Frame", "Overachiever_LeftFrame", AchievementFrameCategories)

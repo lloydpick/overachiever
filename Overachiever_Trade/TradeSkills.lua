@@ -127,7 +127,7 @@ local function GetIcon(skillButton)
   -- OnClick hook:
   skillButton:HookScript("OnClick", skillButtonOnClick)
 
-  if (MouseIsOver(skillButton)) then
+  if (skillButton:IsMouseOver()) then
     currentButton = skillButton  -- Causes ExamineTradeSkillUI to trigger skillButtonOnEnter.
   end
 

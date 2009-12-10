@@ -1,5 +1,5 @@
 
-Overachiever v0.50
+Overachiever v0.51
 ==============================
 
 Author: Tuhljin
@@ -108,10 +108,15 @@ Change log
 
 The change log lists changes of particular note to users, not every change made.
 
+v0.51
+- Updated for WoW patch 3.3.
+- Suggestions Tab: "Master Angler of Azeroth" is now suggested when a fishing pole is equipped while in Stranglethorn
+  Vale or most Northrend zones.
+
 v0.50
 - "Turkey Lurkey": Option added to show whether you need to use your Turkey Shooter on players in their tooltips.
 - Options that add reminders to tooltips are now in their own interface options panel (a sub-category to the main
-  Overachiever panel) and they have had their checkbox text simplified.
+  Overachiever panel) and they have had their checkbox text simplified (English localization).
 - When /oa would open to an interface options panel, the new Reminder Tooltips panel is used.
 - Achievement name labels now include icons that can be interacted with: Mouse-over to see achievement details, click
   to open to the achievement, shift+click to link to chat.

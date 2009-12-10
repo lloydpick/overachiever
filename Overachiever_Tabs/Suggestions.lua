@@ -70,7 +70,7 @@ end
 local ACHID_ZONE_MISC = {
 -- Eastern Kingdoms
 	["Stranglethorn Vale"] =	-- "The Green Hills of Stranglethorn", "Gurubashi Arena Master",
-		{ 940, 389, 396, 306 },	-- "Gurubashi Arena Grand Master", "Master Angler of Stranglethorn"
+		{ 940, 389, 396, 306 },	-- "Gurubashi Arena Grand Master", "Master Angler of Azeroth"
 -- Outland
 	["Blade's Edge Mountains"] = 1276,	-- "Blade's Edge Bomberman"
 	["Nagrand"] = { 939, "1576:1" },	-- "Hills Like White Elekk", "Of Blood and Anguish"
@@ -254,7 +254,7 @@ local ACHID_INSTANCES_HEROIC = {
 	["Utgarde Keep"] = { 489, 1919 },
 	["The Nexus"] = { 490, 2037, 2036, 2150 },
 	["Drak'Tharon Keep"] = { 493, 2039, 2057, 2151 },
-	["Ahn'kahet: The Old Kingdom"] = { 492, 2056, 1861, 1862, 2038 },
+	["Ahn'kahet: The Old Kingdom"] = { 492, 2056, 1862, 2038 }, --removed: 1861
 	["The Oculus"] = { 498, 1868, 1871, 2044, 2045, 2046 },
 	["The Violet Hold"] = { 494, 2153, 1865, 2041, 1816 },
 	["The Culling of Stratholme"] = { 500, 1872, 1817 },
@@ -383,10 +383,20 @@ local ACHID_TRADESKILL_ZONE = {
 		["Orgrimmar"] = {1836,"150:1"},	-- "Old Crafty", "The Fishing Diplomat"
 		["Serpentshrine Cavern"] = 144,	-- "The Lurker Above"
 		["Shattrath City"] = 905,	-- "Old Man Barlowned"
-		["Stranglethorn Vale"] = 306,	-- "Master Angler of Stranglethorn"
 		["Stormwind City"] = "150:2",	-- "The Fishing Diplomat"
 		["Terokkar Forest"] = { 905, 726 },	-- "Old Man Barlowned", "Mr. Pinchy's Magical Crawdad Box"
 		["Zul'Gurub"] = 560,		-- "Deadliest Catch"
+		
+		-- "Master Angler of Azeroth":
+		["Stranglethorn Vale"] = 306,
+		["Howling Fjord"] = 306,
+		["Grizzly Hills"] = 306,
+		["Borean Tundra"] = 306,
+		["Sholazar Basin"] = 306,
+		["Dragonblight"] = 306,
+		["Crystalsong Forest"] = 306,
+		["Icecrown"] = 306,
+		["Zul'Drak"] = 306,
         }
 }
 
