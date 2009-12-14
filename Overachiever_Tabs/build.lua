@@ -648,12 +648,14 @@ end
 
 local function LeftFrame_OnEvent_CRITERIA_UPDATE()
   for k,tab in ipairs(tabs) do
-    if ( tab.frame.selection ) then
+    local frame = tab.frame
+    if ( frame.selection and tabselected == frame ) then
+-- Based on part of AchievementFrameAchievements_OnEvent.
       local id = AchievementFrameAchievementsObjectives.id;
       local button = AchievementFrameAchievementsObjectives:GetParent();
       AchievementFrameAchievementsObjectives.id = nil;
       AchievementButton_DisplayObjectives(button, id, button.completed);
-      updateAchievementsList(getFrameOfButton(button))
+      updateAchievementsList(frame)
       return; -- This only needs to happen once, no matter which frame it is that's currently shown.
     end
   end

@@ -40,7 +40,7 @@ OVERACHIEVER_ACHID = {
 local LBZ = LibStub("LibBabble-Zone-3.0");
 LBZ = LBZ:GetReverseLookupTable()
 
-local EXPLOREZONEID = {
+OVERACHIEVER_EXPLOREZONEID = {
 -- Kalimdor:
 	["Azuremyst Isle"] = 860,
 	["Moonglade"] = 855,
@@ -110,5 +110,5 @@ local EXPLOREZONEID = {
 
 function Overachiever.ExploreZoneIDLookup(zoneName)
   local z = LBZ[zoneName] or zoneName
-  return EXPLOREZONEID[z];
+  return OVERACHIEVER_EXPLOREZONEID[z];
 end

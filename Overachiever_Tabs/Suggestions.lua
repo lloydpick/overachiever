@@ -1004,3 +1004,51 @@ function Overachiever.Debug_GetIDsInCat(cat)
   end
 end
 --]]
+
+--[[
+-- /run Overachiever.Debug_GetMissingAch()
+local function getAchIDsFromTab(from, to)
+  for k,v in pairs(from) do
+    if (type(v) == "table") then
+      getAchIDsFromTab(v, to)
+    else
+      if (type(v) == "string") then
+        local id, crit = strsplit(":", v)
+        id, crit = tonumber(id) or id, tonumber(crit) or crit
+        to[id] = to[id] or {}
+        to[id][crit] = true
+      else
+        to[v] = to[v] or false
+      end
+    end
+  end
+end
+
+function Overachiever.Debug_GetMissingAch()
+  wipe(suggested)
+  getAchIDsFromTab(Overachiever.SUGGESTIONS, suggested)
+  getAchIDsFromTab(OVERACHIEVER_ACHID, suggested)
+  getAchIDsFromTab(OVERACHIEVER_EXPLOREZONEID, suggested)
+  local count = 0
+  for id, crit in pairs(suggested) do
+    if (type(id) ~= "number") then
+      print("Invalid ID type:",id,type(id))
+      count = count + 1
+    elseif (GetAchievementInfo(id)) then
+      if (crit) then
+        local num = GetAchievementNumCriteria(id)
+        for c in pairs(crit) do
+          if (c > num) then
+            print(GetAchievementLink(id),"is missing criteria #"..(tostring(c) or "<?>"))
+            count = count + 1
+          end
+        end
+      end
+    else
+      print("Missing ID:",id..(crit and " (with criteria)" or ""))
+      count = count + 1
+    end
+  end
+  print("Overachiever.Debug_GetMissingAch():",count,"problems found.")
+end
+--]]
