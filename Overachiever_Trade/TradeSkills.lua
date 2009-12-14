@@ -274,7 +274,7 @@ if (Skillet) then
         end
       end
     end
-    
+
     -- Needed for when the button's contents change while the cursor is over it:
     local orig_Skillet_SkillButton_OnEnter = Skillet.SkillButton_OnEnter
     Skillet.SkillButton_OnEnter = function(obj, button, ...)
@@ -359,6 +359,51 @@ if (ATSWFrame) then
 
 end
 
+-- Producer:
+if (Producer) then
+
+  local function producer_achievementClick(id)
+    if (IsShiftKeyDown()) then
+      if (not ChatFrameEditBox:IsVisible()) then  ChatFrameEditBox:Show()  end
+      ChatEdit_InsertLink( GetAchievementLink(id) )
+    else
+      Overachiever.OpenToAchievement(id)
+    end
+  end
+
+  local titleLine
+
+  local orig_AddTradeSkillLines = Producer.CraftFrame.AddTradeSkillLines
+  function Producer.CraftFrame:AddTradeSkillLines(trade, grp)
+    local tradeskill = LBI[GetTradeSkillLine()]
+    local achs = TradeSkillLookup[tradeskill] and TradeSkillCheck(tradeskill, trade.name, true)
+    if (achs) then
+      titleLine = titleLine or { type = "header", text = "|cffffd100" .. L.REQUIREDFORMETATIP, isPlain = true, icon = "Interface\\AddOns\\Overachiever_Trade\\AchShieldGlow" }
+      grp:AddLine(titleLine)
+      local _, name
+      for i,id in ipairs(achs) do
+        _, name = GetAchievementInfo(id)
+        grp:AddLine({ text = name, link = GetAchievementLink(id), action = producer_achievementClick, params = { id } })
+        --closeWhenClicked = true
+      end
+      grp:AddLine()
+    end
+    return orig_AddTradeSkillLines(self, trade, grp)
+  end
+
+  -- Thanks to CMTitan (CurseForge.com user) for the code this is based on:
+  local function ProducerTradeskillChanger(trade, line)
+      if (not trade.name) then  return line;  end
+      local tradeName = LBI[GetTradeSkillLine()]
+      if (TradeSkillLookup[tradeName] and TradeSkillCheck(tradeName, trade.name)) then
+        line.text = "|TInterface\\AddOns\\Overachiever\\AchShield:16:16:-4:-2|t" .. line.text
+      end
+      return line
+  end
+  Producer.CraftFrame:RegisterTradeSkillChanger( ProducerTradeskillChanger )
+
+end
+
 -- ---------- End addon support section. ----------
 
 
@@ -385,7 +430,7 @@ skillButtonOnEnter = skillButtonOnEnter or function(self, _, calledByExamine)
   end
 end
 
-if (not ExamineTradeSkillUI) then
+if (ExamineTradeSkillUI == nil) then
   function ExamineTradeSkillUI()
     -- Hide all icons:
     for btn, icon in pairs(icons) do

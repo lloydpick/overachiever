@@ -110,7 +110,9 @@ The change log lists changes of particular note to users, not every change made.
 
 v0.52
 - Fixed an error that sometimes occurred when achievement criteria or statistics were updated.
-- Work in progress.
+- Trade module: Now supports the addon Producer. Instead of ctrl+clicking on a recipe to open to the relevant
+  achievement, simply left click on the achievement listed in the popup menu for that recipe. If you shift+click on the
+  listed achievement, it will be linked to chat.
 
 v0.51
 - Updated for WoW patch 3.3.

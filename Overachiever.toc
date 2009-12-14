@@ -6,6 +6,7 @@
 ## SavedVariables: Overachiever_Settings, Overachiever_CharVars_Default
 ## SavedVariablesPerCharacter: Overachiever_CharVars, Overachiever_CharVars_Consumed
 ## OptionalDeps: LibBabble-Zone-3.0, LibBabble-Inventory-3.0
+## X-WoWI-ID: 11361
 
 #@no-lib-strip@
 libs\LibBabble-Zone-3.0\LibStub\LibStub.lua

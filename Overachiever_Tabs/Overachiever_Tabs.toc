@@ -7,6 +7,7 @@
 ## LoadWith: Blizzard_AchievementUI
 ## Dependencies: Overachiever
 ## SavedVariables: Overachiever_Tabs_Settings
+## X-Child-Of: Overachiever
 
 localization.lua
 build.lua
