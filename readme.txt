@@ -1,5 +1,5 @@
 
-Overachiever v0.52
+Overachiever v0.53
 ==============================
 
 Author: Tuhljin
@@ -108,6 +108,9 @@ Change log
 
 The change log lists changes of particular note to users, not every change made.
 
+v0.53
+- "Fistful of Love": Fixed an issue where the reminder tooltip wasn't displayed properly.
+
 v0.52
 - Fixed an error that sometimes occurred when achievement criteria or statistics were updated.
 - Trade module: Now supports the addon Producer. Instead of ctrl+clicking on a recipe to open to the relevant
@@ -124,8 +127,8 @@ v0.50
 - Options that add reminders to tooltips are now in their own interface options panel (a sub-category to the main
   Overachiever panel) and they have had their checkbox text simplified (English localization).
 - When /oa would open to an interface options panel, the new Reminder Tooltips panel is used.
-- Achievement name labels now include icons that can be interacted with: Mouse-over to see achievement details, click
-  to open to the achievement, shift+click to link to chat.
+- Achievement name labels in Overachiever's interface options now include icons that can be interacted with: Mouse-over
+  to see achievement details, click to open to the achievement, shift+click to link to chat.
 - "It's Happy Hour Somewhere" and "Tastes Like Chicken": Consumed item tracking now occurs whether or not the option
   to show tooltip reminders about these achievements is enabled.
 - Suggestions Tab: Fixed an issue where the tab key didn't always cycle through locations when it should.
