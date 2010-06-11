@@ -1,5 +1,5 @@
 
-Overachiever v0.53
+Overachiever v0.54
 ==============================
 
 Author: Tuhljin
@@ -107,6 +107,12 @@ Change log
 ==========
 
 The change log lists changes of particular note to users, not every change made.
+
+v0.54
+- Suggestions Tab: Added suggestions for Trial of the Champion, Trial of the (Grand) Crusader, Icecrown Citadel, The
+  Forge of Souls, Halls of Reflection, and Pit of Saron.
+- Non-Heroic versions of creatures should no longer trigger a "need to kill" reminder tooltip for Heroic achievements
+  in most (if not all) cases. Please report any cases where this improper reminder still occurs.
 
 v0.53
 - "Fistful of Love": Fixed an issue where the reminder tooltip wasn't displayed properly.

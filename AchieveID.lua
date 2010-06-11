@@ -106,9 +106,29 @@ OVERACHIEVER_EXPLOREZONEID = {
 	["Zul'Drak"] = 1267,
 	["Grizzly Hills"] = 1266,
 	["The Storm Peaks"] = 1269,
-}
+};
 
 function Overachiever.ExploreZoneIDLookup(zoneName)
   local z = LBZ[zoneName] or zoneName
   return OVERACHIEVER_EXPLOREZONEID[z];
 end
+
+
+OVERACHIEVER_CATEGORY_HEROIC = {
+	[14921] = true, -- Lich King Dungeon
+	[14923] = true, -- Lich King 25-Player Raid
+};
+
+OVERACHIEVER_CATEGORY_25 = {
+	[14923] = true,			-- Lich King 25-Player Raid
+	[14962] = true,			-- Secrets of Ulduar 25-Player Raid
+	[15002] = true,			-- Call of the Crusade 25-Player Raid
+	[15042] = true,			-- Fall of the Lich King 25-Player Raid
+};
+
+OVERACHIEVER_HEROIC_CRITERIA = {
+	[1658] =			-- "Champions of the Frozen Wastes"
+		{ [4] = true, [5] = true, [6] = true, [7] = true, [8] = true, [9] = true, [10] = true, [11] = true, [12] = true,
+		  [13] = true, [14] = true, [15] = true },
+};
+

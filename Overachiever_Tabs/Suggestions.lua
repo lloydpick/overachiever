@@ -204,6 +204,10 @@ local ACHID_INSTANCES = {
 	["The Nexus"] = 478,
 	["The Violet Hold"] = 483,
 	["Azjol-Nerub"] = 480,
+	["Trial of the Champion"] = IsAlliance and 4296 or 3778,
+	["The Forge of Souls"] = 4516,
+	["Halls of Reflection"] = 4518,
+	["Pit of Saron"] = 4517,
 }
 -- Battlegrounds
 ACHID_INSTANCES["Eye of the Storm"] = { 1171, 587, 1258, 211 }
@@ -259,6 +263,10 @@ local ACHID_INSTANCES_HEROIC = {
 	["The Violet Hold"] = { 494, 2153, 1865, 2041, 1816 },
 	["The Culling of Stratholme"] = { 500, 1872, 1817 },
 	["Utgarde Pinnacle"] = { 499, 1873, 2043, 2156, 2157 },
+	["Trial of the Champion"] = { IsAlliance and 4298 or 4297, 3802, 3803, 3804 },
+	["The Forge of Souls"] = { 4519, 4522, 4523 },
+	["Halls of Reflection"] = { 4521, 4526 },
+	["Pit of Saron"] = { 4520, 4524, 4525 },
 }
 
 -- INSTANCES - 10-MAN ONLY (normal or heroic):
@@ -296,6 +304,8 @@ local ACHID_INSTANCES_10 = {
 		},
 	},
 	["Vault of Archavon"] = { 1722, 3136, 3836, 4016 },
+	["Trial of the Crusader"] = { 3917, 3936, 3798, 3799, 3800, 3996, 3797 },
+	["Icecrown Citadel"] = { 4580, 4601, 4534, 4538, 4577, 4535, 4536, 4537, 4578, 4581, 4539, 4579, 4582 },
 }
 
 -- INSTANCES - 25-MAN ONLY (normal or heroic):
@@ -333,22 +343,30 @@ local ACHID_INSTANCES_25 = {
 		},
 	},
 	["Vault of Archavon"] = { 1721, 3137, 3837, 4017 },
+	["Trial of the Crusader"] = { 3916, 3937, 3814, 3815, 3816, 3997, 3813 },
+	["Icecrown Citadel"] = { 4620, 4621, 4610, 4614, 4615, 4611, 4612, 4613, 4616, 4622, 4618, 4619, 4617 },
 }
 
 -- INSTANCES - NORMAL 10-MAN ONLY:
 local ACHID_INSTANCES_10_NORMAL = {
+	["Icecrown Citadel"] = 4532,
 }
 
 -- INSTANCES - HEROIC 10-MAN ONLY:
 local ACHID_INSTANCES_10_HEROIC = {
+	["Trial of the Crusader"] = { 3918, 3808 },
+	["Icecrown Citadel"] = 4636,
 }
 
 -- INSTANCES - NORMAL 25-MAN ONLY:
 local ACHID_INSTANCES_25_NORMAL = {
+	["Icecrown Citadel"] = 4608,
 }
 
 -- INSTANCES - HEROIC 25-MAN ONLY:
 local ACHID_INSTANCES_25_HEROIC = {
+	["Trial of the Crusader"] = { 3812, 3817 },
+	["Icecrown Citadel"] = 4637,
 }
 
 
@@ -515,23 +533,6 @@ end
 
 local TradeskillSuggestions
 
-local function getDifficulty(inInstance)
-  if (inInstance) then
-  -- Returns: <Heroic?>, <25-player Raid?>
-    local name, itype, diff = GetInstanceInfo()
-    if (itype == "raid") then
-      return (diff > 2), (diff == 2 or diff == 4)
-    else
-      return (diff > 1), false
-    end
-  else
-  -- Returns: <Heroic Dungeon?>, <Heroic Raid?>, <Raid set for 25 players?>
-    local d = GetDungeonDifficulty()
-    local r = GetRaidDifficulty()
-    return (d > 1), (r > 2), (r == 2 or r == 4)
-  end
-end
-
 local Refresh_stoploop
 
 local function Refresh(self)
@@ -557,6 +558,8 @@ local function Refresh(self)
     subzdrop:Disable()
   end
 
+  local instype, heroicD, twentyfive, heroicR = Overachiever.GetDifficulty()
+
   -- Suggestions based on an open tradeskill window or whether a fishing pole is equipped:
   TradeskillSuggestions = GetTradeSkillLine()
   local tradeskill = LBIR[TradeskillSuggestions]
@@ -568,7 +571,6 @@ local function Refresh(self)
     if (ACHID_TRADESKILL_ZONE[tradeskill]) then
       Refresh_Add(ACHID_TRADESKILL_ZONE[tradeskill][zone])
     end
-    local _, instype = IsInInstance()
     if (instype == "pvp") then  -- If in a battleground:
       Refresh_Add(ACHID_TRADESKILL_BG[tradeskill])
     end
@@ -576,15 +578,13 @@ local function Refresh(self)
     TradeskillSuggestions = nil
 
   -- Suggestions for your location:
-    local inInstance, instype = IsInInstance()
-    if (inInstance) then
+    if (instype) then  -- If in an instance:
       Refresh_Add(ACHID_INSTANCES[zone])
       if (instype == "pvp") then  -- If in a battleground:
         Refresh_Add(ACHID_BATTLEGROUNDS)
       end
 
-      local heroic, twentyfive = getDifficulty(true)
-      if (heroic) then
+      if (heroicD or heroicR) then
         if (twentyfive) then
           Refresh_Add(ACHID_INSTANCES_HEROIC[zone], ACHID_INSTANCES_25[zone], ACHID_INSTANCES_25_HEROIC[zone])
         else
@@ -605,11 +605,9 @@ local function Refresh(self)
       -- actually in their own "zone" using the instance's zone name):
       Refresh_Add(ACHID_INSTANCES[CurrentSubzone] or ACHID_INSTANCES[zone])
 
-      local heroicD, heroicR, twentyfive = getDifficulty(false)
       local ach10, ach25 = ACHID_INSTANCES_10[CurrentSubzone] or ACHID_INSTANCES_10[zone], ACHID_INSTANCES_25[CurrentSubzone] or ACHID_INSTANCES_25[zone]
       local achH10, achH25 = ACHID_INSTANCES_10_HEROIC[CurrentSubzone] or ACHID_INSTANCES_10_HEROIC[zone], ACHID_INSTANCES_25_HEROIC[CurrentSubzone] or ACHID_INSTANCES_25_HEROIC[zone]
       local achN10, achN25 = ACHID_INSTANCES_10_NORMAL[CurrentSubzone] or ACHID_INSTANCES_10_NORMAL[zone], ACHID_INSTANCES_25_NORMAL[CurrentSubzone] or ACHID_INSTANCES_25_NORMAL[zone]
-      local heroic
 
       if (ach10 or ach25 or achH10 or achH25 or achN10 or achN25) then
       -- If there are 10-man or 25-man specific achievements, this is a raid:

@@ -55,6 +55,29 @@ function Overachiever.RecentReminders_Check()
   end
 end
 
+function Overachiever.GetDifficulty()
+  local inInstance = IsInInstance()
+  if (inInstance) then
+  -- Returns: <instance type ("pvp"/"arena"/"party"/"raid")>, <Heroic?>, <25-player Raid?>, <Heroic Raid?>
+  --   If in a raid, the "Heroic Raid?" return will match the "Heroic?" return. Otherwise, it will be nil (actually
+  --   no return). Matching is done in order to simplify handling return values so special logic in determining
+  --   which return means what is less likely: If in an instance, the "Heroic Raid?" return will always say whether
+  --   you're in a heroic raid and the "Heroic?" return will always say whether you're in a heroic instance (raid or
+  --   or otherwise).
+    local name, itype, diff = GetInstanceInfo()
+    if (itype == "raid") then
+      return itype, (diff > 2), (diff == 2 or diff == 4), (diff > 2)
+    else
+      return itype, (diff > 1), false
+    end
+  else
+  -- Returns: false, <Dungeon set as Heroic?>, <Raid set for 25 players?>, <Raid set as Heroic?>
+    local d = GetDungeonDifficulty()
+    local r = GetRaidDifficulty()
+    return false, (d > 1), (r == 2 or r == 4), (r > 2)
+  end
+end
+
 
 -- UNIT TOOLTIP HOOK
 ----------------------
@@ -180,7 +203,7 @@ function Overachiever.ExamineSetUnit(tooltip)
       guid = tonumber( "0x"..strsub(guid, 8, 12) )
       local tab = Overachiever.AchLookup_kill[guid]
       if (tab) then
-        local num, numincomplete, _, achcom, c, t = 0, 0
+        local num, numincomplete, potential, _, achcom, c, t = 0, 0
         for i = 1, #tab, 2 do
           id = tab[i]
           _, _, _, achcom = GetAchievementInfo(id)
@@ -189,14 +212,31 @@ function Overachiever.ExamineSetUnit(tooltip)
             _, _, c = GetAchievementCriteriaInfo(id, tab[i+1])
             if (not c) then
               numincomplete = numincomplete + 1
-              t = t or time()
-              RecentReminders[id] = t
+              potential = potential or {}
+              potential[id] = i+1
             end
           end
         end
 
         if (num > 0) then
-          if (numincomplete == 0) then
+          if (numincomplete > 0) then
+            local instype, heroic, twentyfive = Overachiever.GetDifficulty()
+            if (instype) then
+              local cat, t
+              for id, crit in pairs(potential) do
+                cat = GetAchievementCategory(id)
+                if ((not heroic and (OVERACHIEVER_CATEGORY_HEROIC[cat] or (OVERACHIEVER_HEROIC_CRITERIA[id] and OVERACHIEVER_HEROIC_CRITERIA[id][crit])))
+		    or (not twentyfive and OVERACHIEVER_CATEGORY_25[cat])) then
+                  numincomplete = numincomplete - 1
+                else
+                  t = t or time()
+                  RecentReminders[id] = t
+                end
+              end
+            end
+          end
+
+          if (numincomplete <= 0) then
             text = L.KILL_COMPLETE
             r, g, b = tooltip_complete.r, tooltip_complete.g, tooltip_complete.b
           else
