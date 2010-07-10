@@ -1,5 +1,5 @@
 
-Overachiever v0.54
+Overachiever v0.55
 ==============================
 
 Author: Tuhljin
@@ -12,7 +12,6 @@ General:
 * Ctrl+click on an achievement link to open the UI to that achievement. Ctrl+click again to track it.
 * Optionally display your progress toward earning an achievement in links provided by others for easy comparison.
 * Click and drag to move the Achievement frame around the screen.
-* Remember achievement tracking between sessions and resume when you log in.
 * Add information from progress bars and normally-hidden progress information to your achievement tooltips. (For
   example, "Progress: 5/10" or "Assault 2 bases (0/2).")
 * Display a tooltip when hovering over an achievement in the Objectives frame to see more details about it.
@@ -107,6 +106,12 @@ Change log
 ==========
 
 The change log lists changes of particular note to users, not every change made.
+
+v0.55
+- Updated for WoW patch 3.3.5.
+- Fixed a pervasive taint issue that could result in blocked actions as taint eventually spreads to various UI elements
+  (such as the Dungeon Finder).
+- Achievements are no longer tracked between sessions to resume when you log in because WoW now does this by default.
 
 v0.54
 - Suggestions Tab: Added suggestions for Trial of the Champion, Trial of the (Grand) Crusader, Icecrown Citadel, The

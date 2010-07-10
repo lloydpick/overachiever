@@ -145,8 +145,11 @@ do
 
   local function icon_OnClick(self)
     if (IsShiftKeyDown()) then
-      if (not ChatFrameEditBox:IsVisible()) then  ChatFrameEditBox:Show()  end
-      ChatEdit_InsertLink( GetAchievementLink(self.id) )
+      if ( ChatEdit_GetActiveWindow() ) then
+        ChatEdit_InsertLink(GetAchievementLink(self.id));
+      else
+        ChatFrame_OpenChat(GetAchievementLink(self.id));
+      end
     else
       Overachiever.OpenToAchievement(self.id)
     end

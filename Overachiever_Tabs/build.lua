@@ -449,7 +449,7 @@ local function achbtnOnClick(self, button)
   end
   -- This section based on the AchievementButton_OnClick function in Blizzard_AchievementUI.lua:
   if (IsModifiedClick()) then
-    if ( IsModifiedClick("CHATLINK") and ChatFrameEditBox:IsVisible() ) then
+    if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
       local achievementLink = GetAchievementLink(self.id);
       if ( achievementLink ) then
         ChatEdit_InsertLink(achievementLink);

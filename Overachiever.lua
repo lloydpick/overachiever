@@ -447,8 +447,9 @@ end
 -- ACHIEVEMENT HYPERLINK HOOK
 -------------------------------
 
-local orig_SetItemRef = SetItemRef
-SetItemRef = function(link, text, button, ...)
+--local orig_SetItemRef = SetItemRef
+local orig_ChatFrame_OnHyperlinkShow = ChatFrame_OnHyperlinkShow
+ChatFrame_OnHyperlinkShow = function(self, link, text, button, ...)
   if (strsub(link, 1, 11) == "achievement") then
     if (IsControlKeyDown()) then
       local id = strsplit(":", strsub(link, 13));
@@ -465,7 +466,7 @@ SetItemRef = function(link, text, button, ...)
       end
     end
   end
-  return orig_SetItemRef(link, text, button, ...)
+  return orig_ChatFrame_OnHyperlinkShow(self, link, text, button, ...)
 end
 
 -- ACHIEVEMENT TRACKER CHANGES
@@ -477,8 +478,11 @@ WatchFrameLinkButtonTemplate_OnLeftClick = function(self, ...)
   if (self.type == "ACHIEVEMENT") then
     CloseDropDownMenus()
     if (IsShiftKeyDown()) then
-      if (not ChatFrameEditBox:IsVisible()) then  ChatFrameEditBox:Show()  end
-      ChatEdit_InsertLink( GetAchievementLink(self.index) )
+      if ( ChatEdit_GetActiveWindow() ) then
+        ChatEdit_InsertLink(GetAchievementLink(self.index));
+      else
+        ChatFrame_OpenChat(GetAchievementLink(self.index));
+      end
     else
     -- We prefer an openToAchievement() call instead of a direct AchievementFrame_SelectAchievement() call, so
     -- we do this here instead of calling orig_WatchFrameLinkButtonTemplate_OnLeftClick():
@@ -795,8 +799,11 @@ function Overachiever.OnEvent(self, event, arg1, ...)
     end
 
     if (Overachiever_CharVars) then
-      if (tonumber(Overachiever_CharVars.Version) < 0.40) then  Overachiever_CharVars.Pos_AchievementWatchFrame = nil;  end
+      oldver = tonumber(Overachiever_CharVars.Version)
+      if (oldver < 0.40) then  Overachiever_CharVars.Pos_AchievementWatchFrame = nil;  end
+      if (oldver < 0.55) then  Overachiever_CharVars.TrackedAch = nil;  end  -- No longer necessary as between-session objective tracking is now done by WoW itself.
 
+     --[[  No longer necessary as this is now done by WoW itself:
       local tracked = Overachiever_CharVars.TrackedAch
       if (tracked and GetNumTrackedAchievements() == 0) then
       -- Resume tracking from last session:
@@ -808,6 +815,7 @@ function Overachiever.OnEvent(self, event, arg1, ...)
           AddTrackedAchievement(tracked)
         end
       end
+     --]]
     else
       Overachiever_CharVars = {};
     end
@@ -873,6 +881,7 @@ function Overachiever.OnEvent(self, event, arg1, ...)
       Overachiever_CharVars_Default = Overachiever_CharVars_Default or {}
       Overachiever_CharVars_Default.Pos_AchievementFrame = Overachiever_CharVars.Pos_AchievementFrame
     end
+   --[[  No longer necessary as this is now done by WoW itself:
     -- Remember tracked achievements:
     local num = GetNumTrackedAchievements()
     if (num > 0) then
@@ -884,6 +893,7 @@ function Overachiever.OnEvent(self, event, arg1, ...)
     else
       Overachiever_CharVars.TrackedAch = nil
     end
+   --]]
 
   end
 end

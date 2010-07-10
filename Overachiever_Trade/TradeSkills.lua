@@ -364,8 +364,11 @@ if (Producer) then
 
   local function producer_achievementClick(id)
     if (IsShiftKeyDown()) then
-      if (not ChatFrameEditBox:IsVisible()) then  ChatFrameEditBox:Show()  end
-      ChatEdit_InsertLink( GetAchievementLink(id) )
+      if ( ChatEdit_GetActiveWindow() ) then
+        ChatEdit_InsertLink(GetAchievementLink(id));
+      else
+        ChatFrame_OpenChat(GetAchievementLink(id));
+      end
     else
       Overachiever.OpenToAchievement(id)
     end
