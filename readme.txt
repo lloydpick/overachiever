@@ -1,5 +1,5 @@
 
-Overachiever v0.55
+Overachiever v0.56
 ==============================
 
 Author: Tuhljin
@@ -106,6 +106,9 @@ Change log
 ==========
 
 The change log lists changes of particular note to users, not every change made.
+
+v0.56
+- Work in progress.
 
 v0.55
 - Updated for WoW patch 3.3.5.

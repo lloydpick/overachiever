@@ -30,6 +30,10 @@ L.SUGGESTIONS_LOCATION_NOSUBZONE = "(unspecified)"
 L.WATCH_TAB = "Watch";
 L.WATCH_HELP = "Create your watch list by |cffffffffalt+clicking|r on achievements in the other tabs or achievement chat links. |cffffffffAlt+click|r on one displayed here to stop watching it.";
 L.WATCH_EMPTY = "Your watch list is empty. Alt+click on an achievement in another tab or an achievement's chat link to watch it.";
+L.WATCH_LISTS = "Lists:";
+L.WATCH_DEFAULTLIST = "Default List:";
+L.WATCH_LIST_GLOBAL = "Global";
+L.WATCH_LIST_PERCHAR = "Character-specific";
 
 L.TAB_SORT = "Sort by:";
 L.TAB_SORT_NAME = "Name";

@@ -701,6 +701,10 @@ do
 
       Overachiever_Tabs_Settings = Overachiever_Tabs_Settings or {}
       local v = Overachiever_Tabs_Settings
+      local oldver = v.Version
+      v.Version = GetAddOnMetadata("Overachiever_Tabs", "Version")
+      if (oldver == v.Version) then  oldver = false;  end
+
       v.AchFilters = v.AchFilters or {}
       local AchFilters = v.AchFilters
       if (AchFilters["AchievementFrameAchievements"]) then
@@ -712,7 +716,7 @@ do
           name = tab.frame:GetName()
           if (AchFilters[name]) then  FilterByTab[tab.frame] = AchFilters[name];  end
           if (tab.loadFunc) then
-            tab.loadFunc(v)
+            tab.loadFunc(v, oldver)
             tab.loadFunc = nil
           end
         end
