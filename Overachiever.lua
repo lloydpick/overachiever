@@ -21,11 +21,6 @@ local OptionsPanel
 local MadeDraggable_AchFrame, MadeDragSave_AchFrame
 
 
-local function chatprint(msg, premsg)
-  premsg = premsg or "["..THIS_TITLE.."]"
-  DEFAULT_CHAT_FRAME:AddMessage("|cff7eff00"..premsg.."|r "..msg, 0.741, 1, 0.467);
-end
-
 local function copytab(from, to)
   for k,v in pairs(from) do
     if(type(v) == "table") then
@@ -35,6 +30,12 @@ local function copytab(from, to)
       to[k] = v;
     end
   end
+end
+
+
+local function chatprint(msg, premsg)
+  premsg = premsg or "["..THIS_TITLE.."]"
+  DEFAULT_CHAT_FRAME:AddMessage("|cff7eff00"..premsg.."|r "..msg, 0.741, 1, 0.467);
 end
 
 local function BuildCategoryInfo()

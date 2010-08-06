@@ -116,12 +116,9 @@ end
 local function FullList_OnClick(self)
   if (self:GetChecked()) then
     PlaySound("igMainMenuOptionCheckBoxOn");
-  else
-    PlaySound("igMainMenuOptionCheckBoxOff");
-  end
-  if (self:GetChecked()) then
     VARS.SearchFullList = true
   else
+    PlaySound("igMainMenuOptionCheckBoxOff");
     VARS.SearchFullList = false
   end
 end
@@ -235,15 +232,14 @@ EditAny = createEditBox("Any", L.SEARCH_ANY, EditReward)
 FullListCheckbox = CreateFrame("CheckButton", "Overachiever_SearchFrameFullListCheckbox", panel, "InterfaceOptionsCheckButtonTemplate")
 FullListCheckbox:SetPoint("TOPLEFT", EditAny, "BOTTOMLEFT", -8, -12)
 Overachiever_SearchFrameFullListCheckboxText:SetText(L.SEARCH_FULLLIST)
+FullListCheckbox:SetHitRectInsets(0, -1 * min(Overachiever_SearchFrameFullListCheckboxText:GetWidth() + 8, 155), 0, 0)
 FullListCheckbox:SetScript("OnClick", FullList_OnClick)
 FullListCheckbox:SetScript("OnEnter", function(self)
   GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
   GameTooltip:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b)
   GameTooltip:SetText(L.SEARCH_FULLLIST_TIP, nil, nil, nil, nil, 1)
 end)
-FullListCheckbox:SetScript("OnLeave", function(self)
-  GameTooltip:Hide()
-end)
+FullListCheckbox:SetScript("OnLeave", GameTooltip_Hide)
 
 local function resetEditBoxes()
   PlaySound("igMainMenuOptionCheckBoxOff")

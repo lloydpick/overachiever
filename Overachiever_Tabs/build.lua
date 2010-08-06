@@ -1,6 +1,7 @@
 
 local L = OVERACHIEVER_STRINGS
 
+
 local isAchievementInUI = Overachiever.IsAchievementInUI
 
 local tabs, tabselected

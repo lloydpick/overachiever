@@ -108,7 +108,10 @@ Change log
 The change log lists changes of particular note to users, not every change made.
 
 v0.56
-- Work in progress.
+- Watch Tab: Separate "Global," "Character-Specific," and custom-named watch lists can now be created. (All are saved
+  per-account so the player can access them from any character.) You can also select a Default List to be set as the
+  active (or "Displayed") list upon logging in. Additionally, you can copy watched achievements from the active list
+  to another list you specify using the Watch tab interface.
 
 v0.55
 - Updated for WoW patch 3.3.5.

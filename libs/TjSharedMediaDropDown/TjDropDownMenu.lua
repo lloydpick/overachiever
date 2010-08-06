@@ -50,6 +50,13 @@
 --      tab          Table. The portion of the menuList table associated with the selection. For example:
 --                   { text = "Option A", tooltipTitle = "Option A", tooltipText = "Use option A", value = 1 }
 --
+--  dropdown:OnMenuOpen(OnMenuOpenFunc)
+--    Assign a function to be called when the dropdown's menu is about to be displayed (such as when the dropdown
+--    button is clicked). This can be useful for editing the menu on demand. When called, the function is passed two
+--    arguments:
+--      dropdown     Frame. The primary dropdown frame.
+--      menuList     Table. The menu currently assigned to this dropdown.
+--
 --  dropdown:SetLabel(text, font)
 --    Creates a label above the dropdown, if it doesn't already exist, and sets its text to that given. If the label
 --    didn't exist, then font is used to determine which game font to use: If it's a string, that is the font used;
@@ -59,7 +66,7 @@
 --    Sets the dropdown menu's currently selected value. This should be the value from one of the entries in the
 --    dropdown's menuList. The dropdown's text is automatically updated. If checkNoAutoSetupEntries is true, then
 --    entries in the table that were excluded from TjDDM's automatic setup method (those that use the NO_TjDDM_Setup
---    field) can be selected.
+--    field) can be selected. Returns true if an entry with the given value was found and selected.
 --
 --  dropdown:Disable()
 --    Disables the dropdown menu, graying-out the selection text and label (if any) and disabling the dropdown
@@ -73,7 +80,7 @@
 --
 --  dropdown:OpenMenu()
 --    Display the dropdown's menu, as if the dropdown button was clicked. Can be called even if the dropdown is
---    disabled.
+--    disabled. Note that the menu will be closed instead if it is already open.
 --
 --  dropdown:SetOffset(x, y)
 --    Set the offset to be used when displaying the menu, as per the x and y arguments of
@@ -96,14 +103,14 @@
 --    selection text, and selected value, respectively.
 --
 --  dropdown:SetMenu([menuList[, doSetup]])
---    Changes the menuList used by the dropdown. Note: You can change which menu to use for dropdowns, but
---    dynamically adding individual entries to the menu may not work as expected. Either use this for switching
---    between a number of static menus or use it after a new (not simply edited) menu is created dynamically.
---    Alternatively, you *can* dynamically add individual entries to a menu if you call "dropdown:SetMenu()"
---    (no arguments) immediately after additions are complete if the menu is the current menu used by the dropdown,
---    or by calling "dropdown:SetMenu(new_menuList, true)" if it currently is not used by the dropdown but should be
---    now. This causes TjDDM to go over the menuList to set it up for use. (If adding multiple entries at once, do so
---    after the last entry is added.)
+--    Changes the menuList used by the dropdown. Returns true if the new menu has a valid selected entry. (If not,
+--    you may want to make a SetSelectedValue call after the SetMenu call.) This function is useful not only for
+--    switching between static menus but also for allowing menus to be edited dynamically. (Dynamically edited menus
+--    menus may not work as expected otherwise.) To use for this purpose, call the function immediately after edits
+--    are complete. If the edited menu is the current menu used by the dropdown, pass no arguments; if the menu is
+--    not currently used by the dropdown but now should be, pass the menuList table for the first argument and use
+--    true as the second argument. This causes TjDDM to go over the menuList to set it up for use. (If making
+--    multiple changes to the menu at once, try to call SetMenu after the last change has been made.)
 --
 --  Additional notes about menuList tables
 --  --------------------------------------
@@ -138,7 +145,7 @@
 --
 
 
-local THIS_VERSION = 0.54
+local THIS_VERSION = 0.55
 
 if (not TjDropDownMenu or TjDropDownMenu.Version < THIS_VERSION) then
   TjDropDownMenu = TjDropDownMenu or {};
@@ -449,6 +456,7 @@ if (not TjDropDownMenu or TjDropDownMenu.Version < THIS_VERSION) then
     if (tab) then
       ClearChecks(frame.TjDDM.menuList, true)
       SelectEntry(frame, tab)
+      return true
     end
   end
 
@@ -460,12 +468,17 @@ if (not TjDropDownMenu or TjDropDownMenu.Version < THIS_VERSION) then
       font = type(font) == "string" and font or font and "GameFontHighlight" or "GameFontNormal"
       frame.TjDDM.label = frame:CreateFontString(frame:GetName().."Label", "ARTWORK", font);
       frame.TjDDM.label:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", 16, 3);
+      frame.TjDDM.label_font = font
     end
     frame.TjDDM.label:SetText(text);
   end
 
   local function OnSelect(frame, func)
     frame.TjDDM.OnSelectFunc = func;
+  end
+  
+  local function OnMenuOpen(frame, func)
+    frame.TjDDM.OnMenuOpenFunc = func;
   end
 
   local function SetMenu(dropdown, menuList, doSetup)
@@ -477,6 +490,7 @@ if (not TjDropDownMenu or TjDropDownMenu.Version < THIS_VERSION) then
     if (tab) then
       ClearChecks(dropdown.TjDDM.menuList, true)
       SelectEntry(dropdown, tab)
+      return true
     end
   end
 
@@ -485,7 +499,11 @@ if (not TjDropDownMenu or TjDropDownMenu.Version < THIS_VERSION) then
     _G[name.."Button"]:Enable()
     _G[name.."Text"]:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
     if (frame.TjDDM.label) then
-      frame.TjDDM.label:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b)
+      if (frame.TjDDM.label_font == "GameFontHighlight") then
+        frame.TjDDM.label:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
+      else
+        frame.TjDDM.label:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b)
+      end
     end
     frame.TjDDM.enabled = true
   end
@@ -545,8 +563,10 @@ if (not TjDropDownMenu or TjDropDownMenu.Version < THIS_VERSION) then
 
   local function OpenMenu(dropdown)
     if (not TjMenuOpen or TjMenuOpen ~= dropdown:GetName()) then
-      local callFunc = dropdown.TjDDM.EasyMenuSubFunc or EasyMenu;
-      -- If using another function, it should take the same arguments as EasyMenu does or problems may occur.
+      local callFunc = dropdown.TjDDM.OnMenuOpenFunc
+      if (type(callFunc) == "function") then
+        callFunc(dropdown, dropdown.TjDDM.menuList);
+      end
 
       local menuFrame;
       if (generateNewMenuFrameForAll) then
@@ -569,9 +589,12 @@ if (not TjDropDownMenu or TjDropDownMenu.Version < THIS_VERSION) then
         hooksComplete = true
       end
 
-      callFunc(dropdown.TjDDM.menuList, menuFrame, dropdown, x, y, dropdown.TjDDM.displayMode, dropdown.TjDDM.autoHideDelay);
+      local menuFunc = dropdown.TjDDM.EasyMenuSubFunc or EasyMenu;
+      -- If using another function, it should take the same arguments as EasyMenu does or problems may occur.
+
+      menuFunc(dropdown.TjDDM.menuList, menuFrame, dropdown, x, y, dropdown.TjDDM.displayMode, dropdown.TjDDM.autoHideDelay);
       -- arg order: menuList, menuFrame, anchor, x, y, displayMode, autoHideDelay
-      TjMenuOpen = dropdown:GetName();   -- Do this after callFunc or it will be set to nil by MenuHidden().
+      TjMenuOpen = dropdown:GetName();   -- Do this after menuFunc or it will be set to nil by MenuHidden().
     else
       CloseMenus()
     end
@@ -634,6 +657,7 @@ if (not TjDropDownMenu or TjDropDownMenu.Version < THIS_VERSION) then
     dropdown.GetSelectedValue = GetSelectedValue;
     dropdown.SetSelectedValue = SetSelectedValue;
     dropdown.OnSelect = OnSelect;
+    dropdown.OnMenuOpen = OnMenuOpen;
     dropdown.SetLabel = SetLabel;
     dropdown.SetMenu = SetMenu;
     dropdown.Enable = Enable;

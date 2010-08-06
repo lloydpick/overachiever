@@ -95,14 +95,14 @@ function Overachiever.CreateOptions(THIS_TITLE, BuildCriteriaLookupTab_check, Au
 	{ type = "Oa_AchLabel", topBuffer = 4, xOffset = 0, id1 = IDs.BunnyMaker },
 	{ variable = "BunnyMaker_eared", text = L.OPT_BUNNYMAKERTIPS, tooltip = L.OPT_BUNNYMAKERTIPS_TIP },
 
-	{ type = "Oa_AchLabel", topBuffer = 4, id1 = IDs.LetItSnow },
-	{ variable = "LetItSnow_flaked", text = L.OPT_LETITSNOWTIPS, tooltip = L.OPT_LETITSNOWTIPS_TIP },
-
 	{ type = "Oa_AchLabel", topBuffer = 4, id1 = IDs.CheckYourHead },
 	{ variable = "CheckYourHead_pumpkin", text = L.OPT_CHECKYOURHEADTIPS, tooltip = L.OPT_CHECKYOURHEADTIPS_TIP },
 
 	{ type = "Oa_AchLabel", topBuffer = 4, id1 = IDs.TurkeyLurkey },
 	{ variable = "TurkeyLurkey_feathered", text = L.OPT_TURKEYLURKEYTIPS, tooltip = L.OPT_TURKEYLURKEYTIPS_TIP },
+	
+	{ type = "Oa_AchLabel", topBuffer = 4, id1 = IDs.LetItSnow },
+	{ variable = "LetItSnow_flaked", text = L.OPT_LETITSNOWTIPS, tooltip = L.OPT_LETITSNOWTIPS_TIP },
   }
 
   local title = THIS_TITLE.." v"..THIS_VERSION
