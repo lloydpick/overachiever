@@ -1,6 +1,7 @@
 
 local L = OVERACHIEVER_STRINGS
 local THIS_VERSION = GetAddOnMetadata("Overachiever", "Version")
+local GetAchievementInfo = Overachiever.GetAchievementInfo
 
 Overachiever.DefaultSettings = {
   Tooltip_ShowProgress = true;

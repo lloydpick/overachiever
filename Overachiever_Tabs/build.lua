@@ -1,5 +1,5 @@
-
 local L = OVERACHIEVER_STRINGS
+local GetAchievementInfo = Overachiever.GetAchievementInfo
 
 
 local isAchievementInUI = Overachiever.IsAchievementInUI
@@ -31,6 +31,10 @@ AchievementFrame_SetFilter = function(value, tabswitch)
 end
 
 
+local function click_parent(self, ...)
+  return self:GetParent():Click()
+end
+
 local function getFrameOfButton(button)
   return button:GetParent():GetParent():GetParent()
 end
@@ -61,6 +65,7 @@ local function selectButton(button)
   achievements.selection = button.id;
   achievements.selectionIndex = button.index;
   button.selected = true;
+  SetFocusedAchievement(button.id) --Not sure what this does yet but AchievementFrameAchievements_SelectButton uses it.
 end
 
 local function isPreviousAchievementInUI(id)
@@ -191,6 +196,7 @@ local function displayAchievement(button, frame, achievement, index, selectionID
 
   return id;
 end
+
 
 local sortList
 do
@@ -398,12 +404,15 @@ end
 
 local function tabUnselect()
   tabselected = nil
-  for k,tab in ipairs(tabs) do
-    tab.text:SetPoint("CENTER", tab, "CENTER", 0, -3)
-  end
+  -- for k,tab in ipairs(tabs) do
+  --   tab.text:SetPoint("CENTER", tab, "CENTER", 0, -3)
+  -- end
 end
 
 local function tabOnClick(self, button)
+  AchievementFrameBaseTab_OnClick(1) -- This should handle some possibly-necessary toggling of views, etc.
+  AchievementFrame_UpdateTabs(self:GetID()) -- Unfortunately, AchievementFrameBaseTab_OnClick already called this but for the wrong tab number.
+  --[[ No longer necessary as of WoW 4.0.1:
   self.text:SetPoint("CENTER", self, "CENTER", 0, -5)
   local i, tab = 0
   repeat
@@ -413,6 +422,8 @@ local function tabOnClick(self, button)
       tab.text:SetPoint("CENTER", tab, "CENTER", 0, -3)
     end
   until (not tab)
+  --]]
+
   -- Don't play sound when this is a silentDisplay or Overachiever.OpenTab_frame call.
   if (button) then  PlaySound("igCharacterInfoTab");  end
 
@@ -427,6 +438,7 @@ local function tabOnClick(self, button)
   AchievementFrameWaterMark:SetTexture(self.watermark)
   PanelTemplates_Tab_OnClick(self, AchievementFrame)
   updateAchievementsList(self.frame)
+  --AchievementFrame_UpdateTabs(self:GetID())
 end
 
 local function silentDisplay(button)
@@ -483,10 +495,12 @@ local redir_btn_tinsert
 local function post_AchievementButton_OnLoad(self)
   if (redir_btn_tinsert) then
     self:SetScript("OnClick", achbtnOnClick)
+    local shield = _G[self:GetName().."Shield"]
+    shield:SetScript("OnClick", click_parent)
     tinsert(redir_btn_tinsert, self);
-    -- Undo the last addition to the table normally used (we don't want our buttons listed there):
-    tremove(AchievementFrameAchievements.buttons);
-    
+    -- Our button isn't put into this table as of WoW 4.0.1, so this line is unneeded:
+    -- tremove(AchievementFrameAchievementsContainer.buttons);
+
     if ( not ACHIEVEMENTUI_FONTHEIGHT ) then
       local _, fontHeight = self.description:GetFont();
       ACHIEVEMENTUI_FONTHEIGHT = fontHeight;
@@ -512,8 +526,16 @@ function Overachiever.BuildNewTab(name, text, watermark, helptip, loadFunc, filt
   tab = CreateFrame("Button", "AchievementFrameTab"..numtabs, AchievementFrame, "AchievementFrameTabButtonTemplate")
   tab:SetText(text)
   tab:SetPoint("LEFT", "AchievementFrameTab"..numtabs-1, "RIGHT", -5, 0)
+  
   tab:SetID(numtabs)
   PanelTemplates_SetNumTabs(AchievementFrame, numtabs)
+
+  -- Correct text placement which for some reason doesn't align with default buttons using the same template:
+  --? tab.text:ClearAllPoints()
+  --? tab.text:SetPoint("CENTER", tab, 0, 3)
+--  tab.text:SetPoint("TOP", _G["AchievementFrameTab"..numtabs-1].text)
+--  tab.text:SetPoint()
+  --tab.text:SetPoint("LEFT", _G["AchievementFrameTab"..numtabs-1].text)
 
   local frame = CreateFrame("Frame", name, AchievementFrame)
   frame:SetWidth(504); frame:SetHeight(440)
@@ -523,6 +545,7 @@ function Overachiever.BuildNewTab(name, text, watermark, helptip, loadFunc, filt
   frameBG:SetTexture("Interface\\AchievementFrame\\UI-Achievement-AchievementBackground")
   frameBG:SetPoint("TOPLEFT", frame, "TOPLEFT", 3, -3)
   frameBG:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -3, 3)
+  frameBG:SetTexCoord(0, 1, 0, 0.5)
   local frameBGDarken = frame:CreateTexture(nil, "ARTWORK")
   frameBGDarken:SetAllPoints(frameBG)
   frameBGDarken:SetTexture(0, 0, 0, 0.75)

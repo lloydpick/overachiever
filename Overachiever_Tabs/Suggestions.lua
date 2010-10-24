@@ -8,6 +8,7 @@
 --
 
 local L = OVERACHIEVER_STRINGS
+local GetAchievementInfo = Overachiever.GetAchievementInfo
 
 local LBZ = LibStub("LibBabble-Zone-3.0"):GetUnstrictLookupTable()
 local LBZR = LibStub("LibBabble-Zone-3.0"):GetReverseLookupTable()

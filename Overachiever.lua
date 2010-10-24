@@ -21,6 +21,21 @@ local OptionsPanel
 local MadeDraggable_AchFrame, MadeDragSave_AchFrame
 
 
+-- Overcome problem where GetAchievementInfo throws an error if the achievement ID is invalid:
+do
+  local GAI = GetAchievementInfo
+  function Overachiever.GetAchievementInfo(...)
+    if (pcall(GAI, ...)) then
+      return GAI(...); -- Calling it again instead of saving values from previous call seems to be better since we would have to deal with new tables, unpack, manipulating the table for unpack to actually work as expected, etc.
+      --tremove(achievementInfo, 1)
+      --achievementInfo[#achievementInfo+1] = ''; -- Inserting this on the end is necessary for unpack to work as expected if there are any nil values in the table.
+      --return unpack(achievementInfo)
+    end
+  end
+end
+local GetAchievementInfo = Overachiever.GetAchievementInfo
+
+
 local function copytab(from, to)
   for k,v in pairs(from) do
     if(type(v) == "table") then
@@ -275,6 +290,7 @@ do
     end
     ALL_ACHIEVEMENTS = {}
     local gap, i, size, id = 0, 0, 0
+    i = 5; --asdf
     --local debug_largestgap = 0
     repeat
       i = i + 1
@@ -766,6 +782,10 @@ do
   end
 end
 
+local function achbtnShieldOnEnter(self, ...)
+  return achbtnOnEnter(self:GetParent(), ...);
+end
+
 
 -- GLOBAL FUNCTIONS
 -----------------------
@@ -859,7 +879,7 @@ function Overachiever.OnEvent(self, event, arg1, ...)
     orig_AchievementButton_GetMeta = AchievementButton_GetMeta
     AchievementButton_GetMeta = new_AchievementButton_GetMeta
     -- Add "series" tooltip to default achievement buttons:
-    Overachiever.UI_HookAchButtons(AchievementFrameAchievements.buttons, AchievementFrameAchievementsContainerScrollBar)
+    Overachiever.UI_HookAchButtons(AchievementFrameAchievementsContainer.buttons, AchievementFrameAchievementsContainerScrollBar)
     -- Allow closing frame with Escape even when UIPanelLayout-enabled is set to false:
     tinsert(UISpecialFrames, "AchievementFrame");
 
@@ -995,6 +1015,9 @@ function Overachiever.UI_HookAchButtons(buttons, scrollbar)
   for i,button in ipairs(buttons) do
     button:HookScript("OnEnter", achbtnOnEnter)
     button:HookScript("OnLeave", achbtnOnLeave)
+    local shield = _G[button:GetName().."Shield"]
+    shield:HookScript("OnEnter", achbtnShieldOnEnter)
+    shield:HookScript("OnLeave", achbtnOnLeave)
   end
   scrollbar:HookScript("OnValueChanged", achBtnRedisplay)
 end

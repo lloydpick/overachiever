@@ -1,5 +1,6 @@
 
 local L = OVERACHIEVER_STRINGS
+local GetAchievementInfo = Overachiever.GetAchievementInfo
 local LBI = LibStub:GetLibrary("LibBabble-Inventory-3.0"):GetReverseLookupTable()
 
 local TradeSkillLookup = {}

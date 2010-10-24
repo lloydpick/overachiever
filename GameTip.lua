@@ -2,6 +2,7 @@
 local L = OVERACHIEVER_STRINGS
 local OVERACHIEVER_ACHID = OVERACHIEVER_ACHID
 local GetStatistic = GetStatistic
+local GetAchievementInfo = Overachiever.GetAchievementInfo
 
 local AchievementIcon = "Interface\\AddOns\\Overachiever\\AchShield"
 local tooltip_complete = { r = 0.2, g = 0.5, b = 0.2 }

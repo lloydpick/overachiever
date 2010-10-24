@@ -1,5 +1,6 @@
 
 local L = OVERACHIEVER_STRINGS
+local GetAchievementInfo = Overachiever.GetAchievementInfo
 
 local AbbreviateLargeQuantities = true
 

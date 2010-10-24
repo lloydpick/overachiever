@@ -8,6 +8,7 @@
 --
 
 local L = OVERACHIEVER_STRINGS
+local GetAchievementInfo = Overachiever.GetAchievementInfo
 
 local CATEGORIES_ALL = Overachiever.UI_GetValidCategories()
 
