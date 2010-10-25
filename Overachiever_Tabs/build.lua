@@ -65,7 +65,7 @@ local function selectButton(button)
   achievements.selection = button.id;
   achievements.selectionIndex = button.index;
   button.selected = true;
-  SetFocusedAchievement(button.id) --Not sure what this does yet but AchievementFrameAchievements_SelectButton uses it.
+  SetFocusedAchievement(button.id) -- Not sure what this does yet but AchievementFrameAchievements_SelectButton uses it.
 end
 
 local function isPreviousAchievementInUI(id)
@@ -409,36 +409,44 @@ local function tabUnselect()
   -- end
 end
 
-local function tabOnClick(self, button)
-  AchievementFrameBaseTab_OnClick(1) -- This should handle some possibly-necessary toggling of views, etc.
-  AchievementFrame_UpdateTabs(self:GetID()) -- Unfortunately, AchievementFrameBaseTab_OnClick already called this but for the wrong tab number.
-  --[[ No longer necessary as of WoW 4.0.1:
-  self.text:SetPoint("CENTER", self, "CENTER", 0, -5)
-  local i, tab = 0
-  repeat
-    i = i + 1
-    tab = _G["AchievementFrameTab"..i]
-    if (tab and tab ~= self) then
-      tab.text:SetPoint("CENTER", tab, "CENTER", 0, -3)
+local tabOnClick
+do
+  local true_clickedTab
+  AchievementFrame_UpdateTabs = function(clickedTab, ...) -- Based on AchievementFrame_UpdateTabs, which we're overwriting:
+    clickedTab = true_clickedTab or clickedTab --Overachiever: Added this line
+    PanelTemplates_Tab_OnClick(_G["AchievementFrameTab"..clickedTab], AchievementFrame);
+    local tab;
+    for i = 1, 99 do --Overachiever: Increased max from 3 to 99
+    tab = _G["AchievementFrameTab"..i];
+      if (not tab) then  break;  end --Overachiever: Added this line
+      if ( i == clickedTab ) then
+        tab.text:SetPoint("CENTER", 0, -5);
+      else
+        tab.text:SetPoint("CENTER", 0, -3);
+      end
     end
-  until (not tab)
-  --]]
-
-  -- Don't play sound when this is a silentDisplay or Overachiever.OpenTab_frame call.
-  if (button) then  PlaySound("igCharacterInfoTab");  end
-
-  if (self.flash and UIFrameIsFading(self.flash)) then
-    UIFrameFlashRemoveFrame(self.flash)
-    self.flash:Hide()
   end
+  
+  function tabOnClick(self, button)
+    true_clickedTab = self:GetID()
+    AchievementFrameBaseTab_OnClick(1) -- This will handle some possibly-necessary toggling of views, etc. (Have to use 1 instead of the proper tab ID because the function treats 4+ the same as it would 3 (statistics) instead of 1 (normal achievements listing).)
+    true_clickedTab = nil
 
-  tabselected = self.frame
-  AchievementFrame_ShowSubFrame(self.frame, LeftFrame)
-  LeftFrame.label:SetText(self:GetText())
-  AchievementFrameWaterMark:SetTexture(self.watermark)
-  PanelTemplates_Tab_OnClick(self, AchievementFrame)
-  updateAchievementsList(self.frame)
-  --AchievementFrame_UpdateTabs(self:GetID())
+    -- Don't play sound when this is a silentDisplay or Overachiever.OpenTab_frame call.
+    if (button) then  PlaySound("igCharacterInfoTab");  end
+
+    if (self.flash and UIFrameIsFading(self.flash)) then
+      UIFrameFlashRemoveFrame(self.flash)
+      self.flash:Hide()
+    end
+
+    tabselected = self.frame
+    AchievementFrame_ShowSubFrame(self.frame, LeftFrame)
+    LeftFrame.label:SetText(self:GetText())
+    AchievementFrameWaterMark:SetTexture(self.watermark)
+    --PanelTemplates_Tab_OnClick(self, AchievementFrame)  -- Not needed here any more: AchievementFrame_UpdateTabs, called by AchievementFrameBaseTab_OnClick, will call it.
+    updateAchievementsList(self.frame)
+  end
 end
 
 local function silentDisplay(button)
@@ -526,16 +534,8 @@ function Overachiever.BuildNewTab(name, text, watermark, helptip, loadFunc, filt
   tab = CreateFrame("Button", "AchievementFrameTab"..numtabs, AchievementFrame, "AchievementFrameTabButtonTemplate")
   tab:SetText(text)
   tab:SetPoint("LEFT", "AchievementFrameTab"..numtabs-1, "RIGHT", -5, 0)
-  
   tab:SetID(numtabs)
   PanelTemplates_SetNumTabs(AchievementFrame, numtabs)
-
-  -- Correct text placement which for some reason doesn't align with default buttons using the same template:
-  --? tab.text:ClearAllPoints()
-  --? tab.text:SetPoint("CENTER", tab, 0, 3)
---  tab.text:SetPoint("TOP", _G["AchievementFrameTab"..numtabs-1].text)
---  tab.text:SetPoint()
-  --tab.text:SetPoint("LEFT", _G["AchievementFrameTab"..numtabs-1].text)
 
   local frame = CreateFrame("Frame", name, AchievementFrame)
   frame:SetWidth(504); frame:SetHeight(440)

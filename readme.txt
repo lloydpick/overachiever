@@ -107,8 +107,8 @@ Change log
 
 The change log lists changes of particular note to users, not every change made.
 
-v0.57 WIP
-- Updated for WoW patch 4.0.1 (work in progress).
+v0.57
+- Updated for WoW patch 4.0.1.
 
 v0.56
 - Watch Tab: Separate "Global," "Character-Specific," and custom-named watch lists can now be created. (All are saved

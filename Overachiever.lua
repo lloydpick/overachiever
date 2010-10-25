@@ -290,7 +290,6 @@ do
     end
     ALL_ACHIEVEMENTS = {}
     local gap, i, size, id = 0, 0, 0
-    i = 5; --asdf
     --local debug_largestgap = 0
     repeat
       i = i + 1
