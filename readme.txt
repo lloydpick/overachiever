@@ -1,5 +1,5 @@
 
-Overachiever v0.57
+Overachiever v0.58
 ==============================
 
 Author: Tuhljin
@@ -106,6 +106,13 @@ Change log
 ==========
 
 The change log lists changes of particular note to users, not every change made.
+
+v0.58
+- Suggestions Tab: Added many suggestions for zone-specific achievements ("complete X quests," exploration, and more)
+  as well as new Fishing and Cooking achievements. Removed some suggestions made obsolete by the Cataclysm.
+- "To All the Squirrels Who Cared for Me" (new): Critters' /loved status for this achievement is now part of the
+  option that exists for "To All The Squirrels I've Loved Before" and "To All The Squirrels Who Shared My Life."
+- The Dynamic Difficulty system is now considered when determining whether the current instance is Heroic.
 
 v0.57
 - Updated for WoW patch 4.0.1.

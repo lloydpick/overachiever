@@ -1,6 +1,6 @@
 ## Interface: 40000
 ## Title: Overachiever
-## Version: 0.57
+## Version: 0.58
 ## Author: Tuhljin
 ## Notes: Tools and tweaks to make the lives of players seeking Achievements a little bit easier.
 ## SavedVariables: Overachiever_Settings, Overachiever_CharVars_Default

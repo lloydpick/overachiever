@@ -59,24 +59,25 @@ end
 function Overachiever.GetDifficulty()
   local inInstance = IsInInstance()
   if (inInstance) then
-  -- Returns: <instance type ("pvp"/"arena"/"party"/"raid")>, <Heroic?>, <25-player Raid?>, <Heroic Raid?>
+-- IF IN AN INSTANCE:
+  -- Returns: <instance type ("pvp"/"arena"/"party"/"raid")>, <Heroic?>, <25-player Raid?>, <Heroic Raid?>, <Dynamic?>
   --   If in a raid, the "Heroic Raid?" return will match the "Heroic?" return. Otherwise, it will be nil (actually
-  --   no return). Matching is done in order to simplify handling return values so special logic in determining
-  --   which return means what is less likely: If in an instance, the "Heroic Raid?" return will always say whether
-  --   you're in a heroic raid and the "Heroic?" return will always say whether you're in a heroic instance (raid or
-  --   or otherwise).
-    local name, itype, diff = GetInstanceInfo()
+  --   no return). "Dynamic?" refers to whether the current instance's difficulty can be changed on the fly, as is
+  --   the case with the Icecrown Citadel raid.
+  --   Note: While it may seem that the "Heroic?" and "Heroic Raid?" returns are redundant here, it's done this
+  --   way to make the return values consistent with those given when you're NOT in an instance.
+    local _, itype, diff, _, _, dynDiff, isDynamic = GetInstanceInfo()
     if (itype == "raid") then
-      return itype, (diff > 2), (diff == 2 or diff == 4), (diff > 2)
-    else
-      return itype, (diff > 1), false
+      if (isDynamic) then  return itype, (dynDiff == 1), (diff == 2 or diff == 4), (dynDiff == 1), true;  end
+      return itype, (diff > 2), (diff == 2 or diff == 4), (diff > 2), false
     end
-  else
-  -- Returns: false, <Dungeon set as Heroic?>, <Raid set for 25 players?>, <Raid set as Heroic?>
-    local d = GetDungeonDifficulty()
-    local r = GetRaidDifficulty()
-    return false, (d > 1), (r == 2 or r == 4), (r > 2)
+    return itype, (diff > 1), false
   end
+-- IF NOT IN AN INSTANCE:
+  -- Returns: false, <Dungeon set as Heroic?>, <Raid set for 25 players?>, <Raid set as Heroic?>
+  local d = GetDungeonDifficulty()
+  local r = GetRaidDifficulty()
+  return false, (d > 1), (r == 2 or r == 4), (r > 2)
 end
 
 
@@ -86,6 +87,7 @@ end
 local CritterAch = {
   LoveCritters = { "CritterTip_loved", L.ACH_LOVECRITTERS_COMPLETE, L.ACH_LOVECRITTERS_INCOMPLETE },
   LoveCritters2 = { "CritterTip_loved", L.ACH_LOVECRITTERS_COMPLETE, L.ACH_LOVECRITTERS_INCOMPLETE },
+  LoveCritters3 = { "CritterTip_loved", L.ACH_LOVECRITTERS_COMPLETE, L.ACH_LOVECRITTERS_INCOMPLETE },
   PestControl = { "CritterTip_killed", L.KILL_COMPLETE, L.KILL_INCOMPLETE },
 };
 

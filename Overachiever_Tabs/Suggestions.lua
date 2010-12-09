@@ -28,6 +28,62 @@ local suggested = {}
 local ACHID_ZONE_NUMQUESTS
 if (IsAlliance) then
   ACHID_ZONE_NUMQUESTS = {
+  -- Kalimdor
+	["Ashenvale"] = 4925,
+	--["Azshara"] = nil,
+	["Darkshore"] = 4928,
+	["Desolace"] = 4930, -- faction neutral?
+	--["Durotar"] = nil,
+	["Dustwallow Marsh"] = 4929,
+	["Felwood"] = 4931, -- faction neutral
+	["Feralas"] = 4932,
+	--["Moonglade"] = nil,
+	--["Mulgore"] = nil,
+	--["Northern Barrens"] = nil,
+	["Silithus"] = 4934, -- faction neutral
+	["Southern Barrens"] = 4937,
+	["Stonetalon Mountains"] = 4936,
+	["Tanaris"] = 4935, -- faction neutral
+	--["Teldrassil"] = nil,
+	["Thousand Needles"] = 4938, -- faction neutral
+	["Un'Goro Crater"] = 4939, -- faction neutral
+	["Winterspring"] = 4940, -- faction neutral
+    -- Burning Crusade:
+	--["Azuremyst Isle"] = nil,
+	["Bloodmyst Isle"] = 4926,
+    -- Cataclysm:
+	["Mount Hyjal"] = 4870,
+	["Uldum"] = 4872,
+  -- Eastern Kingdoms
+	["Arathi Highlands"] = 4896, -- faction neutral
+	["Badlands"] = 4900, -- faction neutral
+	["Blasted Lands"] = 4909, -- faction neutral
+	["Burning Steppes"] = 4901, -- faction neutral
+	["The Cape of Stranglethorn"] = 4905,
+	--["Deadwind Pass"] = nil,
+	--["Dun Morogh"] = nil,
+	["Duskwood"] = 4907,
+	["Eastern Plaguelands"] = 4892, -- faction neutral
+	--["Elwynn Forest"] = nil,
+	--["Hillsbrad Foothills"] = nil,
+	["The Hinterlands"] = 4897, -- faction neutral
+	["Loch Modan"] = 4899,
+	["Northern Stranglethorn"] = 4906,
+	["Redridge Mountains"] = 4902,
+	["Searing Gorge"] = 4910, -- faction neutral
+	--["Silverpine Forest"] = nil,
+	["Swamp of Sorrows"] = 4904, -- faction neutral
+	--["Tirisfal Glades"] = nil,
+	["Western Plaguelands"] = 4893, -- faction neutral
+	["Westfall"] = 4903,
+	["Wetlands"] = 4898,
+     -- Burning Crusade:
+	--["Eversong Woods"] = nil,
+	--["Ghostlands"] = nil,
+	--["Isle of Quel'Danas"] = nil,
+     -- Cataclysm:
+	["Twilight Highlands"] = 4873,
+	["Vashj'ir"] = 4869,
   -- Outland
 	["Blade's Edge Mountains"] = 1193,
 	["Zangarmarsh"] = 1190,
@@ -45,9 +101,67 @@ if (IsAlliance) then
 	["Zul'Drak"] = 36,
 	["Grizzly Hills"] = 37,
 	["The Storm Peaks"] = 38,
+  -- Other (Cataclysm)
+	["Deepholm"] = 4871, -- faction neutral
   }
 else
   ACHID_ZONE_NUMQUESTS = {
+  -- Kalimdor
+	["Ashenvale"] = 4976,
+	["Azshara"] = 4927,
+	--["Darkshore"] = nil,
+	["Desolace"] = 4930, -- faction neutral?
+	--["Durotar"] = nil,
+	["Dustwallow Marsh"] = 4978,
+	["Felwood"] = 4931, -- faction neutral
+	["Feralas"] = 4979,
+	--["Moonglade"] = nil,
+	--["Mulgore"] = nil,
+	["Northern Barrens"] = 4933,
+	["Silithus"] = 4934, -- faction neutral
+	["Southern Barrens"] = 4981,
+	["Stonetalon Mountains"] = 4980,
+	["Tanaris"] = 4935, -- faction neutral
+	--["Teldrassil"] = nil,
+	["Thousand Needles"] = 4938, -- faction neutral
+	["Un'Goro Crater"] = 4939, -- faction neutral
+	["Winterspring"] = 4940, -- faction neutral
+    -- Burning Crusade:
+	--["Azuremyst Isle"] = nil,
+	--["Bloodmyst Isle"] = nil,
+    -- Cataclysm:
+	["Mount Hyjal"] = 4870,
+	["Uldum"] = 4872,
+  -- Eastern Kingdoms
+	["Arathi Highlands"] = 4896, -- faction neutral
+	["Badlands"] = 4900, -- faction neutral
+	["Blasted Lands"] = 4909, -- faction neutral
+	["Burning Steppes"] = 4901, -- faction neutral
+	["The Cape of Stranglethorn"] = 4905,
+	--["Deadwind Pass"] = nil,
+	--["Dun Morogh"] = nil,
+	--["Duskwood"] = nil,
+	["Eastern Plaguelands"] = 4892, -- faction neutral
+	--["Elwynn Forest"] = nil,
+	["Hillsbrad Foothills"] = 4895,
+	["The Hinterlands"] = 4897, -- faction neutral
+	--["Loch Modan"] = nil,
+	["Northern Stranglethorn"] = 4906,
+	--["Redridge Mountains"] = nil,
+	["Searing Gorge"] = 4910, -- faction neutral
+	["Silverpine Forest"] = 4894,
+	["Swamp of Sorrows"] = 4904, -- faction neutral
+	--["Tirisfal Glades"] = nil,
+	["Western Plaguelands"] = 4893, -- faction neutral
+	--["Westfall"] = nil,
+	--["Wetlands"] = nil,
+     -- Burning Crusade:
+	--["Eversong Woods"] = nil,
+	["Ghostlands"] = 4908,
+	--["Isle of Quel'Danas"] = nil,
+     -- Cataclysm:
+	["Twilight Highlands"] = 5501,
+	["Vashj'ir"] = 4982,
   -- Outland
 	["Blade's Edge Mountains"] = 1193,
 	["Zangarmarsh"] = 1190,
@@ -65,20 +179,51 @@ else
 	["Zul'Drak"] = 36,
 	["Grizzly Hills"] = 1357,
 	["The Storm Peaks"] = 38,
+  -- Other (Cataclysm)
+	["Deepholm"] = 4871, -- faction neutral
   }
 end
 
 local ACHID_ZONE_MISC = {
+-- Kalimdor
+	["Ashenvale"] = "4827:6",	-- "Surveying the Damage"
+	["Azshara"] = { 5448, 5546, 5547 },	-- "Glutton for Fiery/Icy/Shadowy Punishment"
+	["Darkshore"] = { "4827:4" },	-- "Surveying the Damage"
+	["Desolace"] = "4827:8",	-- "Surveying the Damage"
+	["Durotar"] = "4827:7",		-- "Surveying the Damage"
+	["Mount Hyjal"] = { 4959, 5483 },	-- "Beware of the 'Unbeatable?' Pterodactyl", "Bounce"
+	["Southern Barrens"] = "4827:1",	-- "Surveying the Damage"
+	["Tanaris"] = "4827:5",		-- "Surveying the Damage"
+	["Thousand Needles"] = "4827:9",	-- "Surveying the Damage"
+	["Uldum"] =			-- "Help the Bombardier! I'm the Bombardier!", "One Hump or Two?",
+		{ 5317, 4888, 4961 },	-- "In a Thousand Years Even You Might be Worth Something"
+	["Winterspring"] = 5443,	-- "E'ko Madness"
 -- Eastern Kingdoms
-	["Stranglethorn Vale"] =	-- "The Green Hills of Stranglethorn", "Gurubashi Arena Master",
-		{ 940, 389, 396, 306 },	-- "Gurubashi Arena Grand Master", "Master Angler of Azeroth"
+	["The Cape of Stranglethorn"] =	-- "Master Angler of Azeroth",
+		{ 306, 389, 396,	-- "Gurubashi Arena Master", "Gurubashi Arena Grand Master",
+		  "4827:2" },		-- "Surveying the Damage"
+	["Northern Stranglethorn"] =	-- Need to confirm where these two achievements belong since Cataclysm:
+		{ 306, 940 },	-- "Master Angler of Azeroth", "The Green Hills of Stranglethorn"
+	["Badlands"] = "4827:3",	-- "Surveying the Damage"
+	["Eastern Plaguelands"] = 5442,	-- "Full Caravan"
+	--Peacebloom vs. Ghouls achievements unavailable at this time:
+	--["Hillsbrad Foothills"] = { 5364, 5365,	-- "Don't Want No Zombies on My Lawn", "Bloom and Doom",
+	--			    "4827:13" },	-- "Surveying the Damage"
+	["Hillsbrad Foothills"] = "4827:13",	-- "Surveying the Damage"
+	["Loch Modan"] = "4827:12",		-- "Surveying the Damage"
+	["Silverpine Forest"] = "4827:10",	-- "Surveying the Damage"
+	["Twilight Highlands"] = { 5451, 4960 },	-- "Consumed by Nightmare", "Round Three. Fight!"
+	["Vashj'ir"] = { 4975, 5452,	-- "From Hell's Heart I Stab at Thee", "Visions of Vashj'ir Past"
+			 IsAlliance and 5318 or 5319 },	-- "20,000 Leagues Under the Sea"
+	["Westfall"] = "4827:11",	-- "Surveying the Damage"
 -- Outland
 	["Blade's Edge Mountains"] = 1276,	-- "Blade's Edge Bomberman"
 	["Nagrand"] = { 939, "1576:1" },	-- "Hills Like White Elekk", "Of Blood and Anguish"
 	["Netherstorm"] = 545,		-- "Shave and a Haircut"
-	["Shattrath City"] =	-- "My Sack is "Gigantique"", "Old Man Barlowned", "Kickin' It Up a Notch"
-		{ 1165, 905, 906 },
+	["Shattrath City"] =	-- "My Sack is "Gigantique"", "Old Man Barlowned", "Kickin' It Up a Notch",
+		{ 1165, 905, 906, 903,  },	-- "Shattrath Divided"
 	["Terokkar Forest"] = { 905, 1275 },	-- "Old Man Barlowned", "Bombs Away"
+	["Zangarmarsh"] = 893,		-- "Cenarion War Hippogryph"
 -- Northrend
 	["Borean Tundra"] = 561,	-- "D.E.H.T.A's Little P.I.T.A."
 	["Dragonblight"] = { 1277, 547 },	-- "Rapid Defense", "Veteran of the Wrathgate"
@@ -89,17 +234,27 @@ local ACHID_ZONE_MISC = {
 			{ 2756, 2772, 2836, 2773, 3736 },
 		-- "Argent Aspiration", "Tilted!", "Lance a Lot", "It's Just a Flesh Wound", "Pony Up!"
 	} },
+	["The Storm Peaks"] = 1428,	-- "Mine Sweeper"
 	["Sholazar Basin"] =		-- "The Snows of Northrend", "Honorary Frenzyheart",
-		{ 938, 961, 962 },	-- "Savior of the Oracles"
+		{ 938, 961, 962, 952 },	-- "Savior of the Oracles", "Mercenary of Sholazar"
 	["Zul'Drak"] = { "1576:2", "1596:2" },	-- "Of Blood and Anguish", "Guru of Drakuru"
 	["Wintergrasp"] = { 2199, 1717, 1751, 1755, 1727, 1723 },
+-- Other (Cataclysm)
+	["Deepholm"] = { 5445, 5446, 5447, 5449 },	-- "Fungalophobia", "The Glop Family Line",
+							-- "My Very Own Broodmother", "Rock Lover"
 }
 if (IsAlliance) then
   tinsert(ACHID_ZONE_MISC["Grizzly Hills"], 2016) -- "Grizzled Veteran"
-  tinsert(ACHID_ZONE_MISC["Wintergrasp"], 1737)	-- "Destruction Derby"
-  tinsert(ACHID_ZONE_MISC["Wintergrasp"], 1752)	-- "Master of Wintergrasp"
+  tinsert(ACHID_ZONE_MISC["Wintergrasp"], 1737) -- "Destruction Derby"
+  tinsert(ACHID_ZONE_MISC["Wintergrasp"], 1752) -- "Master of Wintergrasp"
+  --Currently a Feat of Strength but this may be a bug as I've seen reports that you can still get one. Then
+  --again, maybe since it was much more difficult to get one previously, a FoS is meant to recognize that:
+  --tinsert(ACHID_ZONE_MISC["Winterspring"], 3356) -- "Winterspring Frostsaber"
+  tinsert(ACHID_ZONE_MISC["Twilight Highlands"], 5320) -- "King of the Mountain"
+  tinsert(ACHID_ZONE_MISC["Twilight Highlands"], 5481) -- "Wildhammer Tour of Duty"
+  tinsert(ACHID_ZONE_MISC["Darkshore"], 5453) -- "Ghosts in the Dark"
   -- "City Defender", "Shave and a Haircut":
-  ACHID_ZONE_MISC["Stormwind City"] = { 388, 545 }
+  ACHID_ZONE_MISC["Stormwind City"] = { 388, 545, 5476, 5474 } -- Also: "Fish or Cut Bait", "Let's Do Lunch"
   ACHID_ZONE_MISC["Ironforge"] = { 388, 545 }
   ACHID_ZONE_MISC["Darnassus"] = 388
   ACHID_ZONE_MISC["The Exodar"] = 388
@@ -112,11 +267,14 @@ if (IsAlliance) then
   tinsert(ACHID_ZONE_MISC["Icecrown"], 3676)
   tinsert(ACHID_ZONE_MISC["Icecrown"], 2782)
 else
+  tinsert(ACHID_ZONE_MISC["Azshara"], 5454) -- "Joy Ride"
   tinsert(ACHID_ZONE_MISC["Grizzly Hills"], 2017) -- "Grizzled Veteran"
   tinsert(ACHID_ZONE_MISC["Wintergrasp"], 2476)	-- "Destruction Derby"
   tinsert(ACHID_ZONE_MISC["Wintergrasp"], 2776)	-- "Master of Wintergrasp"
+  tinsert(ACHID_ZONE_MISC["Twilight Highlands"], 5482) -- "Dragonmaw Tour of Duty"
+  tinsert(ACHID_ZONE_MISC["Twilight Highlands"], 5321) -- "King of the Mountain"
   -- "City Defender", "Shave and a Haircut":
-  ACHID_ZONE_MISC["Orgrimmar"] = { 1006, 545 }
+  ACHID_ZONE_MISC["Orgrimmar"] = { 1006, 545, 5477, 5475 } -- Also: "Fish or Cut Bait", "Let's Do Lunch"
   ACHID_ZONE_MISC["Thunder Bluff"] = 1006
   ACHID_ZONE_MISC["Undercity"] = { 1006, 545 }
   ACHID_ZONE_MISC["Silvermoon City"] = 1006
@@ -351,23 +509,27 @@ local ACHID_INSTANCES_25 = {
 -- INSTANCES - NORMAL 10-MAN ONLY:
 local ACHID_INSTANCES_10_NORMAL = {
 	["Icecrown Citadel"] = 4532,
+	["The Ruby Sanctum"] = 4817, -- Need to confirm zone name.
 }
 
 -- INSTANCES - HEROIC 10-MAN ONLY:
 local ACHID_INSTANCES_10_HEROIC = {
 	["Trial of the Crusader"] = { 3918, 3808 },
 	["Icecrown Citadel"] = 4636,
+	["The Ruby Sanctum"] = 4818, -- Need to confirm zone name.
 }
 
 -- INSTANCES - NORMAL 25-MAN ONLY:
 local ACHID_INSTANCES_25_NORMAL = {
 	["Icecrown Citadel"] = 4608,
+	["The Ruby Sanctum"] = 4815, -- Need to confirm zone name.
 }
 
 -- INSTANCES - HEROIC 25-MAN ONLY:
 local ACHID_INSTANCES_25_HEROIC = {
 	["Trial of the Crusader"] = { 3812, 3817 },
 	["Icecrown Citadel"] = 4637,
+	["The Ruby Sanctum"] = 4816, -- Need to confirm zone name.
 }
 
 
@@ -386,8 +548,8 @@ end
 ----------------------------------------------------
 
 local ACHID_TRADESKILL = {
-	["Cooking"] = IsAlliance and 1563 or 1784,	-- "Hail to the Chef"
-	["Fishing"] = 1516,				-- "Accomplished Angler"
+	["Cooking"] = IsAlliance and { 1563, 5474 } or { 1784, 5475 },	-- "Hail to the Chef", "Let's Do Lunch"
+	["Fishing"] = { 1516, 5478, 5479 },	-- "Accomplished Angler", "The Limnologist", "The Oceanographer"
 }
 
 local ACHID_TRADESKILL_ZONE = {
@@ -402,12 +564,13 @@ local ACHID_TRADESKILL_ZONE = {
 		["Orgrimmar"] = {1836,"150:1"},	-- "Old Crafty", "The Fishing Diplomat"
 		["Serpentshrine Cavern"] = 144,	-- "The Lurker Above"
 		["Shattrath City"] = 905,	-- "Old Man Barlowned"
-		["Stormwind City"] = "150:2",	-- "The Fishing Diplomat"
+		["Stormwind City"] = { "150:2" },	-- "The Fishing Diplomat"
 		["Terokkar Forest"] = { 905, 726 },	-- "Old Man Barlowned", "Mr. Pinchy's Magical Crawdad Box"
 		["Zul'Gurub"] = 560,		-- "Deadliest Catch"
 		
 		-- "Master Angler of Azeroth":
-		["Stranglethorn Vale"] = 306,
+		["The Cape of Stranglethorn"] = 306,
+		["Northern Stranglethorn"] = 306, -- Need to confirm it belongs in both zones
 		["Howling Fjord"] = 306,
 		["Grizzly Hills"] = 306,
 		["Borean Tundra"] = 306,
@@ -418,6 +581,13 @@ local ACHID_TRADESKILL_ZONE = {
 		["Zul'Drak"] = 306,
         }
 }
+if (IsAlliance) then
+  tinsert(ACHID_TRADESKILL_ZONE["Fishing"]["Stormwind City"], 5476) -- "Fish or Cut Bait"
+  tinsert(ACHID_TRADESKILL_ZONE["Fishing"]["Stormwind City"], 5474) -- "Let's Do Lunch"
+else
+  tinsert(ACHID_TRADESKILL_ZONE["Fishing"]["Orgrimmar"], 5477) -- "Fish or Cut Bait"
+  tinsert(ACHID_TRADESKILL_ZONE["Fishing"]["Orgrimmar"], 5475) -- "Let's Do Lunch"
+end
 
 local ACHID_TRADESKILL_BG = { Cooking = 1785 }	-- "Dinner Impossible"
 
