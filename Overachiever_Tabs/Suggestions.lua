@@ -83,7 +83,11 @@ if (IsAlliance) then
 	--["Isle of Quel'Danas"] = nil,
      -- Cataclysm:
 	["Twilight Highlands"] = 4873,
+	-- Vashj'ir:
 	["Vashj'ir"] = 4869,
+	["Kelp'thar Forest"] = 4869,
+	["Shimmering Expanse"] = 4869,
+	["Abyssal Depths"] = 4869,
   -- Outland
 	["Blade's Edge Mountains"] = 1193,
 	["Zangarmarsh"] = 1190,
@@ -161,7 +165,11 @@ else
 	--["Isle of Quel'Danas"] = nil,
      -- Cataclysm:
 	["Twilight Highlands"] = 5501,
+	-- Vashj'ir:
 	["Vashj'ir"] = 4982,
+	["Kelp'thar Forest"] = 4982,
+	["Shimmering Expanse"] = 4982,
+	["Abyssal Depths"] = 4982,
   -- Outland
 	["Blade's Edge Mountains"] = 1193,
 	["Zangarmarsh"] = 1190,
@@ -213,9 +221,16 @@ local ACHID_ZONE_MISC = {
 	["Loch Modan"] = "4827:12",		-- "Surveying the Damage"
 	["Silverpine Forest"] = "4827:10",	-- "Surveying the Damage"
 	["Twilight Highlands"] = { 5451, 4960 },	-- "Consumed by Nightmare", "Round Three. Fight!"
-	["Vashj'ir"] = { 4975, 5452,	-- "From Hell's Heart I Stab at Thee", "Visions of Vashj'ir Past"
-			 IsAlliance and 5318 or 5319 },	-- "20,000 Leagues Under the Sea"
 	["Westfall"] = "4827:11",	-- "Surveying the Damage"
+	-- Vashj'ir:
+	["Vashj'ir"] = { 4975, 5452,		-- "From Hell's Heart I Stab at Thee", "Visions of Vashj'ir Past"
+			 IsAlliance and 5318 or 5319 },	-- "20,000 Leagues Under the Sea"
+	["Kelp'thar Forest"] = { 4975, 5452,	-- "From Hell's Heart I Stab at Thee", "Visions of Vashj'ir Past"
+			 IsAlliance and 5318 or 5319 },	-- "20,000 Leagues Under the Sea"
+	["Shimmering Expanse"] = { 4975, 5452,	-- "From Hell's Heart I Stab at Thee", "Visions of Vashj'ir Past"
+			 IsAlliance and 5318 or 5319 },	-- "20,000 Leagues Under the Sea"
+	["Abyssal Depths"] = { 4975, 5452,	-- "From Hell's Heart I Stab at Thee", "Visions of Vashj'ir Past"
+			 IsAlliance and 5318 or 5319 },	-- "20,000 Leagues Under the Sea"
 -- Outland
 	["Blade's Edge Mountains"] = 1276,	-- "Blade's Edge Bomberman"
 	["Nagrand"] = { 939, "1576:1" },	-- "Hills Like White Elekk", "Of Blood and Anguish"

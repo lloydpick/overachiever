@@ -1,5 +1,5 @@
 
-Overachiever v0.58
+Overachiever v0.59
 ==============================
 
 Author: Tuhljin
@@ -106,6 +106,9 @@ Change log
 ==========
 
 The change log lists changes of particular note to users, not every change made.
+
+v0.59
+- Corrected an issue where Vashj'ir achievements weren't being suggested or auto-tracked.
 
 v0.58
 - Suggestions Tab: Added many suggestions for zone-specific achievements ("complete X quests," exploration, and more)

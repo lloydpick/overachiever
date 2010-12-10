@@ -98,7 +98,11 @@ OVERACHIEVER_EXPLOREZONEID = {
 	["Isle of Quel'Danas"] = 868,
    -- Cataclysm:
 	["Twilight Highlands"] = 4866,
+	-- Vashj'ir:
 	["Vashj'ir"] = 4825,
+	["Kelp'thar Forest"] = 4825,
+	["Shimmering Expanse"] = 4825,
+	["Abyssal Depths"] = 4825,
 -- Outland:
 	["Blade's Edge Mountains"] = 865,
 	["Hellfire Peninsula"] = 862,
