@@ -670,19 +670,33 @@ local function LeftFrame_OnHide(self)
   end
 end
 
-local function LeftFrame_OnEvent_CRITERIA_UPDATE()
-  for k,tab in ipairs(tabs) do
-    local frame = tab.frame
-    if ( frame.selection and tabselected == frame ) then
+local LeftFrame_OnEvent_CRITERIA_UPDATE, LeftFrame_OnUpdate
+do
+  local isSet
+
+  local function LeftFrame_OnUpdate(self) -- Throttled response to CRITERIA_UPDATE, only happens if LeftFrame is shown:
+    isSet = nil
+    self:SetScript("OnUpdate", nil)
+    for k,tab in ipairs(tabs) do
+      local frame = tab.frame
+      if ( frame.selection and tabselected == frame ) then
 -- Based on part of AchievementFrameAchievements_OnEvent.
-      local id = AchievementFrameAchievementsObjectives.id;
-      local button = AchievementFrameAchievementsObjectives:GetParent();
-      AchievementFrameAchievementsObjectives.id = nil;
-      AchievementButton_DisplayObjectives(button, id, button.completed);
-      updateAchievementsList(frame)
-      return; -- This only needs to happen once, no matter which frame it is that's currently shown.
+        local id = AchievementFrameAchievementsObjectives.id;
+        local button = AchievementFrameAchievementsObjectives:GetParent();
+        AchievementFrameAchievementsObjectives.id = nil;
+        AchievementButton_DisplayObjectives(button, id, button.completed);
+        updateAchievementsList(frame)
+        return; -- This only needs to happen once, no matter which frame it is that's currently shown.
+      end
     end
   end
+
+  function LeftFrame_OnEvent_CRITERIA_UPDATE(self)
+    if (isSet) then  return;  end
+    self:SetScript("OnUpdate", LeftFrame_OnUpdate)
+    isSet = true
+  end
+
 end
 
 

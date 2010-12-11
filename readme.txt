@@ -109,6 +109,7 @@ The change log lists changes of particular note to users, not every change made.
 
 v0.59
 - Corrected an issue where Vashj'ir achievements weren't being suggested or auto-tracked.
+- Tabs module: Addressed some performance issues by throttling an event that can be called frequently in combat.
 
 v0.58
 - Suggestions Tab: Added many suggestions for zone-specific achievements ("complete X quests," exploration, and more)
