@@ -97,9 +97,9 @@ option under the "Main Achievement UI frame" option. Once in the position you de
 
 EXPLORATION AUTO-TRACKING:
 
-When enabled, if you enter a new zone, Overachiever automatically switches tracking to the Exploration achievement for
-that zone unless you're already tracking a non-Exploration achievement or an Exploration meta-achievement (like
-"Explore Kalimdor"). It can optionally be set to not automatically track an achievement that you've already completed.
+When enabled, Overachiever automatically switches tracking to the Exploration achievement for your current zone
+as you travel unless you've completed that achievement or you are tracking the maximum number of achievements and
+all of them are non-Exploration achievements.
 
 
 Change log
@@ -110,6 +110,11 @@ The change log lists changes of particular note to users, not every change made.
 v0.59
 - Corrected an issue where Vashj'ir achievements weren't being suggested or auto-tracked.
 - Tabs module: Addressed some performance issues by throttling an event that can be called frequently in combat.
+- Trade module: "The Cataclysmic Gourmet" is now considered when determining if you need to cook a recipe.
+- The exploration auto-tracking option will no longer cause tracking to switch away from "Stood in the Fire,"
+  "Surveying the Damage," or "From Hell's Heart I Stab at Thee."
+- The option to automatically track completed exploration achievements in addition to incomplete ones has been
+  removed. (The ability to track completed achievements was removed from the WoW UI in a previous patch.)
 
 v0.58
 - Suggestions Tab: Added many suggestions for zone-specific achievements ("complete X quests," exploration, and more)

@@ -264,7 +264,7 @@ local function canTrackAchievement(id, allowCompleted)
   end
 end
 
-local function setTracking(id, allowCompleted)
+local function setTracking(id, allowCompleted) -- allowCompleted is defunct; WoW UI doesn't allow this. Left here for now just in case.
   if (canTrackAchievement(id, allowCompleted)) then
     AddTrackedAchievement(id)
     if (AchievementFrameAchievements_ForceUpdate) then
@@ -327,33 +327,40 @@ local function BuildCriteriaLookupTab(...)
   local num = select("#", ...)
   local list = getAllAchievements()
   local _, critType, assetID, a, tab, savenum
+  local numc, i
   for x,id in ipairs(list) do
-    for i=1,GetAchievementNumCriteria(id) do
+    --for i=1,GetAchievementNumCriteria(id) do
+    numc = GetAchievementNumCriteria(id)
+    i = 1
+    repeat
       _, critType, _, _, _, _, _, assetID = GetAchievementCriteriaInfo(id, i)
+      if (critType and assetID) then
 
-      for arg=1,num,3 do
-        a, tab, savenum = select(arg, ...)
-        if (critType == a) then
-          if (tab[assetID]) then
-            local v = tab[assetID]
-            if (type(v) == "table") then
-              local size = #v
-              v[size+1] = id
-              if (savenum) then  v[size+2] = i;  end
+        for arg=1,num,3 do
+          a, tab, savenum = select(arg, ...)
+          if (critType == a) then
+            if (tab[assetID]) then
+              local v = tab[assetID]
+              if (type(v) == "table") then
+                local size = #v
+                v[size+1] = id
+                if (savenum) then  v[size+2] = i;  end
+              else
+                tab[assetID] = { v, id }  -- Safe to assume savenum isn't true since this wasn't already a table
+              end
             else
-              tab[assetID] = { v, id }  -- Safe to assume savenum isn't true since this wasn't already a table
-            end
-          else
-            if (savenum) then
-              tab[assetID] = { id, i }
-            else
-              tab[assetID] = id
+              if (savenum) then
+                tab[assetID] = { id, i }
+              else
+                tab[assetID] = id
+              end
             end
           end
         end
-      end
 
-    end
+      end
+      i = i + 1
+    until (i > numc or not assetID)
   end
 end
 
@@ -563,9 +570,11 @@ local function getExplorationAch(zonesOnly, ...)
       local _, parentID = GetCategoryInfo(cat)
       if (parentID == CATEGORY_EXPLOREROOT) then
         if ( not zonesOnly or
-             -- Eliminate achievements in the category that aren't really "exploration":
+             -- Eliminate achievements in the category that aren't standard exploration:
              (id ~= OVERACHIEVER_ACHID.MediumRare and id ~= OVERACHIEVER_ACHID.BloodyRare and
-              id ~= OVERACHIEVER_ACHID.NorthernExposure and id ~= OVERACHIEVER_ACHID.Frostbitten) ) then
+              id ~= OVERACHIEVER_ACHID.NorthernExposure and id ~= OVERACHIEVER_ACHID.Frostbitten and
+              id ~= OVERACHIEVER_ACHID.StoodInTheFire and id ~= OVERACHIEVER_ACHID.SurveyingTheDamage and
+              id ~= OVERACHIEVER_ACHID.WhaleShark) ) then
           return id
         end
       end
@@ -594,14 +603,14 @@ local function AutoTrackCheck_Explore(noClearing)
       end
       if (tracked) then
         RemoveTrackedAchievement(tracked)
-        if (setTracking(id, Overachiever_Settings.Explore_AutoTrack_Completed)) then
+        if (setTracking(id)) then
           AutoTrackedAch_explore = id
         else
           -- If didn't successfully track new achievement, track previous achievement again:
           AddTrackedAchievement(tracked)
         end
       else
-        if (setTracking(id, Overachiever_Settings.Explore_AutoTrack_Completed)) then
+        if (setTracking(id)) then
           AutoTrackedAch_explore = id
         end
       end

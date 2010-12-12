@@ -7,20 +7,25 @@ OVERACHIEVER_ACHID = {
 	PestControl = 2556,		-- "Pest Control"
 	WellRead = 1244,		-- "Well Read"
 	HigherLearning = 1956,		-- "Higher Learning"
-	Scavenger = 1257,		-- "The Scavenger"
-	OutlandAngler = 1225,		-- "Outland Angler"
-	NorthrendAngler = 1517,		-- "Northrend Angler"
 	TastesLikeChicken = 1832,	-- "Takes Like Chicken"
 	HappyHour = 1833,		-- "It's Happy Hour Somewhere"
 
-	GourmetNorthrend = 1779,	-- "The Northrend Gourmet" (last part)
+	Scavenger = 1257,		-- "The Scavenger"
+	OutlandAngler = 1225,		-- "Outland Angler"
+	NorthrendAngler = 1517,		-- "Northrend Angler"
+
 	GourmetOutland = 1800,		-- "The Outland Gourmet"
+	GourmetNorthrend = 1779,	-- "The Northrend Gourmet" (last part)
+	GourmetCataclysm = 5473,	-- "The Cataclysmic Gourmet" (last part)
 	--GourmetWinter = 1688,		-- "The Winter Veil Gourmet"
 
 	MediumRare = 1311,		-- "Medium Rare"
 	BloodyRare = 1312,		-- "Bloody Rare"
 	NorthernExposure = 2256,	-- "Northern Exposure"
 	Frostbitten = 2257,		-- "Frostbitten"
+	StoodInTheFire = 5518,		-- "Stood in the Fire"
+	SurveyingTheDamage = 4827,	-- "Surveying the Damage"
+	WhaleShark = 4975,		-- "From Hell's Heart I Stab at Thee"
 
 	LetItSnow = 1687,		-- "Let It Snow"
 	FistfulOfLove = 1699,		-- "Fistful of Love"

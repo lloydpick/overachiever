@@ -8,8 +8,9 @@ local TradeSkillLookup = {}
 do
   local TradeSkillAch = {
     Cooking = {
+      GourmetOutland = true,
       GourmetNorthrend = true,
-      GourmetOutland = true
+      GourmetCataclysm = true
     }
   }
   local lookup, id, name, _, completed

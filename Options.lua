@@ -11,7 +11,7 @@ Overachiever.DefaultSettings = {
   UI_RequiredForMetaTooltip = true;
   Tracker_AutoTimer = false;
   Explore_AutoTrack = false;
-  Explore_AutoTrack_Completed = false;
+  --Explore_AutoTrack_Completed = false;
   CritterTip_loved = true;
   CritterTip_killed = true;
   WellReadTip_read = true;
@@ -50,8 +50,8 @@ function Overachiever.CreateOptions(THIS_TITLE, BuildCriteriaLookupTab_check, Au
 	{ variable = "Tracker_AutoTimer", text = L.OPT_AUTOTRACKTIMED, tooltip = L.OPT_AUTOTRACKTIMED_TIP },
 	{ variable = "Explore_AutoTrack", text = L.OPT_AUTOTRACKEXPLORE,
 	  tooltip = L.OPT_AUTOTRACKEXPLORE_TIP, OnChange = AutoTrackCheck_Explore },
-	{ variable = "Explore_AutoTrack_Completed", text = L.OPT_AUTOTRACKEXPLORE_COMPLETED,
-	  xOffset = 10, OnChange = AutoTrackCheck_Explore },
+	--{ variable = "Explore_AutoTrack_Completed", text = L.OPT_AUTOTRACKEXPLORE_COMPLETED,
+	--  xOffset = 10, OnChange = AutoTrackCheck_Explore },
 
 	{ type = "labelwrap", text = L.OPT_LABEL_MAINUI, topBuffer = 4, xOffset = 0 },
 	{ variable = "UI_SeriesTooltip", text = L.OPT_UI_SERIESTIP, tooltip = L.OPT_UI_SERIESTIP_TIP },
