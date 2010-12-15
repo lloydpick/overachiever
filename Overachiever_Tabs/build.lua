@@ -672,9 +672,11 @@ end
 
 local LeftFrame_OnEvent_CRITERIA_UPDATE, LeftFrame_OnUpdate
 do
-  local isSet
+  local time, last, isSet = time, 0
 
   local function LeftFrame_OnUpdate(self) -- Throttled response to CRITERIA_UPDATE, only happens if LeftFrame is shown:
+    if (time() < last + 2) then  return;  end
+    last = time()
     isSet = nil
     self:SetScript("OnUpdate", nil)
     for k,tab in ipairs(tabs) do
