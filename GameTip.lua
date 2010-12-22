@@ -341,8 +341,8 @@ function Overachiever.BuildItemLookupTab(id, savedtab, tab)
     return tab
   end
 
-  numDrinksConsumed = GetStatistic(OVERACHIEVER_ACHID.Stat_ConsumeDrinks)
-  numFoodConsumed = GetStatistic(OVERACHIEVER_ACHID.Stat_ConsumeFood)
+  numDrinksConsumed = tonumber(GetStatistic(OVERACHIEVER_ACHID.Stat_ConsumeDrinks)) or 0
+  numFoodConsumed = tonumber(GetStatistic(OVERACHIEVER_ACHID.Stat_ConsumeFood)) or 0
 
 --[[  -- Old code to see whether tables should be built. Now, tables are always built (but only once) because
       -- Blizzard's API no longer tells us what has been consumed. To be reliable, Overachiever needs to "see"
@@ -428,8 +428,8 @@ end
 
 local function BagUpdate(...)
   local oldF, oldD = numFoodConsumed, numDrinksConsumed
-  numFoodConsumed = GetStatistic(OVERACHIEVER_ACHID.Stat_ConsumeFood)
-  numDrinksConsumed = GetStatistic(OVERACHIEVER_ACHID.Stat_ConsumeDrinks)
+  numFoodConsumed = tonumber(GetStatistic(OVERACHIEVER_ACHID.Stat_ConsumeFood)) or 0
+  numDrinksConsumed = tonumber(GetStatistic(OVERACHIEVER_ACHID.Stat_ConsumeDrinks)) or 0
 
   local changeF, changeD = oldF < numFoodConsumed, oldD < numDrinksConsumed
   if (changeF or changeD) then

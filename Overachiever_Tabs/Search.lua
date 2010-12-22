@@ -10,7 +10,7 @@
 local L = OVERACHIEVER_STRINGS
 local GetAchievementInfo = Overachiever.GetAchievementInfo
 
-local CATEGORIES_ALL = Overachiever.UI_GetValidCategories()
+local categories_sel = Overachiever.UI_GetValidCategories(1)
 
 
 local function copytab(from, to)
@@ -24,7 +24,12 @@ local function copytab(from, to)
   end
 end
 
-local AchSearch = Overachiever.SearchForAchievement
+local function AchSearch(isCustomList, searchList, ...)
+  if (not searchList) then
+    return Overachiever.SearchForAchievement(nil, categories_sel, ...)
+  end
+  return Overachiever.SearchForAchievement(isCustomList, searchList, ...)
+end
 
 local function findCriteria(id, pattern)
   local critString, foundCrit
@@ -50,7 +55,7 @@ local function AchSearch_Criteria(list, pattern, results)
     end
   else
     local id
-    for _,cat in ipairs(CATEGORIES_ALL) do
+    for _,cat in ipairs(categories_sel) do
       for i=1,GetCategoryNumAchievements(cat) do
         id = GetAchievementInfo(cat, i)
         if (findCriteria(id, pattern)) then
@@ -107,11 +112,18 @@ local frame, panel, sortdrop
 local EditAny, EditName, EditDesc, EditCriteria, EditReward
 local SubmitBtn, ResetBtn, ResultsLabel
 local FullListCheckbox
+local typedrop
 
 local function SortDrop_OnSelect(self, value)
   VARS.SearchSort = value
   frame.sort = value
   frame:ForceUpdate(true)
+end
+
+local function TypeDrop_OnSelect(self, value)
+  VARS.SearchType = value
+  categories_sel = Overachiever.UI_GetValidCategories(value)
+  frame.guildView_default = value == 2 and true or nil
 end
 
 local function FullList_OnClick(self)
@@ -127,6 +139,7 @@ end
 local function OnLoad(v)
   VARS = v
   sortdrop:SetSelectedValue(VARS.SearchSort or 0)
+  typedrop:SetSelectedValue(VARS.SearchType or 1)
   if (VARS.SearchFullList) then  FullListCheckbox:SetChecked(1);  end
 end
 
@@ -162,7 +175,7 @@ local function beginSearch()
     ResultsLabel:Hide()
     return;
   end
-  local list = VARS.SearchFullList and Overachiever.GetAllAchievements() or nil
+  local list = VARS.SearchFullList and Overachiever.GetAllAchievements(categories_sel) or nil
   local results = frame.AchList
   if (reward ~= "") then  -- Rewards first since there are few of these so it may narrow the list fastest
     list = AchSearch(true, list, 11, reward, nil, true, results) or 0
@@ -229,10 +242,35 @@ EditDesc = createEditBox("Desc", L.SEARCH_DESC, EditName)
 EditCriteria = createEditBox("Criteria", L.SEARCH_CRITERIA, EditDesc)
 EditReward = createEditBox("Reward", L.SEARCH_REWARD, EditCriteria)
 EditAny = createEditBox("Any", L.SEARCH_ANY, EditReward)
+createEditBox = nil
+
+
+typedrop = TjDropDownMenu.CreateDropDown("Overachiever_SearchFrameTypeDrop", panel, {
+  {
+    text = L.SEARCH_TYPE_ALL,
+    value = 0
+  },
+  {
+    text = L.SEARCH_TYPE_INDIV,
+    value = 1
+  },
+  {
+    text = L.SEARCH_TYPE_GUILD,
+    value = 2
+  };
+})
+typedrop:SetLabel(L.SEARCH_TYPE, true)
+typedrop:SetPoint("LEFT", sortdrop, "LEFT")
+typedrop:SetPoint("TOP", EditAny, "BOTTOM", 0, -21)
+typedrop:OnSelect(TypeDrop_OnSelect)
+
 
 FullListCheckbox = CreateFrame("CheckButton", "Overachiever_SearchFrameFullListCheckbox", panel, "InterfaceOptionsCheckButtonTemplate")
-FullListCheckbox:SetPoint("TOPLEFT", EditAny, "BOTTOMLEFT", -8, -12)
+--FullListCheckbox:SetPoint("TOPLEFT", EditAny, "BOTTOMLEFT", -8, -12)
+FullListCheckbox:SetPoint("LEFT", EditAny, "LEFT", -8, 0)
+FullListCheckbox:SetPoint("TOP", typedrop, "BOTTOM", 0, -4)
 Overachiever_SearchFrameFullListCheckboxText:SetText(L.SEARCH_FULLLIST)
+Overachiever_SearchFrameFullListCheckboxText:SetJustifyH("LEFT")
 FullListCheckbox:SetHitRectInsets(0, -1 * min(Overachiever_SearchFrameFullListCheckboxText:GetWidth() + 8, 155), 0, 0)
 FullListCheckbox:SetScript("OnClick", FullList_OnClick)
 FullListCheckbox:SetScript("OnEnter", function(self)

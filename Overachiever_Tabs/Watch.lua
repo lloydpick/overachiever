@@ -80,7 +80,7 @@ local function OnLoad(v, oldver)
 
   CurrentWatchList = CurrentWatchList or VARS.WatchLists_General  -- Default, in case the list we looked for doesn't exist.
   DestinationWatchList = VARS.WatchLists_General
-  
+
   -- If using Global or the current character's character-specific list, it cannot be deleted, only cleared:
   if (VARS.WatchedList == 0 or VARS.WatchedList == 1) then  DeleteListBtn:SetText(L.WATCH_CLEAR);  end
 
@@ -126,7 +126,7 @@ function frame.SetNumListed(num)
 end
 
 
-function Refresh()
+function Refresh(scrollup)
   if (skipRefresh) then  return;  end
   local list, count = frame.AchList, 0
   wipe(list)
@@ -134,7 +134,7 @@ function Refresh()
     count = count + 1
     list[count] = id
   end
-  Overachiever_WatchFrameContainerScrollBar:SetValue(0)
+  if (scrollup == true) then  Overachiever_WatchFrameContainerScrollBar:SetValue(0);  end
   frame:ForceUpdate(true)
 end
 
@@ -171,8 +171,9 @@ function frame.SetAchWatchList(id, add)
     PlaySound("igMainMenuOptionCheckBoxOff")
   end
   if (frame:IsShown()) then
-    Refresh()
+    Refresh(true)
   else
+    frame.AchList_sorted = nil
     Overachiever.FlashTab(frame.tab)
   end
 end
@@ -276,7 +277,7 @@ StaticPopupDialogs["OVERACHIEVER_WATCH_DELETELIST"] = {
 		-- If using Global or the current character's character-specific list, it cannot be deleted, only cleared:
 		if (CurrentWatchList == VARS.WatchLists_General or CurrentWatchList == VARS.WatchLists_Realms[THIS_REALM][THIS_PC]) then
 			wipe(CurrentWatchList)
-			Refresh()
+			Refresh(true)
 		else
 			local deltab, delval = CurrentWatchList, listdrop:GetSelectedValue()
 			if (deflistdrop:GetSelectedValue() == delval) then
@@ -431,7 +432,7 @@ function listdrop_OnSelect(self, value, oldvalue, tab)
   else
     DeleteListBtn:SetText(L.WATCH_DELETE)
   end
-  Refresh()
+  Refresh(true)
 end
 
 function deflistdrop_OnSelect(self, value)

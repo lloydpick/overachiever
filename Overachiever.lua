@@ -16,7 +16,8 @@ Overachiever = {};
 
 local L = OVERACHIEVER_STRINGS
 
-local CATEGORIES_ALL, CATEGORY_EXPLOREROOT, CATEGORIES_EXPLOREZONES
+local CATEGORIES_INDIV_ALL, CATEGORIES_GUILD_ALL, CATEGORIES_ALL
+local CATEGORY_EXPLOREROOT, CATEGORIES_EXPLOREZONES
 local OptionsPanel
 local MadeDraggable_AchFrame, MadeDragSave_AchFrame
 
@@ -47,6 +48,8 @@ local function copytab(from, to)
   end
 end
 
+local function emptyfunc()  end
+
 
 local function chatprint(msg, premsg)
   premsg = premsg or "["..THIS_TITLE.."]"
@@ -58,7 +61,7 @@ local function BuildCategoryInfo()
   CATEGORY_EXPLOREROOT = GetAchievementCategory(OVERACHIEVER_ACHID.WorldExplorer);
   CATEGORIES_EXPLOREZONES = {};
   local name, parentID
-  for i,id in ipairs(CATEGORIES_ALL) do
+  for i,id in ipairs(CATEGORIES_INDIV_ALL) do
     name, parentID = GetCategoryInfo(id)
     if (parentID == CATEGORY_EXPLOREROOT) then
       CATEGORIES_EXPLOREZONES[#(CATEGORIES_EXPLOREZONES) + 1] = id;
@@ -274,6 +277,39 @@ local function setTracking(id, allowCompleted) -- allowCompleted is defunct; WoW
   end
 end
 
+local isGuildAchievement
+do
+  local GuildCatLookup
+  function isGuildAchievement(id)
+    if (not GuildCatLookup) then
+      GuildCatLookup = {}
+      for i,c in ipairs(CATEGORIES_GUILD_ALL) do
+        GuildCatLookup[c] = true
+      end
+    end
+    local cat = GetAchievementCategory(id)
+    return GuildCatLookup[cat]
+  end
+end
+
+local isUIInGuildView
+do
+  local fakeframe
+  function isUIInGuildView()
+    fakeframe = fakeframe or { border = { SetTexture = emptyfunc, SetTexCoord = emptyfunc } }
+    AchievementButton_ToggleMetaView(fakeframe)  -- Done so we can find out what their local variable IN_GUILD_VIEW is currently.
+    return fakeframe.guildView
+  end
+end
+
+local function checkGuildMembersTooltip(frame)
+  if (not isGuildAchievement(frame.id)) then  return;  end
+  local gv = isUIInGuildView()
+  if (not gv) then  AchievementFrame_ToggleView();  end  -- Toggle so we're in guild mode so AchievementFrameAchievements_CheckGuildMembersTooltip will work as desired.
+  AchievementFrameAchievements_CheckGuildMembersTooltip(frame)
+  if (not gv) then  AchievementFrame_ToggleView();  end
+end
+
 
 -- ACHIEVEMENT ID LOOKUP
 --------------------------
@@ -281,14 +317,16 @@ end
 local getAllAchievements --, getAllAchievementsInCat
 do
   local ALL_ACHIEVEMENTS
-  function getAllAchievements()
+  function getAllAchievements(catlist)
   -- Retrieve an array of all achievement IDs, including those not normally listed in the UI for this character.
-    if (ALL_ACHIEVEMENTS) then  return ALL_ACHIEVEMENTS;  end
+    catlist = catlist or CATEGORIES_ALL
+    ALL_ACHIEVEMENTS = ALL_ACHIEVEMENTS or {}
+    if (ALL_ACHIEVEMENTS[catlist]) then  return ALL_ACHIEVEMENTS[catlist];  end
     local catlookup = {}
-    for i,c in ipairs(CATEGORIES_ALL) do
+    for i,c in ipairs(catlist) do
       catlookup[c] = true
     end
-    ALL_ACHIEVEMENTS = {}
+    local buildlist = {}
     local gap, i, size, id = 0, 0, 0
     --local debug_largestgap = 0
     repeat
@@ -297,14 +335,15 @@ do
       if (id) then
         --if (gap > debug_largestgap) then debug_largestgap = gap; print("high gap:",debug_largestgap); end
         gap = 0
-        if (catlookup[GetAchievementCategory(id)]) then  size = size + 1; ALL_ACHIEVEMENTS[size] = id;  end
+        if (catlookup[GetAchievementCategory(id)]) then  size = size + 1; buildlist[size] = id;  end
       else
         gap = gap + 1
       end
     until (gap > 1000) -- 1000 is arbitrary. As of this writing, the largest gap is 79, but this is more future-safe.
-    --print("last ach ID:",ALL_ACHIEVEMENTS[size], "/ size:",size)
+    --print("last ach ID:",buildlist[size], "/ size:",size)
     catlookup = nil
-    return ALL_ACHIEVEMENTS
+    ALL_ACHIEVEMENTS[catlist] = buildlist
+    return buildlist
   end
 
   --[[
@@ -325,7 +364,7 @@ end
 local function BuildCriteriaLookupTab(...)
 -- To be called in this fashion: BuildCriteriaLookupTab( <criteriaType1>, <table1>, <saveCriteriaNumber1>[, <criteriaType2>, <table2>, <saveCriteriaNumber2>[, ...]] )
   local num = select("#", ...)
-  local list = getAllAchievements()
+  local list = getAllAchievements() -- Consider CATEGORIES_INDIV_ALL only?
   local _, critType, assetID, a, tab, savenum
   local numc, i
   for x,id in ipairs(list) do
@@ -628,10 +667,12 @@ end
 local orig_AchievementButton_GetMeta
 
 local function MetaCriteriaOnEnter(self)
-  if (self.id) then
+  local id = self.id
+  if (id and type(id) == "number" and id > 0) then  -- Extra checks needed for compatibility with addons like Failchievements.
     GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
-    local link = GetAchievementLink(self.id)
+    local link = GetAchievementLink(id)
     GameTooltip:SetHyperlink(link)
+    checkGuildMembersTooltip(self)
     if (GameTooltip:GetBottom() < self:GetTop()) then
       GameTooltip:ClearAllPoints()
       GameTooltip:SetPoint("TOPLEFT", self, "BOTTOMLEFT")
@@ -641,6 +682,7 @@ local function MetaCriteriaOnEnter(self)
   elseif ( self.date ) then
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
     GameTooltip:AddLine(string.format(ACHIEVEMENT_META_COMPLETED_DATE, self.date), 1, 1, 1);
+    checkGuildMembersTooltip(self)
     GameTooltip:Show();
   end
 end
@@ -703,14 +745,21 @@ do
   end
 
   function achbtnOnEnter(self)
+    GameTooltip:SetOwner(self, "ANCHOR_NONE")
+    GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 8, 0)
+    GameTooltip:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b)
+    checkGuildMembersTooltip(self)
+
+    -- This guild data doesn't pop up as consistently as I'd like but the same thing happens with the default UI and after running tests with the relevant events and functions, it seems to be a Blizzard bug.
+    -- Generally, if there's anything to display, selecting the achievement and then moving the cursor away and back will make it work for that achievement. (Same workaround goes for default UI.)
+
+    local id, tipset, guildtip = self.id, 0
+    if (GameTooltip:NumLines() > 0) then  tipset, guildtip = 1, true;  end
     button = self
-    local id, tipset = self.id
 
     if (Overachiever_Settings.UI_SeriesTooltip and (GetNextAchievement(id) or GetPreviousAchievement(id))) then
-      GameTooltip:SetOwner(self, "ANCHOR_NONE")
-      GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 8, 0)
-      GameTooltip:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b)
-      tipset = true
+      if (tipset == 1) then  GameTooltip:AddLine(" ");  end
+      tipset = tipset + 1
       GameTooltip:AddLine(L.SERIESTIP)
       GameTooltip:AddLine(" ")
       local ach = GetPreviousAchievement(id)
@@ -742,12 +791,8 @@ do
     end
 
     if (Overachiever_Settings.UI_RequiredForMetaTooltip and AchLookup_metaach[id]) then
-      if (not tipset) then
-        GameTooltip:SetOwner(self, "ANCHOR_NONE")
-        GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 8, 0)
-        GameTooltip:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b)
-        tipset = true
-      end
+      if (tipset == 1) then  GameTooltip:AddLine(" ");  end
+      tipset = tipset + 1
       GameTooltip:AddLine(L.REQUIREDFORMETATIP)
       GameTooltip:AddLine(" ")
       AddAchListToTooltip(GameTooltip, AchLookup_metaach[id])
@@ -755,20 +800,16 @@ do
     end
 
     if (Overachiever_Settings.Tooltip_ShowID) then
-      if (not tipset) then
-        GameTooltip:SetOwner(self, "ANCHOR_NONE")
-        GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 8, 0)
-        GameTooltip:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b)
-        tipset = true
-      end
-      if (GameTooltip:NumLines() > 0) then
+      if (tipset > 0) then
+        if (tipset == 1 and guildtip) then  GameTooltip:AddLine(" ");  end
         GameTooltip:AddDoubleLine(" ", "|cff7eff00ID:|r "..id, nil, nil, nil, 0.741, 1, 0.467)
       else
         GameTooltip:AddLine("|cff7eff00ID:|r "..id, 0.741, 1, 0.467)
       end
+      tipset = tipset + 1
     end
 
-    if (tipset) then
+    if (tipset > 0) then
       GameTooltip:Show()
       return true
     end
@@ -776,7 +817,8 @@ do
 
   function achbtnOnLeave(self)
     button = nil
-    GameTooltip:Hide()
+    AchievementMeta_OnLeave(self) -- Used because it sets guildMemberRequestFrame, a variable local to Blizzard_AchievementUI.lua,
+    -- to nil without doing anything else except GameTooltip:Hide() which we want to do anyway.
   end
 
   -- This function is needed to handle cases where OnEnter isn't triggered again because the frame scrolls down
@@ -790,9 +832,9 @@ do
   end
 end
 
-local function achbtnShieldOnEnter(self, ...)
-  return achbtnOnEnter(self:GetParent(), ...);
-end
+--local function achbtnShieldOnEnter(self, ...)
+--  return achbtnOnEnter(self:GetParent(), ...);
+--end
 
 
 -- GLOBAL FUNCTIONS
@@ -1024,15 +1066,25 @@ function Overachiever.UI_HookAchButtons(buttons, scrollbar)
     button:HookScript("OnEnter", achbtnOnEnter)
     button:HookScript("OnLeave", achbtnOnLeave)
     local shield = _G[button:GetName().."Shield"]
-    shield:HookScript("OnEnter", achbtnShieldOnEnter)
-    shield:HookScript("OnLeave", achbtnOnLeave)
+    --shield:SetScript("OnEnter", achbtnShieldOnEnter)
+    shield:EnableMouse(false) -- Removes its tie to AchievementShield_OnEnter and lets the parent button control highlighting, etc.
   end
   scrollbar:HookScript("OnValueChanged", achBtnRedisplay)
 end
 
-function Overachiever.UI_GetValidCategories()
-  CATEGORIES_ALL = CATEGORIES_ALL or GetCategoryList()
-  return CATEGORIES_ALL
+function Overachiever.UI_GetValidCategories(sel)
+  if (not CATEGORIES_ALL) then
+    CATEGORIES_INDIV_ALL = GetCategoryList()
+    CATEGORIES_GUILD_ALL = GetGuildCategoryList()
+    CATEGORIES_ALL = {}
+    copytab(CATEGORIES_INDIV_ALL, CATEGORIES_ALL)
+    local i = #CATEGORIES_ALL
+    for k,v in pairs(CATEGORIES_GUILD_ALL) do
+      i = i + 1
+      CATEGORIES_ALL[i] = v
+    end
+  end
+  return sel == 1 and CATEGORIES_INDIV_ALL or sel == 2 and CATEGORIES_GUILD_ALL or CATEGORIES_ALL
 end
 
 Overachiever.IsAchievementInUI = isAchievementInUI;
@@ -1040,6 +1092,8 @@ Overachiever.OpenToAchievement = openToAchievement;
 Overachiever.GetAllAchievements = getAllAchievements;
 Overachiever.BuildCriteriaLookupTab = BuildCriteriaLookupTab;
 Overachiever.AddAchListToTooltip = AddAchListToTooltip;
+Overachiever.IsGuildAchievement = isGuildAchievement
+Overachiever.isUIInGuildView = isUIInGuildView
 
 
 -- SLASH COMMANDS

@@ -1,5 +1,5 @@
 
-Overachiever v0.59
+Overachiever v0.60
 ==============================
 
 Author: Tuhljin
@@ -106,6 +106,23 @@ Change log
 ==========
 
 The change log lists changes of particular note to users, not every change made.
+
+v0.60
+- You can now search for guild achievements using slash commands and the Tabs module. On the Search tab, a new option
+  has been added to allow you to search personal achievements, guild achievements, or all achievements.
+- The tooltip that shows which guild members have contributed to the completion of a guild achievement is no longer
+  overridden by Overachiever tooltips. Additionally, this information is now displayed where appropriate when viewing
+  guild achievements on tabs created by the Tabs module.
+- Tabs module: Guild achievements now use the unique art designed for them on all tabs instead of only the Guild tab.
+- Tabs module: If a guild achievement is selected or the Search tab was set to search only guild achievements, then
+  the points shown at the top of the main achievement UI will show Guild Points instead of personal Achievement Points.
+- Tabs module: Sorting by points now functions as most would expect, adding points from previous achievements in its
+  series (if it is in one) to the points the achievement is worth alone. (This is the same way the points shown on the
+  shield on the right-hand side of a displayed achievement are calculated.)
+- "It's Happy Hour Somewhere" and "Tastes Like Chicken": Corrected an issue where an item could sometimes be consumed
+  without being properly recorded.
+- Fixed a compatibility issue with the addon Failchievements where an error was given when the meta-criteria tooltip
+  of a custom "achievement" should display.
 
 v0.59
 - Corrected an issue where Vashj'ir achievements weren't being suggested or auto-tracked.
