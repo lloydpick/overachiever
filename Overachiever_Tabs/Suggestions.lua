@@ -220,7 +220,9 @@ local ACHID_ZONE_MISC = {
 	["Hillsbrad Foothills"] = "4827:13",	-- "Surveying the Damage"
 	["Loch Modan"] = "4827:12",		-- "Surveying the Damage"
 	["Silverpine Forest"] = "4827:10",	-- "Surveying the Damage"
-	["Twilight Highlands"] = { 5451, 4960 },	-- "Consumed by Nightmare", "Round Three. Fight!"
+	["Tol Barad"] = { 4874, IsAlliance and 5489 or 5490 },	-- "Breaking out of Tol Barad", "Master of Tol Barad"
+	["Twilight Highlands"] = { 5451, 4960,	-- "Consumed by Nightmare", "Round Three. Fight!",
+				   "4958:3" },	-- "The First Rule of Ring of Blood is You Don't Talk About Ring of Blood"
 	["Westfall"] = "4827:11",	-- "Surveying the Damage"
 	-- Vashj'ir:
 	["Vashj'ir"] = { 4975, 5452,		-- "From Hell's Heart I Stab at Thee", "Visions of Vashj'ir Past"

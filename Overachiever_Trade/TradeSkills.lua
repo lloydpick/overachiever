@@ -426,6 +426,7 @@ skillButtonOnEnter = skillButtonOnEnter or function(self, _, calledByExamine)
       GameTooltip:AddLine(" ")
       Overachiever.AddAchListToTooltip(GameTooltip, achlist)
       GameTooltip:AddLine(" ")
+      if (Overachiever_Debug) then  GameTooltip:AddLine(icon.name)  end
       GameTooltip:Show()
       return true
     elseif (not calledByExamine) then
@@ -447,12 +448,15 @@ if (ExamineTradeSkillUI == nil) then
     local tradeName = LBI[GetTradeSkillLine()]
     if (TradeSkillLookup[tradeName]) then
       -- Find icons that should be displayed:
+      -- Based on part of TradeSkillFrame_Update().
       local skillOffset = FauxScrollFrame_GetOffset(TradeSkillListScrollFrame)
+      local hasFilterBar = TradeSkillFilterBar:IsShown()
+      local diplayedSkills = hasFilterBar and (TRADE_SKILLS_DISPLAYED - 1) or TRADE_SKILLS_DISPLAYED  -- "diplayedSkills" [sic], as per original
       local skillName, skillType
-      for i=1,TRADE_SKILLS_DISPLAYED do
+      for i=1,diplayedSkills do
         skillName, skillType = GetTradeSkillInfo(i + skillOffset)
         if (skillName and skillType ~= "header" and TradeSkillCheck(tradeName, skillName)) then
-          local icon = GetIcon( _G["TradeSkillSkill"..i] )
+          local icon = GetIcon( _G["TradeSkillSkill"..(hasFilterBar and (i + 1) or i)] )
           icon:Show()
           highlights[icon]:Show()
           icon.name = skillName

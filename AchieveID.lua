@@ -102,6 +102,8 @@ OVERACHIEVER_EXPLOREZONEID = {
 	["Ghostlands"] = 858,
 	["Isle of Quel'Danas"] = 868,
    -- Cataclysm:
+	["Tol Barad"] = 4867,
+	["Tol Barad Peninsula"] = 4867,
 	["Twilight Highlands"] = 4866,
 	-- Vashj'ir:
 	["Vashj'ir"] = 4825,
