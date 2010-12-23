@@ -781,8 +781,31 @@ local function LeftFrame_OnHide(self)
 end
 
 local LeftFrame_OnEvent_CRITERIA_UPDATE, LeftFrame_OnUpdate
+local recolor_AchievementObjectives_DisplayCriteria
 do
   local time, last, isSet = time, 0
+
+  -- Meta-criteria recolor:
+  function recolor_AchievementObjectives_DisplayCriteria(objectivesFrame, id)
+    if (isSet or not id or GetPreviousAchievement(id) or isAchievementInUI(id, true)) then  return;  end
+    -- Checking for isSet like this means we "ignore" calls when CRITERIA_UPDATE events have been detected until
+    -- until the OnUpdate function clears it. Since the OnUpdate func calls AchievementButton_DisplayObjectives
+    -- which in turn calls AchievementObjectives_DisplayCriteria which will in turn trigger this function (since
+    -- it should be hooked to it), this simple check should be all that's needed to throttle this function.
+    -- (Throttling is required in the first place because the default achievement UI responds to CRITERIA_UPDATE by
+    -- calling AchievementButton_DisplayObjectives.)
+    -- Known issue: Since recolors are throttled, the wrong color may display for some meta-criteria for a couple
+    -- of seconds but this should only be noticeable if you're in the UI looking at one of the few relevant
+    -- achievements while in combat or otherwise triggering AchievementObjectives_DisplayCriteria repeatedly.
+    local metaCriteria, index = AchievementFrameMeta1, 1
+    while (metaCriteria and metaCriteria:IsShown()) do
+      if (not GetPreviousAchievement(metaCriteria.id) and not isAchievementInUI(metaCriteria.id, true)) then
+        metaCriteria.label:SetTextColor(.9, .4, .4, 1)
+      end
+      index = index + 1
+      metaCriteria = _G["AchievementFrameMeta"..index]
+    end
+  end
 
   local function LeftFrame_OnUpdate(self) -- Throttled response to CRITERIA_UPDATE, only happens if LeftFrame is shown:
     if (time() < last + 2) then  return;  end
@@ -891,17 +914,6 @@ end
 AchievementButton_GetMeta = new_AchievementButton_GetMeta
 
 -- Meta-criteria recolor:
-local function recolor_AchievementObjectives_DisplayCriteria(objectivesFrame, id)
-  if (not id or GetPreviousAchievement(id) or isAchievementInUI(id, true)) then  return;  end
-  local metaCriteria, index = AchievementFrameMeta1, 1
-  while (metaCriteria and metaCriteria:IsShown()) do
-    if (not GetPreviousAchievement(metaCriteria.id) and not isAchievementInUI(metaCriteria.id, true)) then
-      metaCriteria.label:SetTextColor(.9, .4, .4, 1)
-    end
-    index = index + 1
-    metaCriteria = _G["AchievementFrameMeta"..index]
-  end
-end
 hooksecurefunc("AchievementObjectives_DisplayCriteria", recolor_AchievementObjectives_DisplayCriteria)
 
 
