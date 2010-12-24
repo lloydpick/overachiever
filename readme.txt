@@ -120,6 +120,7 @@ v0.60
 - Tabs module: Sorting by points now functions as most would expect, adding points from previous achievements in its
   series (if it is in one) to the points the achievement is worth alone. (This is the same way the points shown on the
   shield on the right-hand side of a displayed achievement are calculated.)
+- Tabs module: Expanded the scope of the throttle in order to address performance issues.
 - Suggestions Tab: Updated zone-based suggestions.
 - "It's Happy Hour Somewhere" and "Tastes Like Chicken": Corrected an issue where an item could sometimes be consumed
   without being properly recorded.
