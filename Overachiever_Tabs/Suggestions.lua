@@ -384,6 +384,14 @@ local ACHID_INSTANCES = {
 	["The Forge of Souls"] = 4516,
 	["Halls of Reflection"] = 4518,
 	["Pit of Saron"] = 4517,
+-- Cataclysm Dungeons
+	["Lost City of the Tol'vir"] = 4848,
+	["Throne of the Tides"] = 4839,
+	["Blackrock Caverns"] = 4833,
+	["Grim Batol"] = 4840,
+	["Halls of Origination"] = 4841,
+	["The Stonecore"] = 4846,
+	["The Vortex Pinnacle"] = 4847,
 }
 -- Battlegrounds
 ACHID_INSTANCES["Eye of the Storm"] = { 1171, 587, 1258, 211 }
@@ -443,6 +451,14 @@ local ACHID_INSTANCES_HEROIC = {
 	["The Forge of Souls"] = { 4519, 4522, 4523 },
 	["Halls of Reflection"] = { 4521, 4526 },
 	["Pit of Saron"] = { 4520, 4524, 4525 },
+-- Cataclysm Dungeons
+	["Lost City of the Tol'vir"] = { 5291, 5292, 5006, 5140, 5290 },
+	["Throne of the Tides"] = { 5061, 5135, 5285, 5286 },
+	["Blackrock Caverns"] = { 5282, 5284, 5281, 5060, 5134, 5283 },
+	["Grim Batol"] = { 5298, 5062, 5138, 5297 },
+	["Halls of Origination"] = { 5296, 5065, 5139, 5293, 5295, 5294 },
+	["The Stonecore"] = { 5063, 5136, 5287 },
+	["The Vortex Pinnacle"] = { 5289, 5064, 5137, 5288 },
 }
 
 -- INSTANCES - 10-MAN ONLY (normal or heroic):
@@ -482,6 +498,11 @@ local ACHID_INSTANCES_10 = {
 	["Vault of Archavon"] = { 1722, 3136, 3836, 4016 },
 	["Trial of the Crusader"] = { 3917, 3936, 3798, 3799, 3800, 3996, 3797 },
 	["Icecrown Citadel"] = { 4580, 4601, 4534, 4538, 4577, 4535, 4536, 4537, 4578, 4581, 4539, 4579, 4582 },
+-- Cataclysm Raids
+	["Baradin Hold"] = { 5416, 5425 },
+	["The Bastion of Twilight"] = { 4825, 5311, 5312, 4850, 4986, 5300 },
+	["Throne of the Four Winds"] = { 5305, 5304, 4851, 4987 },
+	["Blackwing Descent"] = { 5310, 5307, 4842, 4985, 5309, 4849, 5306, 5308 },
 }
 
 -- INSTANCES - 25-MAN ONLY (normal or heroic):
@@ -521,6 +542,11 @@ local ACHID_INSTANCES_25 = {
 	["Vault of Archavon"] = { 1721, 3137, 3837, 4017 },
 	["Trial of the Crusader"] = { 3916, 3937, 3814, 3815, 3816, 3997, 3813 },
 	["Icecrown Citadel"] = { 4620, 4621, 4610, 4614, 4615, 4611, 4612, 4613, 4616, 4622, 4618, 4619, 4617 },
+-- Cataclysm Raids
+	["Baradin Hold"] = { 5416, 5425 },
+	["The Bastion of Twilight"] = { 4825, 5311, 5312, 4850, 4986, 5300 },
+	["Throne of the Four Winds"] = { 5305, 5304, 4851, 4987 },
+	["Blackwing Descent"] = { 5310, 5307, 4842, 4985, 5309, 4849, 5306, 5308 },
 }
 
 -- INSTANCES - NORMAL 10-MAN ONLY:
@@ -531,9 +557,14 @@ local ACHID_INSTANCES_10_NORMAL = {
 
 -- INSTANCES - HEROIC 10-MAN ONLY:
 local ACHID_INSTANCES_10_HEROIC = {
+-- Lich King Raids
 	["Trial of the Crusader"] = { 3918, 3808 },
 	["Icecrown Citadel"] = 4636,
 	["The Ruby Sanctum"] = 4818, -- Need to confirm zone name.
+-- Cataclysm Raids
+	["The Bastion of Twilight"] = { 5119, 5120, 5461, 5118, 5121, 5464, 5117, 5313 },
+	["Throne of the Four Winds"] = { 5123, 5463, 5122 },
+	["Blackwing Descent"] = { 5109, 5115, 5094, 5108, 5116, 5462, 5107 },
 }
 
 -- INSTANCES - NORMAL 25-MAN ONLY:
@@ -544,9 +575,14 @@ local ACHID_INSTANCES_25_NORMAL = {
 
 -- INSTANCES - HEROIC 25-MAN ONLY:
 local ACHID_INSTANCES_25_HEROIC = {
+-- Lich King Raids
 	["Trial of the Crusader"] = { 3812, 3817 },
 	["Icecrown Citadel"] = 4637,
 	["The Ruby Sanctum"] = 4816, -- Need to confirm zone name.
+-- Cataclysm Raids
+	["The Bastion of Twilight"] = { 5119, 5120, 5461, 5118, 5121, 5464, 5117, 5313 },
+	["Throne of the Four Winds"] = { 5123, 5463, 5122 },
+	["Blackwing Descent"] = { 5109, 5115, 5094, 5108, 5116, 5462, 5107 },
 }
 
 
